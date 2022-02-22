@@ -276,6 +276,7 @@ The quantile function is defined as
 \end{equation}
 returning a quantile value where $p$ is a given probability $0\leq p \leq 1$.
 
+% \subsubsubsection{Scoring}
 For a forecast represented as a parametric function with pmf/pdf $p_m(x)$, 
 the accuracy of the forecast may be measured as how likely realized value $x^*$
 is to occur. Commonly used proper scoring rules for parametric distributions
@@ -293,10 +294,79 @@ probability of the observed value $x^*$. It is defined as
 \begin{equation}
   LS(p_m,x*) = -log\;p_m(x^*)
 \end{equation}
+The goal is to minimize the LogS, so that a forecast $p{'}_m(x^*)$ is deemed 
+superior to $p_m$ if
+$LS(p{'}_m, x^*) < LS(p_m, x^*)$.
+The LogS is strictly limited to scoring forecasts with density functions and
+evaluating those densities only at the point $x^*$.
 
+The CRPS is a function of a CDF $F$
+and so 
+can be used a bit more extensively than the LogS which is limited to 
+distributions which carry a density. For the CDF $F_m$, the CRPS is defined as
 
+\begin{equation}
+\label{eq:crps}
+  CRPS(F_m, x^*) = \int_{-\infty}^{\infty} (F_m(x)- 1_{\{x*\leq x\}})^2 dy
+\end{equation}
+Here too a smaller score indicates a better forecast.
 
- 
+Besides evaluating forecasts, the CRPS is also used in optimizing weights used
+to build ensembles. Considered the state-of-the-art techniques for combining 
+component distributions
+into a multi-model ensemble are nonhomogeneous regression (NR), also known as
+ensemble model output statistics (EMOS), and ensemble Bayesian model averaging
+(BMA), both of which will be defined as in \cite{gneiting2014probabilistic}.
+
+In the context of an ensemble made from component models submitted from various
+sources, contructed with different methods and with potentially different data,
+BMA is the better option. In BMA, the final model does not have to be specified
+beforehand and the resulting forecast will be a discrete mixture distribution
+of all component forecasts. The general form for the ensemble distribution $p^E$
+is
+
+\begin{equation}
+  p^E(x) = \sum_{jm=1}^M w_mp_m(x)
+\end{equation}
+where $p_m$ is the $j^{th}$ component forecast distribution and 
+$0 \leq w_m \leq 1$ is a weight assigned to each component where $\sum w_m = 1$.
+Methods for estimating weights include Maximum Likelihood estimation
+\cite{raftery2005using}, MCMC 
+sampling see \cite{vrugt2008ensemble} (also in this paper it talks about how 
+EM can get difficult as parameters i.e. number of distributions increase, and 
+shows MCMC may be better with that high dimensionality and gives full posterior
+of weights)
+and minimizing the CRPS as in 
+\cite{baran2018combining}.
+
+For selecting distribution weights, the CRPS has some nice properties, but can 
+sometimes be
+difficult to compute. For example, when the forecast is a mixture of a 
+Truncated Normal distribution (TN) and a Truncated Lognormal (TL) the CRPS is 
+not available in closed form \cite{baran2018combining}.
+
+Generally computation and evaluation of parametric distributions is not hard. 
+For most commonly used parametric distributions -Normal, Lognorm, Poisson,
+Gamma, etc.- there is software readily available to compute density, 
+distribution and quantile values. Likewise, requirements for storage are low 
+compared to other uncertainty representations we will discuss. The most common
+parametric distributions can be fully defined with three or pieces of data.
+The distribution family and two or three parameters. Below shows a table with
+enough information to completely define a $Lognormal(1,0.4)$ distribution.
+
+\begin{table}[h!]
+\centering
+ \begin{tabular}{|c c c|} 
+ \hline
+ Family & param1 & param2 \\ [0.5ex] 
+ \hline
+ lnorm & 1 & 0.4 \\ 
+ \hline
+ \end{tabular}
+\end{table}
+
+A completely defined continuous parametric distribution can be evaluated at an
+infinite number of values. We will call this an infinite resolution.
 
 
 A drawback of representing a forecast in a parametric distribution is the lack 
@@ -306,18 +376,31 @@ shapes may unattainable. The distribution may assign probability to values
 outside the range of the forecast. There are remedies for this such as 
 truncation, but these increase the complexity in evaluation and scoring.
 Requiring a parametric forecast also bars the use of some statistical methods
-which might be used including certain Bayesian methods.
+which might be used to create a forecast model including some Bayesian methods
+where a posterior distribution cannot be computed in closed form.
 
 
-\subsection{Forecast as samples}
-A random sample $(X_1,...,X_n)$ where $X_i \sim D$ may be used to 
-estimate values such as the mean or quantiles of the distribution $D$. 
+\subsubsection{Sample Distributions}
+Some forecast model builders may want more flexibility than a parametric 
+distribution can provide. Some methods such as sampling from a posterior 
+distribution or resampling methods like Bootstrap will produce forecasts of
+sample distributions. 
+
+A sample distribution is built of a sample of random variables 
+$(X_1,...,X_n)$ where $X_i \sim D$ and $D$ is a distribution. From this, sample
+statistics such as mean, median, variance and quantiles may be calculated. 
+An empirical cumulative distribution function (ECDF) may also be calculated as
+
+\begin{equation}
+\label{eq:ecdf}
+  F_n(x) = \frac{1}{n} \sum_{i=1}^n \mathbb{I}(X_i \leq x)
+\end{equation}
 
 According to the Strong Law of Large numbers, the sample mean will converge to
-the expected value of distribution as $n$ approaches $\infty$ as long as the 
+the expected value of distribution as $n \rightarrow \infty$ as long as the 
 expected value of that distribution exists. Likewise by the same law the 
-empirical distribution function will converge to the true cumulative 
-distribution function as $n$ approches $\infty$. Thus, if a sufficiently large 
+ECDF will converge to the true CDF 
+distribution function as $n \rightarrow \infty$. Thus, if a sufficiently large 
 sample is generated from a distribution, the sample will closely approximate the 
 true distribution. 
 
@@ -331,7 +414,27 @@ approximated without knowing the true mathematical form.
 
 In the last few decades, increased computing power and improvements in MCMC
 sampling have greatly contributed to growth in the use of
-predictive distributions \cite{gneiting2007strictly}.
+predictive distributions \cite{gneiting2007strictly}. (See examples listed in
+\cite{krueger2016probabilistic}).
+
+To properly score a forecast represented by a sample distribution, both the CRPS
+and LogS may be used. The CRPS has the advantage here of scoring the sample 
+distribution directly since the CDF in  (\ref{eq:crps}) may be replaced by 
+(\ref{eq:ecdf}). To use the LogS to score a forecast, a density function for the 
+sample must be approximated. Common approximations include a kernel density (KD)
+or Gaussian approximation (GA).
+
+KD is defined in Kruger as
+
+\begin{equation}
+\label{eq:kd}
+  \hat{p}_n(x) = \frac{1}{n h_n} \sum_{i=1}^n K \left( \frac{x-X_i}{h_n} \right) 
+\end{equation}
+where $K$ is a kernel function, and $h_n$ is a bandwidth
+
+Kruger et. al compare scoring of MCMC drawn forecast distributions using CRPS 
+and LogS over samples directly using ECDF or over density approximations using
+KD or GA.
 
 \subsection{Discretized probability bins}
 A discretized bin probability distribution may be constructed over a set 
@@ -528,10 +631,7 @@ can be used a bit more extensively. For the CDF $F_m$, the CRPS is defined as
 \end{equation}
 
 For a forecast of drawn samples, the ECDF may be computed and the CRPS used to 
-score the prediction. The CRPS has some nice properties, but can sometimes be
-difficult to compute. For example, when the forecast is a mixture of a 
-Truncated Normal distribution (TN) and a Truncated Lognormal (TL) the CRPS is 
-not available in closed form \cite{baran2018combining}.
+score the prediction. 
 
 The Interval score (IS), a consistent and elicitable proper score 
 (see \cite{gneiting2014probabilistic} for definitions) is defined as 
@@ -590,31 +690,7 @@ The amount of info
 \subsection{Ensemble}
 
 
-Considered the state-of-the-art techniques for combining component distributions
-into a multi-model ensemble are nonhomogeneous regression (NR), also known as
-ensemble model output statistics (EMOS), and ensemble Bayesian model averaging
-(BMA), both of which will be defined as in \cite{gneiting2014probabilistic}.
 
-In the context of an ensemble made from component models submitted from various
-sources, contructed with different methods and with potentially different data,
-BMA is the better option. In BMA, the final model does not have to be specified
-beforehand and the resulting forecast will be a discrete mixture distribution
-of all component forecasts. The general form for the ensemble distribution $p^E$
-is
-
-\begin{equation}
-  p^E(y) = \sum_{j=1}^J w_jp_j(y)
-\end{equation}
-where $p_j$ is the $j^{th}$ component forecast distribution and 
-$0 \leq w_j \leq 1$ is a weight assigned to each component where $\sum w_j = 1$.
-Methods for estimating weights include Maximum Likelihood estimation
-\cite{raftery2005using}, MCMC 
-sampling see \cite{vrugt2008ensemble} (also in this paper it talks about how 
-EM can get difficult as parameters i.e. number of distributions increase, and 
-shows MCMC may be better with that high dimensionality and gives full posterior
-of weights)
-and minimizing CRPS as in 
-\cite{baran2018combining}.
 
 Reich et. al used BMA to combine multiple forecasts from the flu 
 competition. There built and compared ensemble models with different weighting
@@ -659,16 +735,7 @@ required including specification of the distribution family and model
 parameters. See the table below for an example of a normal distribution with 
 mean 0 and variance 1.
 
-\begin{table}[h!]
-\centering
- \begin{tabular}{||c c c c||} 
- \hline
- Family & param1 & param2 & param3 \\ [0.5ex] 
- \hline\hline
- lnorm & 1 & 0.4 & NA \\ 
- \hline
- \end{tabular}
-\end{table}
+
 
 With those three pieces of information, the whole distribution is completely
 defined and software is readily available for calculating moments, percentiles,
