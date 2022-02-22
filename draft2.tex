@@ -25,6 +25,7 @@
 
 \usepackage{framed}
 \usepackage{changepage}
+\usepackage{amsfonts}
 \makeatletter
 \newenvironment{kframe}{%
  \def\at@end@of@kframe{}%
@@ -68,8 +69,10 @@ which probabilistic forecasts is used include weather forecasting
 \cite{baran2018combining}, economics \cite{groen2013real} and disease outbreaks
 \cite{yamana2016superensemble}.
 
-A probabilistic forecast is a probability distribution that may be represented
-in a few different formats. A common representation is either a continuous or
+A probabilistic forecast is a forecast to which probabilities are assigned to 
+various possible outcomes. There are a number of ways the probabilities or 
+uncertainty may be represented. A common representation is either a continuous 
+or
 discrete parametric distribution function (a pdf or pmf). Much of the literature 
 on calibration, sharpness and scoring of a forecast pertains to parametric 
 distribution forecasts (see for example 
@@ -178,41 +181,123 @@ forecast predictions and an attempt to assess whether any predictions
 approximately come from well known continuous distributions.
 
 
-\section{Probability Distributions}
+\section{Probabilistic Forecast Representations}
 
-A probabilistic forecast model may be represented in a number of ways. A 
-forecast should always come with a point estimate for a prediction and a 
-characterization of the uncertainty associated with the point prediction.
-Common representations which we review include parametric distributions,
-discretized bin probabilities, samples and quantile or interval values.
-In what follows, let $D$ be a distribution.
+Before introducing discrete mixture distributions as a candidate for a
+probabilistic forecast, we review representations already commonplace in 
+forecasting. In a collaborative setting, certain aspects of each representation
+should be considered. With each representation presented, 
+commmon application of 
+scoring, data storage and ensemble construction will be considered for each type
+as well as other notable properties.
 
-\subsection{Parametric distributions}
-In a parametric distribution representation we let $D := D(\theta)$ 
-where $\theta$ is vector of known or unkown parameters contained in a parameter 
-space. We consider a parametric distribution any probability distribution with a 
-fixed parameter set and a known probability density function (pdf) or 
-probability mass function (pmf) for continuous and discrete distributions
-repsectively. The pdf or pmf is represented as $p(y|\theta)$ where $\theta$ is 
-a parameter, usually unknown but estimated using given data.
+\subsection{Considerations...}
+\subsubsection{Scoring}
+Scoring rules are used to evaluate numerically a probability forecast. The
+score is a measure on the accuracy of the forecast and where multiple forecasts
+exist may provide a rank for each relative to the others. If a scoring rule is 
+proper, then the highest possible reward is obtained by reporting the true 
+distribution. The rule is strictly proper if that value is unique. 
+Under proper
+scoring rules, a forecaster has no incentive to be dishonest in their 
+submission \cite{gneiting2007strictly}. This makes proper scoring rules ideal
+for grading forecasts. We will limit our review of scoring methods to rules
+which are proper.
 
-The value of $p(\cdot|\theta)$ evaluated at $y$ is defined as 
-$p(y|\theta) = P(D = y)$ or the probability that the random variable $D$ takes
-on $y$. In the continuous case $P(D = y) = 0$ for all $y$, but the probability 
-that $D$ falls within an interval $(a,b)$ is calculated as
+\subsubsection{Storage}
+For a forecast hub collecting many predictions, computer storage is something
+that needs to be addressed. For a project involving many researchers, the 
+number of forecast predictions can add up. For example, the repository for the
+COVID-19 Forecast Hub predictions contained 85.4 million predictions as of 
+February 5, 2022! (cite zoltar??)
+When determining the goals of a forecast project, there should be consideration 
+of the storage required for different representations.
 
-$$P(a < y < b) = \int_a^b p(y|\theta) dy$$
+\subsubsection{Ensemble Modeling}
+A multi-model ensemble is a statistical model made by combining information from
+2 or more individual statistical models. Private and public decisions are 
+regularly made after combining information from multiple sources. For any given
+situation, information from one source may shed light on a subject which other
+sources fail to capture. Likewise one statistical model may provide perspective
+that another model does not, so that when they are combined in an ensemble the 
+resulting model is superior.
 
-(??Note: I'm trying to decide how detailed I should be here. Have I already said
-more than is necessary? Should I define the CDF and inverse CDF functions?)
+As probabilistic forecasting becomes more commonplace, so too does ensemble 
+modeling. Multi-model ensembles have been used extensively in weather and
+climate modeling see \cite{baran2018combining}, 
+and they have been used increasingly in modeling infectious disease outbreaks
+see for example \cite{yamana2016superensemble}. 
+Multi-model ensembles allow for an incorporation of multiple signals -
+often from differing data sources- and for individual model biases being canceled
+out or reduced by biases in others (\cite{reich2019accuracy} see references
+therein). 
+In several disease outbreak studies, multi-model ensemble forecasts have been 
+shown to outperform individual model forecasts (\cite{cramer2021evaluation} see
+references therein).
+
+Construction of an ensemble may be done by combining individual forecast 
+distributions using weighted averages. This has been called stacking 
+\cite{wolpert1992stacked} or weighted density ensembles 
+\cite{ray2018prediction}. 
+
+\subsection{Representations}
+\subsubsection{Parametric distributions}
+A parametric distribution is a discrete or continuous probability distribution 
+described by a known function $p(x) := p(x|\theta)$ -pmf in the discrete case or 
+pdf in the continuous case. $\theta$ is a vector of known or unkown parameters 
+contained in a parameter space. 
+
+The value of $p(\cdot)$ evaluated at $x$ is defined as 
+$p(x) = P(X = x)$ or the probability that the random variable $X$ takes
+on $x$ in the space of the random variable. In the continuous case 
+$P(D = x) = 0$ for all $x$, but the probability 
+that $X$ falls within an interval $(a,b)$ is calculated as
+
+\begin{equation}
+  P(a < X < b) = \int_a^b p(x) dx
+\end{equation}
+
+Other functions classified by a parameteric distribution include the cumulative
+distribution function (CDF) and the inverse CDF or quantile function. The CDF 
+in the continuous case is defined as
+
+\begin{equation}
+  F_X(x) = P(X \leq b) = \int_{-\infty}^x p(t) dt
+\end{equation}
+or in the discrete case 
+
+\begin{equation}
+  F_X(x) = P(X \leq b) = \sum_{k=1}^n p(x_k) dt
+\end{equation}
+where $x_n$ is the largest value of X less than or equal to $x$.
+The quantile function is defined as
+\begin{equation}
+  Q(p) = \inf \{ y \in \mathbb{R} : p \leq F_X(x) \}
+\end{equation}
+returning a quantile value where $p$ is a given probability $0\leq p \leq 1$.
+
+For a forecast represented as a parametric function with pmf/pdf $p_m(x)$, 
+the accuracy of the forecast may be measured as how likely realized value $x^*$
+is to occur. Commonly used proper scoring rules for parametric distributions
+include the Logarithmic score (LogS), 
+continuous rank probability score (CRPS) \cite{hersbach2000decomposition}
+\cite{alves2013ncep} and the interval/Brier 
+score \cite{gneiting2007strictly} among 
+others. See also \cite{gneiting2014probabilistic}
+section 3 for on proper scoring functions. Unless otherwise noted, the following
+definitions/reviews can be found in the review by Krueger.
+
+For a forecast with pdf/pmf $p_m(x)$, the Logarithmic score evaluates the 
+probability of the observed value $x^*$. It is defined as
+
+\begin{equation}
+  LS(p_m,x*) = -log\;p_m(x^*)
+\end{equation}
+
+
+
  
-In forecast modeling with a parametric distribution, data is used to obtain a 
-likelihood function $L(\theta|y)$ and the unknown parameter $\theta$ is 
-estimated as $\hat{\theta}$. (more/less detail ??) The mean or the median is
-then used as a point estimate of the forecast and estimated probabilities for 
-all other possible values may be calculated. For the most commonly used families
-of distributions (Normal, Gamma, Poisson etc.) calculating point estimates and 
-probabilities is easy due to the availability of software.
+
 
 A drawback of representing a forecast in a parametric distribution is the lack 
 of flexibility in the model selection. Easy computation and evaluation of these 
@@ -405,33 +490,10 @@ parametric forecast and as much as a forecast hub will allow.
 
 \subsection{Scoring}
 
-Scoring rules are used to assign a numeric score to a probability forecast. The
-score is a measure on the accuracy of the forecast and where multiple forecasts
-exist may provide a rank for each relative to the others. If a scoring rule is 
-proper, then the highest possible reward is obtained by reporting the true 
-distribution. The rule is strictly proper if that value is unique.(define??) 
-Under proper
-scoring rules, a forecaster has no incentive to be dishonest in their 
-submission \cite{gneiting2007strictly}. This makes proper scoring rules ideal
-for grading forecasts.
 
-Commonly used proper scoring rules include the Logarithmic score (LogS), 
-continuous rank probability score (CRPS) \cite{hersbach2000decomposition}
-\cite{alves2013ncep} and the interval/Brier 
-score \cite{gneiting2007strictly} among 
-others. See also \cite{gneiting2014probabilistic}
-section 3 for on proper scoring functions. Unless otherwise noted, the following
-definitions/reviews can be found in the review by Krueger.
 
-For a forecast with pdf/pmf $p_m(y)$, the Logarithmic score evaluates the 
-probability of the observed value $y^*$. It is defined as
 
-\begin{equation}
-  LS(p_m,y*) = -log\;p_m(y^*)
-\end{equation}
 
-This scoring method is appropriate for scoring density forecasts as well as 
-descretized bins. The smaller the score, the better the forecast.
 Because the probability evaluation is only at the observed 
 point \cite{reich2019accuracy} used a modified Logarithmic score 
 known as the multibin logarithmic score (MBlogS) for scoring
@@ -526,30 +588,7 @@ The amount of info
 
 
 \subsection{Ensemble}
-A multi-model ensemble is a statistical model made by combining information from
-2 or more individual statistical models. Private and public decisions are 
-regularly made after combining information from multiple sources. For any given
-situation, information from one source may shed light on a subject which other
-sources fail to capture. Likewise one statistical model may provide perspective
-that another model does not, so that when they are combined in an ensemble the 
-resulting model is superior.
 
-As probabilistic forecasting becomes more commonplace, so too does ensemble 
-modeling. Multi-model ensembles have been used extensively in weather and
-climate modeling see \cite{baran2018combining}, 
-and they have been used increasingly in modeling infectious disease outbreaks
-see for example \cite{yamana2016superensemble}. 
-Multi-model ensembles allow for an incorporation of multiple signals -
-often from differing data sources- and for individual model biases being canceled
-out or reduced by biases in others \cite{reich2019accuracy}. (See specific citations in this paper 12-15??)
-In several disease outbreak studies, multi-model ensemble forecasts have been 
-shown to outperform individual model forecasts \cite{cramer2021evaluation} (see
-10, 14-25 in this paper).
-
-Construction of an ensemble may be done by combining individual forecast 
-distributions using weighted averages. This has been called stacking 
-\cite{wolpert1992stacked} or weighted density ensembles 
-\cite{ray2018prediction}.
 
 Considered the state-of-the-art techniques for combining component distributions
 into a multi-model ensemble are nonhomogeneous regression (NR), also known as
@@ -611,13 +650,7 @@ probabilities. More sharp (less variation), perform better in scoring etc.
 
 
 \subsection{Storage}
-For a forecast hub collecting many predictions, computer storage is something
-that needs to be addressed. For a project involving many researchers, the 
-number of forecast predictions can add up. For example, the repository for the
-COVID-19 Forecast Hub predictions contained 85.4 million predictions as of 
-February 5, 2022! (cite zoltr??)
-When determining the goals of a forecast project, there should be consideration 
-of the storage required for different representations.
+
 
 The data requirement for a parametric distribution small and will usually be the 
 least when compared with other representations. As long as the forecast is 
