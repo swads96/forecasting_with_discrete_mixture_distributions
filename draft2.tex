@@ -267,6 +267,7 @@ in the continuous case is defined as
 or in the discrete case 
 
 \begin{equation}
+\label{eq:dcdf}
   F_X(x) = P(X \leq b) = \sum_{k=1}^n p(x_k) dt
 \end{equation}
 where $x_n$ is the largest value of X less than or equal to $x$.
@@ -326,6 +327,7 @@ of all component forecasts. The general form for the ensemble distribution $p^E$
 is
 
 \begin{equation}
+\label{eq:bma}
   p^E(x) = \sum_{jm=1}^M w_mp_m(x)
 \end{equation}
 where $p_m$ is the $j^{th}$ component forecast distribution and 
@@ -412,6 +414,9 @@ require a Gibbs or Metropolis-Hastings algorithm, among others, to generate a
 sample. Such samples are useful in that the true distribution may be closely 
 approximated without knowing the true mathematical form. 
 
+So the options that a researcher has for constructing a forecast are more than
+if they are asked to submit a parametric distribution and the characterisitcs 
+and potential shapes of distributions is much larger.
 In the last few decades, increased computing power and improvements in MCMC
 sampling have greatly contributed to growth in the use of
 predictive distributions \cite{gneiting2007strictly}. (See examples listed in
@@ -430,57 +435,152 @@ KD is defined in Kruger as
 \label{eq:kd}
   \hat{p}_n(x) = \frac{1}{n h_n} \sum_{i=1}^n K \left( \frac{x-X_i}{h_n} \right) 
 \end{equation}
-where $K$ is a kernel function, and $h_n$ is a bandwidth
+where $K$ is a kernel function, and $h_n$ is a suitable bandwidth. GA is defined
+as 
+
+\begin{equation}
+\label{eq:ga}
+  \hat{F}_n(x) = \Phi  \left( \frac{x-\hat{\mu}_n}{\hat{\sigma}_n} \right)
+\end{equation}
+where $\Phi$ is the standard normal CDF and $\hat{\mu}_n$ and $\hat{\sigma}_n$
+are the empirical mean and standard deviation of the sample $(X_i)$. (See
+\cite{krueger2016probabilistic} for definitions of \ref{eq:kd} and \ref{eq:ga}).
 
 Kruger et. al compare scoring of MCMC drawn forecast distributions using CRPS 
 and LogS over samples directly using ECDF or over density approximations using
 KD or GA.
 
-\subsection{Discretized probability bins}
+To build an ensemble model from sample distribution forecasts, the BMA 
+construction from (\ref{eq:bma}) would work only replacing $p_m$ with 
+$\hat{p}_{n_m}^{KD}$ or $\hat{p}_{n_m}^{GA}$. Here as well the optimal weights 
+$w_m$ may be estimated by maximizing the likelihood or minimizing CRPS. Then 
+the ensemble distribution would take the form of a continuous or discrete
+probability mixture distribution. If the desire is that the ensemble still be
+a sample distribution, after selecting weights, a sample may be selected by 
+randomly selecting a sample from $(X_n)_m$ with probability $w_m$.
+
+A potentially big issue with using sample distributions is the amount of storage
+it would require. For example when making MCMC draws from a posterior 
+distribution, the final sample distribution can have a sample size of thousands
+or tens of thousands. Maybe not all distributions would require such a large 
+sample size, but sizes of at least dozens or hundreds would be required for each
+forecast prediction. For any project the size of the CDC flu competition or the
+COVID-19 Forecast Hub, the storage required would be large and potentially 
+expensive.
+
+\subsection{Discretized bin distributions}
+An alternative to parametric distributions and sample distributions which allows
+for high flexibility in distribution shape but is more manageable in terms of 
+storage is a discretized bin distribution.
+
 A discretized bin probability distribution may be constructed over a set 
 $A = [a, b]$ by partitioning $A$ into a set of $K$ bins $\{B_i\}_{i=1}^{K}$
 where $B_i = [b_{i-1}, b_i)$ and $\cup_{i=1}^{K} B_i = A$. Based on the problem
 to be forecasted, a forecast hub will determine the possible values for $A$ and 
-select the number of bins and the sizes for each. It may the case
+select the number of bins and the sizes for each. It may be the case
 that a forecast hub will set the width of all bins to be equal so that 
 $\Delta = b_i - b_{i-1}$ is the width for all $i$ see for example
-\cite{mcgowan2019collaborative}. 
-For this paper, we will consider the case where all bins share a common width.
+\cite{mcgowan2019collaborative}.
 To complete the construction, a probability $p_i$ is assigned to each $b_i$ 
 where $\sum_{i=1}^{K}p_i = 1$. These probabilities are determined by the 
 forecasters. 
 This discrete representation with a given bin and assigned probability is in
-essence a probability mass function, so a given forecast may be evaluated and 
-scored the same as a discrete parametric distribution. 
+essence a probability mass function in that the calculation of moments and the 
+the cumulative distribution are done the same as for a discrete parametric 
+distribution. For a random variable X from a binned distribution to calculate
+the $j^{th}$ moment we may use
+
+\begin{equation}
+\label{eq:bev}
+  EX^j = \sum_{i=1}^n \beta_i^j p_i
+\end{equation}
+where $\beta_i$ is a value related to the bin $B_i$ such as $\beta_i = b_i$,
+$\beta_i = b_{i-1}$ or $\beta_i$ is the mean or mid value in $B_i$. The 
+cumulative distribution may be
+
+\begin{equation}
+\label{eq:bcdf}
+  P(X \leq b) = \sum_{i=1}^n p_i
+\end{equation}
+where $p_n$ is the probability for the bin $B_n$ where $b \in B_n$.
 
 If the value to be forecasted takes on discrete values, a common discrete 
 distribution, such as a binary or Poisson distribution, may sometimes be used to 
 assign probabilities to each of the bins. When the values to be forecasted are
-continuous, a forecaster may need to employ some method of discretization to a 
+continuous, a forecaster may need to employ a method of discretization to a 
 forecast distribution. There are a number of possible ways to do this including
 those outlined by Chakraborty and Subrata \cite{chakraborty2015generating}.
-In a retroactive analysis of forecast predictions from the CDC influenza 
-competition, we attempt to evaluate whether some or any teams made their 
-predictions by discretizing from a common continuous distribution function.
 
 The CDC has used a discretized distribution representation as the representation
 for their annual influenza forecasting competition and other disease outbreaks.
 In that context it has become the standard representation 
-\cite{brooks2020comparing}. 
+\cite{brooks2020comparing}. A decent amount of work has been done in evaluating 
+and constructing ensemble models on influenza forecasts represented by 
+discretized bins \cite{mcgowan2019collaborative}, \cite{mcandrew2019adaptively}
+\cite{reich2019collaborative}. 
 
-Most statistical models such as parametric models 
-or distributions made from samples may be readily translated into a discretized 
-distribution -see \cite{chakraborty2015generating} for a summary of several-
-giving forecasters flexibility in how they build their 
-models and assign probabilities. 
-There is however some sacrifice in what can be 
-forecasted as the possible range of the distribution may be limited to what the
-forecast hub requires. This limitation is in part what prompted the COVID-19
-Forecast Hub to use quantile forecasts rather than binned distributions.
-\cite{bracher2021evaluating}.
-In a simulation study outlined later, we will
-consider a construction from Kemp \cite{kemp2004classes} to discretize known
-continuous distributions.
+Because discretized bins can be seen as a pmf, methods for proper scoring 
+already 
+discussed -LogS and CRPS- are useable and BMA is valid method for ensemble 
+construction. Reich et. al used BMA to combine multiple forecasts from the flu 
+competition. There built and compared ensemble models with different weighting
+schemes including equally weighted components $w_j = 1/J$ and estimating weights
+according to the model specification. To estimate weights they used the 
+Expectation Maximization (EM) algorithm \cite{reich2019accuracy}. See the
+supplementary material for details. 
+
+The exact amount of information required for a discretized bin forecast will 
+vary depending on permitted range of the forecast and the desired resolution. 
+In the CDC flu contest, a forecast could have 131 bins between 0\% and 13\% 
+-bins having increments of 0.1- with 
+corresponding probabilities in each. That makes 262 pieces of information per
+prediction. For any binning scheme of more than two bins, the information 
+requirement for discretized bins will be higher than for parametric distrbutions.
+Table \ref{tab:dbins} illustrates what a discretized 
+Lognormal$(1,0.4)$ distribution truncated over $[0,8]$
+looks like in 41 equally spaced discretized bins. The discretization was done
+such that 
+
+\begin{equation}
+\label{eq:disc}
+  p_i = \int_{b_{i-1}}^{b_i} p^{TL}(x) dx
+\end{equation}
+where $p^{TL}$ is the pdf of a truncated Lognormal$(1,0.4)$. This is similar
+to Methodology-IV from Chakraborty \cite{chakraborty2015generating}
+ \cite{kemp2004classes}.
+
+\begin{table}[h!]
+\centering
+\label{tab:dbins}
+ \begin{tabular}{|c|c|} 
+ \hline
+    bin & prob \\ \hline
+    ... & ... \\
+    {[1.4,\;1.6)} & 0.04414 \\
+    {[1.6,\;1.8)} & 0.05896 \\
+    {[1.8,\;2.0)} & 0.07032 \\
+    {[2.0,\;2.2)} & 0.07172 \\
+    {[2.2,\;2.4)} & 0.07955 \\
+    ... & ... \\
+ \hline
+ \end{tabular}
+\end{table}
+Submitted as a forecast prediction, the distribution in table \ref{tab:dbins} 
+includes 82 pieces of data. For parts 
+of the CDC influenza competition some forecasts included upt to 262. This is 
+much more manageable than possible thousands of samples from a samle 
+distribution but is 
+still much larger than the 3 or 5 data pieces required to report a lognormal
+or truncated lognormal distribution.
+
+Depending on what is known about the problem to be solved, creating the right 
+binning scheme might be a challenge. Because there must be a finite number of
+bins, forecast distributions must have a finite support. Where the range of 
+possible outcomes to a problem is little known, the right binning scheme may be
+hard to produce.
+
+
+
 
 
 
@@ -488,10 +588,17 @@ continuous distributions.
 
 
 \subsection{Quantile representation}
-Uncertainty in a forecast prediction may also be characterized by  including
-multiple quantiles along with corresponding values. Often the median value will
-be reported as a point forecast with a number of quantiles included which form 
-confidence intervals of various levels.
+When deciding how forecasts should be represented in the COVID-19 Forecast Hub,
+the time pressure of generating forecasts and the consideration of the large
+range for possible outcomes contributed to the COVID-19 Forecast Hub decision
+to forego trying to create the right binning scheme and use sets of prediction
+intervals to represent uncertainty in predictions \cite{bracher2021evaluating}.
+
+The Forecast Hub requires predictions to be submitted as 11 or 3 nominal 
+intervals -depending on the specific target- and a median.
+Using this interval or quantile representation lead to a number of changes in 
+the evaluation and aggregation of forecasts.
+
 A quantile forecast is constructed as follows.
 For $N$ given quantiles $\alpha_1,..., \alpha_N$, $q_1,..., q_N$ are the values
 such that 
@@ -500,79 +607,174 @@ such that
   P(Y \leq q_1) = \alpha_1, P(Y \leq q_2) = \alpha_2, ..., 
   P(Y \leq q_N) = \alpha_N
 \end{equation}
-
-When the quantiles are reported as a median and confidence intervals we have
+When the quantiles are reported as prediction intervals we have more 
+specifically
 
 \begin{equation}
-  P(Y \leq q_1) = \alpha_1, P(Y \leq q_2) = \alpha_2, ..., P(Y \leq q_k) = .5, 
-  ..., 
+  P(Y \leq q_1) = \alpha_1, P(Y \leq q_2) = \alpha_2, ...,
   P(Y \leq q_{N-1}) = 1 - \alpha_{N-1}, P(Y \leq q_N) = 1 - \alpha_N
 \end{equation}
-
-The COVID-19 Forecast Hub requires that participating teams report their
-forecasts as quantile values corresponding to 23 or 7 quantiles -depending on 
-the target or time being forecasted. The quantile representation was selected
-over the discretized bins used in the influenza competition because the range 
-of observation outcomes of interest was much larger and an appropriate binning
-scheme would have been difficult to define \cite{bracher2021evaluating}.
 
 The quantile or interval format is somewhat unique among forecast 
 representations discussed in this paper. What is possible for scoring forecasts
 or building ensemble models in other representations is often not possible with
-quantile forecasts. Yet it has its advantages. 
+quantile forecasts. The shape of a distribution is also not known and in fact,
+nothing is known about the tails of the uncertainty or ouside of the most 
+extreme reported quantile values. In the Forecast Hub predictions, nothing 
+is said about the range below the $1^{st}$ quantile or above the $99^{ths}$.
+Yet the quantile representation has its advantages. 
 
 Quantile representation allows for forecasters to submit fairly detailed
-forecasts without restricting the range of possible values -a major reason for 
-selecting a quantile representation over discretized bins 
-\cite{bracher2021evaluating}. 
-
+forecasts without restricting the range of possible values.
 Since quantiles are easily calculated from any regular distribution type
--e.g. inverse CDF for parametric functions and inverse ECDF from data or 
-samples- we consider quantile forecasts to have high flexbility in terms of 
-shape and range. 
+-e.g. quantile function for parametric functions or calculating sample 
+quantiles- we consider quantile forecasts to have high flexbility in terms of 
+what methods forecasters may employ in modeling.
 
-As in the
-discretized representation, the resolution of a distribution based on quantiles
-will depend on the number of quantiles to be forecasted. There is however a 
-significant loss of information in reporting the extreme outcomes in a quantile
-model. Since reported intervals can only be so wide, it is possible that tail 
-information is lost. The COVID-19 Forecast Hub for example requires forecast 
-values up to the $99^{th}$ and down to the $1^{st}$ percentile. For values any
-more extreme, exactly assigning probabilities is impossible.
+To score predictions from a prediction interval, 
+neither the LogS nor the CRPS may be used, 
+but another proper scoring rule the interval score (IS) may be.
+For an observed outcome $x^*$ and a prediction interval $(l,r)$ 
+where $l$ and $r$ are the $\alpha/2$ and $(1-\alpha/2)$ quantiles that bound
+the central $(1-\alpha)$ prediction interval the IS is defined as
+
+\begin{equation}
+\label{eq:is}
+  IS_{\alpha}(l,r; x^*) = (r-l) + \frac{2}{\alpha}(l-x^*)1\{x^*<l\} 
+  + \frac{2}{\alpha}(y-r)1\{x^* > r\}
+\end{equation}
+This is a sum -weighted by 
+$\alpha$- of the width of the
+interval and the distance between $x^*$ and the interval (if $x^*$ is not 
+captured in the interval) \cite{gneiting2014probabilistic}. 
+The IS requires only a single central 
+$(1-\alpha) \times 100$ prediction interval.
+
+When an interval forecast is made up of more than one interval with different
+$\alpha$ levels, a weighted interval score (WIS) may be evaluated. Bracher et.
+al use the WIS to evaluate COVID-19 inverval forecasts 
+\cite{bracher2021evaluating}.
+There are multiple versions of the WIS -some of 
+which are described by Bracher et. al- but that used in the COVID-19 Forecast
+Hub is defined as follows
+
+\begin{equation}
+  WIS_{0,K}(F_m,y^*) = \frac{1}{K + 1/2} \times (w_0, \times |y^*-med|+
+  \sum_{k=1}^K \{ w_k \times IS_{\alpha_k}(F_m,y) \} )
+\end{equation}
+$w_k = \alpha_k/2$ is the weight on
+intervals which was used. With that choice of weights, it may be shown that the
+WIS approximates CRPS see S1 Text  \cite{bracher2021evaluating}
+
+Bogner, Liechti and Zappa compared scoring forecasts of quantiles with the 
+Quantile Score similar to the interval score and scoring distribution functions
+fit to those quantiles using CRPS \cite{bogner2017combining}. The CRPS 
+corresponds to the integral of the QS over all possible thresholds rather than
+just specific quantiles, it more effectively reveals deficiencies in parts of 
+the distribution and especially in the tails past the end points of quantiles
+used in QS or IS.
+
+Like the CRPS, not only does the WIS provide an easily interpretable proper 
+score for interval forecasts, but it may also be useful when building an 
+ensemble forecast.
+
+The ensemble forecast constructed by the COVID-19 Forecast Hub was made as an
+equally-weighted average of forecasts from the component models. More 
+specifically, each quantile value of the ensemble was the average of values from
+all models corresponding to the same quantile \cite{ray2020ensemble}. For $M$ 
+models each with $K$ quantiles, the $k^{th}$ ensemble quantile $q_k$ is 
+calculated as
+
+\begin{equation}
+\label{eq:qa}
+  q_k = \sum_{m=1}^M \nu_m q_k^m 
+\end{equation}
+where $\nu_m$ is the weight assigned to each forecast and $\sum \nu_m = 1$. In
+the Forecast Hub model, $\nu_m = \nu = 1/M$. Where the overall mean or a
+weighted mean may be used, the median may also be used.
+Brooks et. al compare performance of the COVID-19 ensemble
+between equally-weighted means, weighted means and median value constructions.
+\cite{brooks2020comparing} (is is appropriate to cite this blog??)
+In their report, they show that weighted means and median constructions tend
+to outperform equally-weighted mean construction. To come up with optimal 
+weights, they select values $\nu_m$ from \ref{eq:qa} which minimize the WIS of 
+the ensemble forecast.
+
+Averaging quantiles in this way the same as quantile averaging or Vincentization
+only with an incomplete quantile function. It thus carries with it many of the
+same characteristics.
+Quantile averaging or Vincentization for a complete distribution is defined as 
+
+\begin{equation}
+\label{eq:vinc}
+  F_v^{-1}(\alpha) = \sum_{m=i}^M w_m F_m^{-1} (\alpha)
+\end{equation}
+where $F_m^{-1} (\alpha) = \inf \{y:F_m(y) \geq \alpha\}$ for 
+$0 < \alpha \leq 1$. Some notable characteristics are that it is more likely
+to be unimodal than linear averaging of densities like BMA 
+\cite{busetti2017quantile} (this paper is a comparison of QMA and 
+linear or log averaging. Under some circumstances, such as when member
+distributions are exponential, Weibull or logisitic the aggregated distribution
+is the same \cite{ratcliff1979group}. It produces smoother
+distributions than BMA according to Schepen and Wang \cite{schepen2015model}.
+Lichtendahl et. al conclude that quantile averaging produces sharper forecasts
+and tends to perform better in scoring than probability averaging
+\cite{lichtendahl2013better}.
+
+As in sample distributions and binned distributions, 
+data storage for interval forecasts will
+depend on the desired clarity of resolution. For the COVID-19 forecasts 
+submitted to the forecast hub, twenty-three quantile values are requested for 
+the quantiles (0.01, 0.025, 0.05, 0.10, …, 0.95, 0.975, 0.99). This included a 
+median along with eleven confidence intervals \cite{bracher2021evaluating}. This
+requires forecasters to submit forty-six values in each short-term forecast 
+(some of the longer term forecasts only include seven quantiles). In terms of 
+storage, this is an improvement over requirements for the flu contest. Table
+\ref{tab:qstor} shows what a submission of 23 quantiles from a 
+Lognormal $(1,0.4)$ looks like.
 
 
 
+% \begin{table}[h!]
+% \centering
+%  \begin{tabular}{|c|c|} 
+%  \hline
+%     quantile & value \\ \hline
+%     0.01 & 1.07137 \\
+%     0.025 & 1.2404 \\
+%     0.05 & 1.40689 \\
+%     0.01 & 1.62675 \\
+%     ...  & ... \\
+%     0.9 & 4.50667 \\
+%     0.95 & 5.18328 \\
+%     0.975 & 5.82391 \\
+%     0.99 & 6.58783 \\
+%  \hline
+%  \end{tabular}
+% \end{table}
 
-
-\subsection{Discrete mixture of parametric distributions}
-In a parametric setting, forecasters may be permitted to submit a forecast as a
-discrete mixture. Such a distribution may be constructed in the same way as the
-ensemble described under Parametric distributions where for $T$ models with pdf
-$p_t(y|\theta)$ $p^{M} = \sum_{t=1}^T z_tp_t(y|\theta)$ where 
-$z_t > 0$ and $\sum_{t=1}^{T} z_t = 1$
-
-Like the standard parametric model, a discrete mixture is easily evaluated with
-exisiting software (like distr R package) (cite??) and scoring may be done by 
-most or all of the same methods. The resolution of a discrete mixture is high 
-and the support need not be limited by submission requirements. 
-
-A mixture distribution may be much more flexible than a simple parametric in 
-terms of distributional shape. But as it is essentially parametric, forecasters
-mays still be limited in how they construct their models. But it may be possible
-to fit a mixture distribution to probability models with the other 
-representations discussed. Further discussion on methods for fitting mixture 
-distributions to different types of model representations is included in this 
-paper.
-
-An ensemble model may be built by constructing a mixture of mixtures. Where for 
-$J$ forecasts $p^{E}(y|\theta) = \sum_{j=1}^{J} w_j p^{M}_j(y|\theta)$ where 
-$w_j > 0$ and $\sum_{j=1}^J w_j = 1$. (is it necessary to describe this
-construction). 
-
-Depending on the number of components a forecaster includes in a mixture 
-forecast, the amount of storage per forecast might be as little as for a 
-parametric forecast and as much as a forecast hub will allow.
-
+\begin{table}[h!]
+\centering
+\label{tab:qstor}
+ \begin{tabular}{|c|c|c|c|c|c|c|c|c|c|}
+ % \begin{tabular}{|c|c|}
+ \hline
+    quantile & 0.01 & 0.025 & 0.05  & ...  & 0.95 & 0.975 & 0.99 \\ \hline
+    value & 1.07137 & 1.2404 & 1.40689 & ... & 5.18328 &
+    5.82391 & 6.58783 \\
+    % quantile & value \\ \hline
+    % 0.01 & 1.07137 \\
+    % 0.025 & 1.2404 \\
+    % 0.05 & 1.40689 \\
+    % 0.01 & 1.62675 \\
+    % ...  & ... \\
+    % 0.9 & 4.50667 \\
+    % 0.95 & 5.18328 \\
+    % 0.975 & 5.82391 \\
+    % 0.99 & 6.58783 \\
+ \hline
+ \end{tabular}
+\end{table}
 
 
 \begin{figure}[htbp]
@@ -588,222 +790,51 @@ parametric forecast and as much as a forecast hub will allow.
 \end{figure}
 
 
-	 
-\section{Forecast specifics on scoring, ensembling, etc.}
 
-\subsection{Scoring}
-
-
-
-
-
-Because the probability evaluation is only at the observed 
-point \cite{reich2019accuracy} used a modified Logarithmic score 
-known as the multibin logarithmic score (MBlogS) for scoring
-forecasts. This allowed for a range of values to be considered "correct" or 
-accurate. MGlogS is defined as
+\subsection{Discrete mixture of parametric distributions}
+In a parametric setting, forecasters may be permitted to submit a forecast as a
+discrete mixture. Such a distribution may be constructed in the same way as the
+ensemble described under Parametric distributions (\ref{eq:bma}) 
+where for $T$ distributions
+with pdfs $p_t(x)$ and $z_t > 0$ and $\sum_{t=1}^{T} z_t = 1$
+ 
 
 \begin{equation}
-  MBlogS(F_m, y^*) = log(\sum_{i=-d}^{d} p_m(y^* + i))
+\label{eq:dmd}
+  p^{M} = \sum_{t=1}^T z_tp_t(x)
 \end{equation}
 
-\begin{equation}
-  \int_{y*-\epsilon}^{y^*+\epsilon} -log\;p_m(y^*) (??)
-\end{equation}
-
-The MBlogS has the advantage of offering a more accesible interpretation but the
-drawback of being improper \cite{bracher2021evaluating}.
-
-Another commonly used score, the interval score, may also be used on density 
-forecasts including discretized bin forecasts. With the right smoothing of
-a distribution of drawn samples, 
-such as Gaussian approximation or Kernel density estimation, these methods may 
-be used for scoring, see for example \cite{krueger2016probabilistic}.
-These scoring methods will not work for raw samples however.
-
-The Continuous ranked probability score (CRPS) is a function of a CDF $F$, 
-including an Empirical CDF, $\hat{F}(x) = n^{-1} \sum_{i=1}^n 1\{x \geq X_i\}$
-and so 
-can be used a bit more extensively. For the CDF $F_m$, the CRPS is defined as
-
-\begin{equation}
-  CRPS(F_m, y^*) = \int_{-\infty}^{\infty} (F_m(y) - 1_{\{y*\leq y\}})^2 dy
-\end{equation}
-
-For a forecast of drawn samples, the ECDF may be computed and the CRPS used to 
-score the prediction. 
-
-The Interval score (IS), a consistent and elicitable proper score 
-(see \cite{gneiting2014probabilistic} for definitions) is defined as 
-
-\begin{equation}
-  IS_{\alpha}(l,r; y^*) = (r-l) + \frac{2}{\alpha}(l-y^*)1\{y^*<l\} 
-  + \frac{2}{\alpha}(y-r)1\{y>r\}
-\end{equation}
-
-where $l$ and $r$ are the $\alpha/2$ and $(1-\alpha/2)$ quantiles that bound
-the central $(1-\alpha)$ prediction interval. This is a sum -weighted by 
-$\alpha$- of the width of the
-interval and the distance between $y^*$ and the interval (if $y^*$ is not 
-captured in the interval). The IS requires only a single central 
-$(1-\alpha) \times 100$ prediction interval.
-
-When an interval forecast is made up of more than one interval with different
-$\alpha$ levels, a weighted interval score (WIS) may be evaluated. Bracher et.
-al use the WIS to evaluate COVID-19 inverval forecasts 
-\cite{bracher2021evaluating}. There are multiple versions of the WIS -some of 
-which are described by Bracher et. al- but that used in the COVID-19 Forecast
-Hub is defined as follows.
-
-\begin{equation}
-  WIS_{0,K}(F_m,y^*) = \frac{1}{K + 1/2} \times (w_0, \times |y^*-med|+
-  \sum_{k=1}^K \{ w_k \times IS_{\alpha_k}(F_m,y) \} )
-\end{equation}
-
-where $F_m$ is the interval forecast, $K$ is the number of prediction intervals
-each with level $\alpha_k$ and $med$ is the predictive median. $\alpha_0 = 1$ is 
-is the $\alpha$ value corresponding to the predictive median which may also be
-considered a level 0 prediction interval. $w_k = \alpha_k/2$ is the weight on
-intervals which was used. With that choice of weights, it may be shown that the
-WIS approximates CRPS see S1 Text  \cite{bracher2021evaluating} or
-
-\begin{equation}
-  WIS_{0,K}(F_m,y^*) \approx CRPS(F_m,y^*)
-\end{equation}
-
-Bogner, Liechti and Zappa compared scoring forecasts of quantiles with the 
-Quantile Score similar to the interval score and scoring distribution functions
-fit to those quantiles using CRPS \cite{bogner2017combining}. The CRPS 
-corresponds to the integral of the QS over all possible thresholds rather than
-just specific quantiles, it more effectively reveals deficiencies in parts of 
-the distribution and especially in the tails past the end points of quantiles
-used in QS or IS.
 
 
 
+Like the standard parametric model, a discrete mixture is easily evaluated with
+exisiting software (like distr R package \cite{camphausen2007distr}). And 
+scoring may be done by 
+using the LogS, CRPS and IS. The resolution of a discrete mixture is high 
+and the support need not be limited by submission requirements. 
+
+A mixture distribution may be much more flexible than a simple parametric in 
+terms of distributional shape. But as it is essentially parametric, forecasters
+mays still be limited in how they construct their models. But it may be possible
+to fit a mixture distribution to probability models with the other 
+representations discussed. Further discussion on methods for fitting mixture 
+distributions to different types of model representations is included in this 
+paper.
+
+An ensemble model may be built by using (\ref{eq:bma}) only replacing $p_m$
+with $p^M$. Solving for weights may also be done similarly, though with the 
+added complexity of component models being mixture distributions, the 
+computation is likely to get more expensive. An example where this may be
+especially true is when minimizing of CRPS, but the exact mixture doesn't 
+result in CRPS in closed form \cite{baran2018combining}.
+
+Depending on the number of components a forecaster includes in a mixture 
+forecast, the amount of storage per forecast might be as little as for a 
+parametric forecast and as much as a forecast hub will allow. For modelers whose
+models produce distributions with irregular shapes, it may be that those
+distributions can be closely approximated by the right mixture distribution.
 
 
-\subsection{Flexibility, resolution and information (such as tail info)}
-The amount of info
-
-
-\subsection{Ensemble}
-
-
-
-
-Reich et. al used BMA to combine multiple forecasts from the flu 
-competition. There built and compared ensemble models with different weighting
-schemes including equally weighted components $w_j = 1/J$ and estimating weights
-according to the model specification. To estimate weights they used the 
-Expectation Maximization (EM) algorithm \cite{reich2019accuracy}. See the
-supplementary material for details. Other options for estimating the weights 
-include Monte Carlo Markov Chain sampling ??\cite{vrugt2008ensemble} or a 
-minimization of the ensemble CRPS score \cite{baran2018combining}.
-
-The BMA ensemble construction works for discrete and continuous parametric 
-distributions as well as discretized bin distributions, but is not useful when 
-the forecasts are of the interval type. 
-
-Quantile averaging or Vincentization is defined as 
-
-\begin{equation}
-  F_v^{-1}(\alpha) = \sum_{m=i}^M w_m F_m^{-1} (\alpha)
-\end{equation}
-
-where $F_m^{-1} (\alpha) = \inf \{y:F_m(y) \geq \alpha\}$ for 
-$0 < \alpha \leq 1$. Some notable characteristics are that it is more likely
-to be unimodal than linear averaging of densities like BMA 
-\cite{busetti2017quantile} (this paper is a big comparison of QMA and 
-linear or log averaging. Under some circumstances, such as when member
-distributions are exponential, Weibull or logisitic the aggregated distribution
-is the same \cite{ratcliff1979group}. It apparently produces smoother
-distributions than BMA, at least in \cite{schepen2015model}.
-
-These dudes seem to think averaging quantiles is better than simple averaging 
-probabilities. More sharp (less variation), perform better in scoring etc.
-\cite{lichtendahl2013better}.
-
-
-\subsection{Storage}
-
-
-The data requirement for a parametric distribution small and will usually be the 
-least when compared with other representations. As long as the forecast is 
-allowed to have an unbounded range, only 3 or 4 pieces of information will be
-required including specification of the distribution family and model 
-parameters. See the table below for an example of a normal distribution with 
-mean 0 and variance 1.
-
-
-
-With those three pieces of information, the whole distribution is completely
-defined and software is readily available for calculating moments, percentiles,
-probabilities and generating random samples. The third box under param3 is there
-in case a particular distribution family has three parameters -a location-scale
-T distribution for example.
-
-If the distribution is made up of samples from a distribution, like posterior
-predictive distribution, much more space will be required to contain all the 
-information. A sample using MCMC sampling may have thousands or even tens of 
-thousands of draws. It's easy to see why this could be a problem if millions of
-predictive distributions are collected and saved.
-
-The exact amount of information required for a discretized bin forecast will 
-vary depending on permitted range of the forecast and the desired resolution. 
-In the CDC flu contest, a forecast could have 131 bins between 0\% and 13\% 
--bins having increments of 0.1- with 
-corresponding probabilities in each. That makes 262 pieces of information per
-prediction. A much larger number than what is required for a fully defined
-parametric distribution. The following table shows what a discretized standard
-normal distribution looks like in 131 discretized bins. Note that for the sum of 
-the probabilities to equal one, it was essential to normalize the probabilites
-within the range $[-6.5,6.5]$ since the full range of a normal distribution is
-$(-\infty, \infty)$.
-
-\begin{table}[h!]
-\centering
- \begin{tabular}{|c|c|} 
- \hline
-    bin & prob \\ \hline
-    ... & ... \\
-    {[1.4,\;1.6)} & 0.04414 \\
-    {[1.6,\;1.8)} & 0.05896 \\
-    {[1.8,\;2.0)} & 0.07032 \\
-    {[2.0,\;2.2)} & 0.07172 \\
-    {[2.2,\;2.4)} & 0.07955 \\
-    ... & ... \\
- \hline
- \end{tabular}
-\end{table}
-
-Like in the last two representations, data storage for interval forecasts will
-depend on the desired clarity of resolution. For the COVID-19 forecasts 
-submitted to the forecast hub, twenty-three quantile values are requested for 
-the quantiles (0.01, 0.025, 0.05, 0.10, …, 0.95, 0.975, 0.99). This included a 
-median along with eleven confidence intervals \cite{bracher2021evaluating}. This
-requires forecasters to submit forty-six values in each short-term forecast 
-(some of the longer term forecasts only include seven quantiles). In terms of 
-storage, this is an improvement over requirements for the flu contest. 
-
-
-\begin{table}[h!]
-\centering
- \begin{tabular}{|c|c|} 
- \hline
-    quantile & value \\ \hline
-    0.01 & 1.07137 \\
-    0.025 & 1.2404 \\
-    0.05 & 1.40689 \\
-    0.01 & 1.62675 \\
-    ...  & ... \\
-    0.9 & 4.50667 \\
-    0.95 & 5.18328 \\
-    0.975 & 5.82391 \\
-    0.99 & 6.58783 \\
- \hline
- \end{tabular}
-\end{table}
 
 
 \begin{flushleft}
