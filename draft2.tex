@@ -839,31 +839,35 @@ distributions can be closely approximated by the right mixture distribution.
 
 \begin{flushleft}
     \begin{adjustwidth}{-3cm}{-1cm}
-    \begin{tabular}{ | p{2.4cm} | p{2cm} | p{4cm} | p{3cm} | l |}
+    \begin{tabular}{ | p{2.4cm} | p{3cm} | p{4cm} | p{3cm} | p{3.5cm} |}
     \hline
     Representation & Scoring & Flexibility/Information & Ensemble &
     Storage Requirement
     \\ \hline
 
-    Parametric & All methods & Limited to common distribution families 
-    &  & Low 3-6 values \\ \hline
+    Parametric & LogS, CRPS, IS & Limited to common distribution families. 
+    Infinite resoution
+    & BMA & Low 3-6 values/prediction \\ \hline
     
-    Discretized bins & All methods, more computation required for some (CRPS) &
-    Any shape allowed, but limited to bin description and range & &
-    High
+    Samples & CRPS and IS. LogS after smoothing & Any shape. Resolution may be
+    high but depends on sample size & BMA after smoothing. Resampling otherwise& 
+    Hundreds or thousands of values/prediction
+    \\ \hline
+    
+    Discretized bins & LogS, CRPS, IS &
+    Any shape allowed, but limited by binning scheme & BMA &
+    Depends on binning scheme but dozens to hundreds of values
     \\ \hline
 
-    Samples & Limited to CRPS and IS unless smoothing is performed & High & & 
-    Very high, thousands of values
-    \\ \hline
 
-    
-    Quantiles & IS, WIS & High & & Medium 
+    Quantiles & IS, WIS & Shape unknown but may still have much info with 
+    enough quantiles. No tail information & Quantile averaging & Depends on 
+    quantiles requested but dozens of values
     \\ \hline
     
-    Discrete Mixture & All methods, but may be limited by computation & 
-    High with proper approximation &
-    & Low-Medium
+    Discrete Mixture & LogS, CRPS, IS. May be more limited by computation & Can
+    take on many shapes/approximate most & BMA 
+    & 3 to limit values permitted
     \\ \hline
 
 	 \end{tabular}
