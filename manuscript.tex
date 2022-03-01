@@ -11,17 +11,7 @@
 }
 \makeatother
 
-\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
-\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
-\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
-\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
-\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
-\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
-\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
-\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
-\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
-\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
-\let\hlipl\hlkwb
+
 
 \usepackage{framed}
 \usepackage{changepage}
@@ -357,6 +347,7 @@ The distribution family and two or three parameters. Below shows a table with
 enough information to completely define a $Lognormal(1,0.4)$ distribution.
 
 \begin{table}[h!]
+\label{tab:pstor}
 \centering
  \begin{tabular}{|c c c|} 
  \hline
@@ -550,8 +541,8 @@ to Methodology-IV from Chakraborty \cite{chakraborty2015generating}
  \cite{kemp2004classes}.
 
 \begin{table}[h!]
+\label{tab:dstor}
 \centering
-\label{tab:dbins}
  \begin{tabular}{|c|c|} 
  \hline
     bin & prob \\ \hline
@@ -565,7 +556,7 @@ to Methodology-IV from Chakraborty \cite{chakraborty2015generating}
  \hline
  \end{tabular}
 \end{table}
-Submitted as a forecast prediction, the distribution in table \ref{tab:dbins} 
+Submitted as a forecast prediction, the distribution in table \ref{tab:dstor} 
 includes 82 pieces of data. For parts 
 of the CDC influenza competition some forecasts included upt to 262. This is 
 much more manageable than possible thousands of samples from a samle 
@@ -817,7 +808,13 @@ A mixture distribution may be much more flexible than a simple parametric in
 terms of distributional shape. But as it is essentially parametric, forecasters
 mays still be limited in how they construct their models. But it may be possible
 to fit a mixture distribution to probability models with the other 
-representations discussed. Further discussion on methods for fitting mixture 
+representations discussed. According to McLachlan and Peel, a finite mixture of 
+normal densities with common variance can be used to approximate abitrarily well
+any continuous distribution \cite{peel2000finite} (see also 
+\cite{nguyen2019approximations}). Thus, for any unconventional probability
+distribution -such as MCMC posterior samples- it may be reasonable to 
+approximate the distribution by a mixture of normals.
+Further discussion on methods for fitting mixture 
 distributions to different types of model representations is included in this 
 paper.
 
@@ -1074,17 +1071,101 @@ from the same distribution as the fit distribution. The results are below.
 
 \section{...}
 
-Tools for creating a discrete mixture distribution as well as constructing an 
-ensemble model from several mixture distributions are 
 
-\subsection{Tools for a discrete mixture}
 
-\section*{MakeDist}
-The MakeDist function is applied function over an R dataframe and returns an 
-object of class "UnivarMixingDistribution"
+The CDC and the COVID-19 Forecast Hub as well as other collaborative projects
+have their own established systems for receiving, 
+evaluating and constructing ensemble forecasts. A transition from using binned 
+distributions or quantile forecasts to using mixture distributions would require
+a few adjustments to those systems. In this section we outline how some of these
+adjustments may be implemented as well as present some tools which may be used
+to evaluate forecasts and construct ensemble forecasts from multiple models.
 
-\subsection*{Usage}
-MakeDist(df)
+\subsection{Submission format}
+For a collaborative forecast project to run smoothly, model submissions from all 
+modelers should all follow the same format. For both the CDC flu forecasting and
+the COVID-19 Forecast Hub, teams are provided a csv spreadsheet with columns 
+similar to those in tables \ref{tab:dstor} and \ref{tab:qstor}. Additionally
+columns for Location, Target, Type and Unit are included which serve as
+indicators of the specific prediction. The values for all variables except 
+Value come from a specified list from the forecast center. Value is the 
+probability assigned to a bin when the Type is Bin.
+
+\begin{table}[h!]
+\label{tab:dstan}
+\centering
+ \begin{tabular}{|c|c|c|c|c|c|}
+ \hline
+    Location & Target & Type & Unit & Bin & Value  \\ \hline
+    US National & Season Onset & Point & week & NA & . \\
+    US National & Season Onset & Bin & week & 0.0 & . \\
+    US National & Season Onset & Bin & week & 0.1 & . \\
+    ... & ... & ... & ... & ... & ... \\
+ \hline
+ \end{tabular}
+\end{table}
+
+For the quantile forecasts of the Forecast Hub, the possible values for Type 
+are Point and Quantile, and rather than using a Bin variable Quantile is used
+with values specified by the Hub. Then Value rather than a probability is the
+forecasted value for the specified quantile. Per prediction there may be a 
+couple dozen rows, up to 24 in the Forecast Hub, or over 100 rows as in some
+flu forecasts. 
+
+An adjustment may be made to the format of table \ref{tab:dstan} where each row
+represents a compnonent in a mixture distribution.
+The variables Bin/Quantile and Value are removed and replaced with Family,
+Param1, Param2, Param3 and Weight where Family is the distribution family,
+Params are the parameters for the component distribution and Weight is the 
+weight $w_i$ for that component.
+
+\begin{table}[h!]
+\label{tab:mstan}
+\centering
+ \begin{tabular}{|c|c|c|c|c|c|c|c|c|}
+ \hline
+    Location & Target & Type & Unit & Family & Param1 & Param2 & Param3 & Weight
+    \\ \hline
+    US National & Season Onset & Dist & week & norm & mean & sd & NA & .  \\
+    US National & Season Onset & Dist & week & lnorm & meanlog & sdlog & NA & . \\
+    ... & ... & ... & ... & ... & ... & ... & ... & .\\
+ \hline
+ \end{tabular}
+\end{table}
+
+A forecast center may want to limit the number of components allowed per 
+prediction. For a reference, a mixture distribution prediction with 16 
+components would require $16 \times 9 = 144$ cells submitted. This is the same 
+number of cells
+submitted for a Forecast Hub forecast with 23 quantiles and a point prediction.
+
+\subsection{Mixture construction and scoring tools}
+
+From a submitted forecast, a prediction may be found by Location, Target and 
+Unit (or whatever other indication variables are used) and evaluated. We found
+the \texttt{distr} \cite{camphausen2007distr}
+useful for constructing a mixture distribution given
+information like that from table \ref{tab:mstan}. 
+
+The function 
+\texttt{UnivarMixingDistribution} takes as arguments a list of distributions
+and a vector of weights for each distribution and a object pf a class called 
+\texttt{AbscontDistribution} is returned. Functions for density, distribution
+and quantile functions as well as for random sampling may then be used on the
+mixture distribution object for evaluation. Using those functions and the 
+created object, LogS and CRPS are easily calculable. 
+
+We wrote a function \texttt{MakeDist} which takes on a data frame with variables
+Family, Param1, Param2, Param3 and Weight and returns a mixture distribution 
+of component distributions specified in the rows. 
+
+\subsection{Ensemble construction}
+
+To construct an ensemble distribution from multiple mixture distributions, the 
+\texttt{UnivarMixingDistribution} is again a useful tool. Two or more 
+\texttt{AbscontDistribution} objects may be 
+
+
 
 
 Variables of R dataframe to b used in making mixture distribution 
