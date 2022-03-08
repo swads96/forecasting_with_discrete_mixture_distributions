@@ -14,6 +14,18 @@
 \usepackage{framed}
 \usepackage{changepage}
 \usepackage{amsfonts}
+\usepackage{listings}
+\usepackage[svgnames]{xcolor}
+
+\lstset{language=R,
+    basicstyle=\small\ttfamily,
+    stringstyle=\color{DarkGreen},
+    otherkeywords={0,1,2,3,4,5,6,7,8,9},
+    morekeywords={TRUE,FALSE},
+    deletekeywords={data,frame,length,as,character},
+    keywordstyle=\color{blue},
+    commentstyle=\color{DarkGreen},
+}
 \makeatletter
 \newenvironment{kframe}{%
  \def\at@end@of@kframe{}%
@@ -229,6 +241,7 @@ distributions using weighted averages. This has been called stacking
 
 \subsection{Representations}
 \subsubsection{Parametric distributions}
+\label{section:pardist}
 A parametric distribution is a discrete or continuous probability distribution 
 described by a known function $p(x) := p(x|\theta)$ -pmf in the discrete case or 
 pdf in the continuous case. $\theta$ is a vector of known or unkown parameters 
@@ -1139,7 +1152,8 @@ submitted for a Forecast Hub forecast with 23 quantiles and a point prediction.
 \subsection{Mixture construction and scoring tools}
 
 From a submitted forecast, a prediction may be found by Location, Target and 
-Unit (or whatever other indication variables are used) and evaluated. We found
+Unit (or whatever other indication variables are used by collaborators) and 
+evaluated. We found
 the \texttt{distr} \cite{camphausen2007distr}
 useful for constructing a mixture distribution given
 information like that from table \ref{tab:mstan}. 
@@ -1147,111 +1161,275 @@ information like that from table \ref{tab:mstan}.
 The function 
 \texttt{UnivarMixingDistribution} takes as arguments a list of distributions
 and a vector of weights for each distribution and a object pf a class called 
-\texttt{AbscontDistribution} is returned. Functions for density, distribution
+\texttt{AbscontDistribution} is returned. The object is in essence a mixture
+distribution of the form from (\ref{eq:dmd}). Functions for density, 
+distribution
 and quantile functions as well as for random sampling may then be used on the
 mixture distribution object for evaluation. Using those functions and the 
 created object, LogS and CRPS are easily calculable. 
 
-We wrote a function \texttt{MakeDist} which takes on a data frame with variables
+We wrote a function \texttt{MakeDist} (see appendix)
+which takes on a data frame with variables
 Family, Param1, Param2, Param3 and Weight and returns a mixture distribution 
-of component distributions specified in the rows. 
+of component distributions specified in the rows.
+
+
 
 \subsection{Ensemble construction}
 
 To construct an ensemble distribution from multiple mixture distributions, the 
-\texttt{UnivarMixingDistribution} is again a useful tool. Two or more 
-\texttt{AbscontDistribution} objects may be 
+\texttt{UnivarMixingDistribution} is again a useful tool. The function takes 
+two or more
+\texttt{AbscontDistribution} or mixture distributions and a vector of weights 
+corresponding to each mixture. A new \texttt{AbscontDistribution} object is 
+returned as an ensemble of mixture distributions see (\ref{eq:bma}). 
+
+At the onset of a collaborative forecast before the various models can be scored
+based on true observations, it may make sense to assign equal weight to each 
+component distribution in an ensemble. As a project progresses however, 
+assigning weights based on past performance may be desired. As mentioned in 
+section \ref{section:pardist}, weights may be selected by maximizing the
+likelihood of (\ref{eq:bma}) or by minimizing the CRPS. Another method of 
+selecting weights is to use the posterior model probability. 
+
+If we have $T$ models ($M_t$) the posterior model probability of $M_t$ is 
+defined as 
+
+\begin{equation}
+\label{eq:pmp}
+p(M_t|x) = \frac{p(x|M_t)p(M_t)}{p(x)}
+         = \frac{p(x|M_t)p(M_t)}{\sum_{k=1}^T p(x|M_k)p(M_k)}
+\end{equation}
+where $p(\cdot |M_t) := p_m(\cdot)$ is the density function of the model and 
+$p(M_j)$ is the prior probability assigned to the model. Where the prior
+probabilities for each model are equal or $p(M_t) = 1/T$ for all $t$ 
+(\ref{eq:pmp}) is reduced to 
+
+\begin{equation}
+\label{eq:pmpeq}
+p(M_t|x) =  \frac{p(x|M_t)}{\sum_{k=1}^Tp(x|M_k)}
+\end{equation}
+
+The posterior model probability $p(M_t|x^*)$ for an already observed event $x^*$
+are then used as weights for a yet unrealized event being forecasted i.e.
+$w_t := p(M_t|x^*)$ see (\ref{eq:bma}). 
 
 
 
+\subsection{Toy Example}
 
-Variables of R dataframe to b used in making mixture distribution 
-\begin{center}
-    \begin{tabular}{ | l | p{4cm} | p{7cm} |}
-    \hline
-    Argument & Summary & Options \\ \hline
-    dist & A string specifying a distribution family.  & “Beta”, “Cauchy”, 
-    “Lnorm”, “Logis”, “Unif”, “Lst” (location scale t distribution), 
-    “Weibull”, “Fd”, “Norm”,  “Chisq”, 
-    “Gammad”, “Exp”
-	 “Binom”, “Dirac”, “Pois”, “Hyper”, “Nbinom”, “Geom” \\ \hline
-    param1 & A real number specifying the first parameter value of the 
-    distribution. & Beta: shape1; 
-	Cauchy: location; 
-	Lnorm: meanlog; 
-	Logis: location; 
-	Unif: min; 
-	Lst: location; 
-	Weibull: shape;
-	Fd: df1;
-	Norm: mean;
-	Chisq: df;
-	Gammad: scale;
-	Exp: rate; 
-	Binom: size;
-	Dirac: location;
-	Pois: lambda;
-	Hyper: m;
-	Nbinom: n;
-	Geom: prob
-     \\ \hline
-    param2 & A real number specifying the second parameter value of the 
-    distribution. & Beta: shape2; 
-	Cauchy: scale; 
-	Lnorm: slog; 
-	Logis: scale; 
-	Unif: Max; 
-	Lst: scale; 
-	Weibull: scale; 
-	Fd: df2; 
-	Norm: sd; 
-	Chisq: ncp; 
-	Gammad: shape; 
-	Binom: prob; 
-	Hyper: n; 
-	Nbinom: p \\
-    \hline
-    param3 & A real number specifying the third parameter value of the 
-    distribution. & Lst: df;
-	Hyper: k \\
-	\hline
-	weight & A real number between 0 and 1 specifying the weight given to the 
-	distribution in the overall mixture distribution. The sum of the weight 
-	column should equal 1. & ...
-	\\
-	\hline
-    \end{tabular}
-\end{center}
+In the following example, a toy example is given of constructing two  
+mixture distribution forecast prediction models from separate forecast 
+submissions. The tools presented in this section are used in \texttt{R} code to
+construct the distributions, build an ensemble consisting of both predictions 
+and score the different models. In building the ensemble forecast, weights are
+selected using the posterior model probability with equal prior probabilities
+for both models (\ref{eq:pmpeq}).
+
+Beginning with two forecast submissions of the form of table \ref{tab:mstan}, 
+say we select from each a prediction of an event for the same location, target
+and unit. The following two data frames \texttt{preddf1} and \texttt{preddf2}
+are the resulting predictions.
+
+\begin{table}[h!]
+\label{tab:preddf1}
+\centering
+ \begin{tabular}{|c|c|c|c|c|}
+ \hline
+    family & param1 & param2 & param3 & weight
+    \\ \hline
+    Lnorm & 2 & 1 & NA & 0.3  \\
+    Norm & 2.1 & 1 & NA & 0.7 \\
+ \hline
+ \end{tabular}
+\end{table}
+
+\begin{table}[h!]
+\label{tab:preddf2}
+\centering
+ \begin{tabular}{|c|c|c|c|c|}
+ \hline
+    family & param1 & param2 & param3 & weight
+    \\ \hline
+    Norm & 1.5 & 1 & NA & 0.4  \\
+    Norm & 4 & 2 & NA & 0.6 \\
+ \hline
+ \end{tabular}
+\end{table}
+
+
+The following code in \texttt{R} will construct mixture distributions, select
+weights for an ensemble based on an observed realization, build the ensemble and 
+score the forecasts using the
+LogS and the CRPS.
 
 \newpage
-% \begin{adjustwidth}{-3cm}{-1cm}
-\begin{center}
-% \caption{MakeDist parameter options}
-    \begin{tabular}{ l l  p{2cm}  p{2cm}  p{2cm}}
-    \hline
-    \textbf{Distribution} & \textbf{dist} & \textbf{param1} & \textbf{param2} & 
-    \textbf{param3} \newline \\ \hline
-    Beta & Beta & shape1 & shape2 &  \\ 
-    Cauch & Cauchy & location & scale &  \\
-    Log-normal & Lnorm & meanlog & slog &  \\
-    Logistic & Logis & location & scale &  \\
-    Uniform & Unif & min & max &  \\
-    Location Scale T & Lst & location & scale & df \\
-    Weibull & Weibull & shape & scale &  \\
-    F & Fd & df1 & df2 &  \\
-    Normal & Norm & mean & sd &  \\
-    Chisqure & Chisq & df &  &  \\
-    Gamma & Gammad & scale & shape &  \\
-    Exponential & Exp & rate &  &  \\
-    Binomial & Binom & size & prob &  \\
-    Dirac & Dirac & location &  &  \\
-    Poisson & Pois & lambda &  &  \\
-    Hypergeometric & Hyper & m & n & k \\
-    Negative binomial & Nbinom & n & p &  \\
-    Geometric & Geom & prob &  &  \\ \hline
-    \end{tabular}
-\end{center}
-% \end{adjustwidth}
+\begin{lstlisting}[language=R]
+
+preddf1
+#  family param1 param2 param3 weights
+#1  Lnorm    2.0      1     NA     0.3
+#2   Norm    2.1      1     NA     0.7
+
+preddf2
+#  family param1 param2 param3 weights
+#1   Norm    1.5      1     NA     0.4
+#2   Norm    4.0      2     NA     0.6
+
+#make mixture distributions from prediction submissions
+mdist1 <- MakeDist(preddf1)
+mdist2 <- MakeDist(preddf2)
+
+#make pdfs for mixture predictions
+dmdist1 <- function(x) {distr::d(mdist1)(x)}
+dmdist2 <- function(x) {distr::d(mdist2)(x)}
+
+#make cdfs for mixture predictions
+pmdist1 <- function(x) {distr::p(mdist1)(x)}
+pmdist2 <- function(x) {distr::p(mdist2)(x)}
+
+#realized observation
+ob <- 3
+
+#posterior model probability for calculating weights
+w1 <- pmdist1(ob)/(pmdist1(ob) + pmdist2(ob))
+w2 <- 1-w1
+#w1 => 0.5286434
+#w1 => 0.4713566
+
+#build ensemble with calculated weights
+ensdist <- distr::UnivarMixingDistribution(mdist1,
+                                           mdist2,
+                                           mixCoeff = c(w1,w2))
+
+#pdf and cdf for ensemble
+densdist <- function(x) {(distr::d(ensdist)(x))}
+pensdist <- function(x) {(distr::p(ensdist)(x))}
+
+#LogS for predictions at the realized observation
+-log(dmdist1(ob)) # => 1.547238
+-log(dmdist2(ob)) # => 1.848796
+-log(densdist(ob)) # => 1.678156
+
+#CRPS for predictions at the realized observation
+CRPS(pmdist1,y=ob) # => 0.6348212
+CRPS(pmdist2,y=ob) # => 0.5306083
+CRPS(pensdist,y=ob) # => 0.5486368
+\end{lstlisting}
+
+
+Figure \ref{figmixs} below shows the density plots for each of the two mixture
+distribution forecasts and the ensemble from the toy example. 
+
+
+\begin{figure}[htbp]
+\centerline{\includegraphics[scale=.15]{mix_dists.png}}
+\caption{Figure this out later}
+\label{figmixs}
+\end{figure}
+
+\section{Discussion}
+
+In this paper we have reviewed four representation types commonly used in
+probabilistic 
+forecasting including proper scoring, data storage and ensemble model 
+construction for each type. We presented the discrete mixture distribution
+representation and argue that in terms of model flexibility, storage and 
+ensemble building it is
+comparable to discretized bins and interval forecasts but also provides a 
+forecast with a continuous nominal resolution. Thus we advocate its use in
+future forecasting projects like those done by the CDC and COVID-19 Forecast 
+Hub.
+
+
+
+% Variables of R dataframe to b used in making mixture distribution 
+% \begin{center}
+%     \begin{tabular}{ | l | p{4cm} | p{7cm} |}
+%     \hline
+%     Argument & Summary & Options \\ \hline
+%     dist & A string specifying a distribution family.  & “Beta”, “Cauchy”, 
+%     “Lnorm”, “Logis”, “Unif”, “Lst” (location scale t distribution), 
+%     “Weibull”, “Fd”, “Norm”,  “Chisq”, 
+%     “Gammad”, “Exp”
+% 	 “Binom”, “Dirac”, “Pois”, “Hyper”, “Nbinom”, “Geom” \\ \hline
+%     param1 & A real number specifying the first parameter value of the 
+%     distribution. & Beta: shape1; 
+% 	Cauchy: location; 
+% 	Lnorm: meanlog; 
+% 	Logis: location; 
+% 	Unif: min; 
+% 	Lst: location; 
+% 	Weibull: shape;
+% 	Fd: df1;
+% 	Norm: mean;
+% 	Chisq: df;
+% 	Gammad: scale;
+% 	Exp: rate; 
+% 	Binom: size;
+% 	Dirac: location;
+% 	Pois: lambda;
+% 	Hyper: m;
+% 	Nbinom: n;
+% 	Geom: prob
+%      \\ \hline
+%     param2 & A real number specifying the second parameter value of the 
+%     distribution. & Beta: shape2; 
+% 	Cauchy: scale; 
+% 	Lnorm: slog; 
+% 	Logis: scale; 
+% 	Unif: Max; 
+% 	Lst: scale; 
+% 	Weibull: scale; 
+% 	Fd: df2; 
+% 	Norm: sd; 
+% 	Chisq: ncp; 
+% 	Gammad: shape; 
+% 	Binom: prob; 
+% 	Hyper: n; 
+% 	Nbinom: p \\
+%     \hline
+%     param3 & A real number specifying the third parameter value of the 
+%     distribution. & Lst: df;
+% 	Hyper: k \\
+% 	\hline
+% 	weight & A real number between 0 and 1 specifying the weight given to the 
+% 	distribution in the overall mixture distribution. The sum of the weight 
+% 	column should equal 1. & ...
+% 	\\
+% 	\hline
+%     \end{tabular}
+% \end{center}
+
+% \newpage
+% % \begin{adjustwidth}{-3cm}{-1cm}
+% \begin{center}
+% % \caption{MakeDist parameter options}
+%     \begin{tabular}{ l l  p{2cm}  p{2cm}  p{2cm}}
+%     \hline
+%     \textbf{Distribution} & \textbf{dist} & \textbf{param1} & \textbf{param2} & 
+%     \textbf{param3} \newline \\ \hline
+%     Beta & Beta & shape1 & shape2 &  \\ 
+%     Cauch & Cauchy & location & scale &  \\
+%     Log-normal & Lnorm & meanlog & slog &  \\
+%     Logistic & Logis & location & scale &  \\
+%     Uniform & Unif & min & max &  \\
+%     Location Scale T & Lst & location & scale & df \\
+%     Weibull & Weibull & shape & scale &  \\
+%     F & Fd & df1 & df2 &  \\
+%     Normal & Norm & mean & sd &  \\
+%     Chisqure & Chisq & df &  &  \\
+%     Gamma & Gammad & scale & shape &  \\
+%     Exponential & Exp & rate &  &  \\
+%     Binomial & Binom & size & prob &  \\
+%     Dirac & Dirac & location &  &  \\
+%     Poisson & Pois & lambda &  &  \\
+%     Hypergeometric & Hyper & m & n & k \\
+%     Negative binomial & Nbinom & n & p &  \\
+%     Geometric & Geom & prob &  &  \\ \hline
+%     \end{tabular}
+% \end{center}
+% % \end{adjustwidth}
 
 
 

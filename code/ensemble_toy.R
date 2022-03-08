@@ -1,29 +1,29 @@
 library(scoringutils)
 
 md1 <- distr::UnivarMixingDistribution(distr::Norm(1.5,1), 
-                                       distr::Norm(2,2),
-                                       mixCoeff = c(.3,.7))
+                                       distr::Norm(4,2),
+                                       mixCoeff = c(.4,.6))
 
 md2 <- distr::UnivarMixingDistribution(distr::Lnorm(2,1),
                                        distr::Norm(2.1,1),
-                                       mixCoeff = c(.4,.6))
+                                       mixCoeff = c(.3,.7))
 
 md2 <- distr::Truncate(md2,lower=0,upper=4)
 
-pmd1 <- function(x) {p(md1)(x)}
-pmd2 <- function(x) {p(md2)(x)}
+pmd1 <- function(x) {distr::p(md1)(x)}
+pmd2 <- function(x) {distr::p(md2)(x)}
+dmd1 <- function(x) {distr::d(md1)(x)}
+dmd2 <- function(x) {distr::d(md2)(x)}
 
+(pmd1(2.2)*.5)/(.5*(pmd1(2.2)+pmd2(2.2)))
+(pmd2(2.2)*.5)/(.5*(pmd1(2.2)+pmd2(2.2)))
 
 crps_integrand <- function(x,dist,y) {(dist(x) - as.numeric(y <= x))^2}
+
 CRPS <- function(y,dist) {
   int <- integrate(crps_integrand,-Inf,Inf,y,dist=dist)
   return(int$value)
 }
-
-CRPS(pmd1,y=4)
-CRPS(pmd2,y=4)
-ens(lw1,x=4)
-CRPS(pmd1+.6*pmd2,y=2.2)
 
 ens <- function(lw1,x) {
   w1 <- boot::inv.logit(lw1)
@@ -33,8 +33,25 @@ ens <- function(lw1,x) {
   return(s)
 }
 
-j <- integrate(dnorm,-Inf,Inf)
-test <- optim(fn=ens,par=c(12),x=4)
+test <- optim(fn=ens,par=c(12),x=3)
+w1 <- inv.logit(test$par)
+w2 <- 1- w1
+
+ense <- distr::UnivarMixingDistribution(md1,md2,mixCoeff = c(w1,w2))
+pense <- function(x) {distr::p(ense)(x)}
+dense <- function(x) {distr::d(ense)(x)}
+
+
+CRPS(pmd1,y=3)
+CRPS(pmd2,y=3)
+CRPS(pense,y=3)
+
+-log(dmd1(3))
+-log(dmd2(3))
+-log(dense(3))
+
+
+
 optimize(f=CRPS,interval=c(-3,3),dist=pmd1)
 
 weight_ensemble <- function(w1,w2,x) {
@@ -42,6 +59,12 @@ weight_ensemble <- function(w1,w2,x) {
   return(ens)
 }
 
+
+
+
+
+crps_integrand <- function(x,dist,y) {(dist(x) - as.numeric(y <= x))^2}
+weight_ensemble
 optim()
 
 crps(y=2.2,family='normal',mean=0,sd=1)
