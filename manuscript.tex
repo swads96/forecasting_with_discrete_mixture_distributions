@@ -1,15 +1,15 @@
 \documentclass{article}\usepackage[]{graphicx}\usepackage[]{color}
 % maxwidth is the original width if it is less than linewidth
 % otherwise use linewidth (to make sure the graphics do not exceed the margin)
-\makeatletter
-\def\maxwidth{ %
-  \ifdim\Gin@nat@width>\linewidth
-    \linewidth
-  \else
-    \Gin@nat@width
-  \fi
-}
-\makeatother
+% \makeatletter
+% \def\maxwidth{ %
+%   \ifdim\Gin@nat@width>\linewidth
+%     \linewidth
+%   \else
+%     \Gin@nat@width
+%   \fi
+% }
+% \makeatother
 
 \usepackage{framed}
 \usepackage{changepage}
@@ -27,28 +27,28 @@
     commentstyle=\color{DarkGreen},
 }
 \makeatletter
-\newenvironment{kframe}{%
- \def\at@end@of@kframe{}%
- \ifinner\ifhmode%
-  \def\at@end@of@kframe{\end{minipage}}%
-  \begin{minipage}{\columnwidth}%
- \fi\fi%
- \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
- \colorbox{shadecolor}{##1}\hskip-\fboxsep
-     % There is no \\@totalrightmargin, so:
-     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
- \MakeFramed {\advance\hsize-\width
-   \@totalleftmargin\z@ \linewidth\hsize
-   \@setminipage}}%
- {\par\unskip\endMakeFramed%
- \at@end@of@kframe}
-\makeatother
+% \newenvironment{kframe}{%
+%  \def\at@end@of@kframe{}%
+%  \ifinner\ifhmode%
+%   \def\at@end@of@kframe{\end{minipage}}%
+%   \begin{minipage}{\columnwidth}%
+%  \fi\fi%
+%  \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+%  \colorbox{shadecolor}{##1}\hskip-\fboxsep
+%      % There is no \\@totalrightmargin, so:
+%      \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+%  \MakeFramed {\advance\hsize-\width
+%    \@totalleftmargin\z@ \linewidth\hsize
+%    \@setminipage}}%
+%  {\par\unskip\endMakeFramed%
+%  \at@end@of@kframe}
+% \makeatother
 
-\definecolor{shadecolor}{rgb}{.97, .97, .97}
-\definecolor{messagecolor}{rgb}{0, 0, 0}
-\definecolor{warningcolor}{rgb}{1, 0, 1}
-\definecolor{errorcolor}{rgb}{1, 0, 0}
-\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+% \definecolor{shadecolor}{rgb}{.97, .97, .97}
+% \definecolor{messagecolor}{rgb}{0, 0, 0}
+% \definecolor{warningcolor}{rgb}{1, 0, 1}
+% \definecolor{errorcolor}{rgb}{1, 0, 0}
+% \newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
 
 \usepackage{alltt}
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -56,6 +56,22 @@
 \usepackage{apacite}
 
 \begin{document}
+
+\section*{Abstract}
+
+Collaboration among multiple teams has played a major role in probabilistic
+forecasting of influenza outbreaks, the COVID-19 pandemic, other disease
+outbreaks and problems in other fields. When collecting forecasts from 
+individual teams, ensuring that each team's model represents forecast
+uncertainty according to the same format allows for direct comparison of 
+forecasts as well as methods of constructing multi-model ensemble forecasts.
+This paper outlines several common probabilistic forecast formats including
+probability density functions, samples, binned distributions and  quantile 
+forecasts and compares
+their usage within the context of collaborative projects. The discrete mixture
+distribution forecast format is presented as an attractive alternative to the 
+former formats due to the flexibility such a forecast may have in shape as well
+as the relatively low loss of information due to limited computer storage.
 
 \section{Introduction}
 Predicting the outcomes of prospective events is the object of much scientific
@@ -779,13 +795,13 @@ Lognormal $(1,0.4)$ looks like.
 
 
 \begin{figure}[htbp]
-\centerline{\includegraphics[scale=.4]{dens_comp.png}}
+\centerline{\includegraphics[scale=.1]{dens_comp.png}}
 \caption{Figure this out later}
 \label{fig}
 \end{figure}
 
 \begin{figure}[htbp]
-\centerline{\includegraphics[scale=.4]{cum_comp.png}}
+\centerline{\includegraphics[scale=.1]{cum_comp.png}}
 \caption{Figure this out later}
 \label{fig}
 \end{figure}
@@ -1334,13 +1350,33 @@ In this paper we have reviewed four representation types commonly used in
 probabilistic 
 forecasting including proper scoring, data storage and ensemble model 
 construction for each type. We presented the discrete mixture distribution
-representation and argue that in terms of model flexibility, storage and 
+representation and we argue that its use in collaborative probabilistic 
+forecasting is preferable to the other representations.
+In terms of model flexibility, storage and 
 ensemble building it is
 comparable to discretized bins and interval forecasts but also provides a 
 forecast with a continuous nominal resolution. Thus we advocate its use in
 future forecasting projects like those done by the CDC and COVID-19 Forecast 
 Hub.
-j
+
+For a number of reasons, the adoption of finite mixture distributions as the
+submission format may face hurdles. A forecast hub, along with modelers, using a 
+different representation may simply not want to break from tradition. The 
+implementation of new scoring and ensemble construction methods may be a 
+barrier. One aspect of ensemble construction which received little attention in 
+this paper is the selection of weights for components of an ensemble where each
+of the components is mixture distribution. Computing requirements could become a
+concern in such a problem and further research on this may provide
+ideas of best methods for weight selection.
+
+Another area of recommended research is the use of joint distributions for 
+forecasting. We have only considered here probabilistic forecasting of one 
+event at a time. Number of new infections in one week at one specific location
+for example. This forecast is presented as a marginal distribution for that 
+specific target, time and location. A joint distribution for forecasting 
+multiple targets, times or locations may sometime be desirable and may require
+further consideration on how joint mixture distributions could be used as a 
+format in collaboration.
 
 
 % Variables of R dataframe to b used in making mixture distribution 
