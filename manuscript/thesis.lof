@@ -1,0 +1,19 @@
+\gdef \the@ipfilectr {@-1}
+\noaddvspace 
+\gdef \the@ipfilectr {}
+\gdef \the@ipfilectr {@-2}
+\gdef \the@ipfilectr {}
+\nobreakspace {}\hfill \textbf {Page}\par 
+\gdef \the@ipfilectr {@-3}
+\gdef \the@ipfilectr {}
+\gdef \the@ipfilectr {@-4}
+\gdef \the@ipfilectr {}
+\gdef \the@ipfilectr {@-5}
+\gdef \the@ipfilectr {}
+\contentsline {figure}{\numberline {1}{\ignorespaces Official CDC COVID-19 deaths report August 2021}}{4}{figure.caption.13}%
+\contentsline {figure}{\numberline {2}{\ignorespaces Density/CDF comparison between parametric distribution, sample distribution, discretized bin distribution and quantiles}}{18}{figure.caption.47}%
+\contentsline {figure}{\numberline {3}{\ignorespaces Toy mixture distributions}}{24}{figure.caption.58}%
+\contentsline {figure}{\numberline {4}{\ignorespaces Toy ensemble forecast}}{27}{figure.caption.62}%
+\contentsline {figure}{\numberline {5}{\ignorespaces Parametric distribution fits to binned distribution}}{30}{figure.caption.69}%
+\contentsline {figure}{\numberline {6}{\ignorespaces QQ plot for quantile fit}}{33}{figure.caption.73}%
+\contentsline {figure}{\numberline {7}{\ignorespaces CDF plot for quantile fit}}{34}{figure.caption.74}%

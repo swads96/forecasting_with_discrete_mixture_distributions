@@ -1,0 +1,46 @@
+\gdef \the@ipfilectr {@-1}
+\gdef \the@ipfilectr {}
+\gdef \the@ipfilectr {@-2}
+\gdef \the@ipfilectr {}
+\nobreakspace {}\hfill \textbf {Page}\par 
+\def \@chapapp {}
+\contentsline {chapter}{LIST OF TABLES}{iv}{section*.3}%
+\contentsline {chapter}{LIST OF FIGURES}{v}{section*.5}%
+\gdef \the@ipfilectr {@-3}
+\gdef \the@ipfilectr {}
+\gdef \the@ipfilectr {@-4}
+\def \@chapapp {}
+\contentsline {chapter}{ACKNOWLEDGMENTS}{vi}{section*.8}%
+\def \@chapapp {CHAPTER\ }
+\def \@chapapp {CHAPTER\ }
+\gdef \the@ipfilectr {}
+\gdef \the@ipfilectr {@-5}
+\def \@chapapp {}
+\contentsline {chapter}{ABSTRACT}{vii}{section*.9}%
+\def \@chapapp {CHAPTER\ }
+\gdef \the@ipfilectr {}
+\contentsline {section}{\numberline {1}Introduction}{1}{section.10}%
+\contentsline {subsection}{\numberline {1.1}CDC Influenza Like Illness}{1}{subsection.11}%
+\contentsline {subsection}{\numberline {1.2}COVID-19 Forecast Hub}{2}{subsection.12}%
+\contentsline {subsection}{\numberline {1.3}}{3}{subsection.14}%
+\contentsline {section}{\numberline {2}Probabilistic Forecast Representations}{5}{section.15}%
+\contentsline {subsection}{\numberline {2.1}Representation properties to consider in collaborative projects}{5}{subsection.16}%
+\contentsline {subsubsection}{\numberline {2.1.1}Scoring}{5}{subsubsection.17}%
+\contentsline {subsubsection}{\numberline {2.1.2}Storage}{5}{subsubsection.18}%
+\contentsline {subsubsection}{\numberline {2.1.3}Ensemble Modeling}{6}{subsubsection.19}%
+\contentsline {subsection}{\numberline {2.2}Probabilistic Forecast Representation Types}{6}{subsection.20}%
+\contentsline {subsubsection}{\numberline {2.2.1}Parametric distributions}{6}{subsubsection.21}%
+\contentsline {subsubsection}{\numberline {2.2.2}Sample Distributions}{9}{subsubsection.30}%
+\contentsline {subsubsection}{\numberline {2.2.3}Discretized bin distributions}{12}{subsubsection.34}%
+\contentsline {subsubsection}{\numberline {2.2.4}Quantile representation}{14}{subsubsection.39}%
+\contentsline {subsection}{\numberline {2.3}Discrete mixture of parametric distributions}{17}{subsection.48}%
+\contentsline {section}{\numberline {3}Mixture distributions in a collaborative forecast project}{21}{section.51}%
+\contentsline {subsection}{\numberline {3.1}Submission format}{21}{subsection.52}%
+\contentsline {subsection}{\numberline {3.2}Mixture construction and scoring tools}{22}{subsection.55}%
+\contentsline {subsection}{\numberline {3.3}Ensemble construction}{25}{subsection.59}%
+\contentsline {section}{\numberline {4}Retrospective Analysis}{27}{section.63}%
+\contentsline {subsection}{\numberline {4.1}CDC Influenza like Illness}{27}{subsection.64}%
+\contentsline {subsection}{\numberline {4.2}COVID-19 Forecast Hub}{31}{subsection.70}%
+\contentsline {section}{\numberline {5}Discussion}{36}{section.75}%
+\contentsline {section}{\numberline {6}References}{36}{section.76}%
+\contentsline {section}{\numberline {7}Appendix}{39}{section.77}%

@@ -1,0 +1,233 @@
+\begin{thebibliography}{}
+
+\bibitem[\protect\astroncite{Alves et~al.}{2013}]{alves2013ncep}
+Alves, J.-H.~G., Wittmann, P., Sestak, M., Schauer, J., Stripling, S., Bernier,
+  N.~B., McLean, J., Chao, Y., Chawla, A., Tolman, H., et~al. (2013).
+\newblock The ncep--fnmoc combined wave ensemble product: Expanding benefits of
+  interagency probabilistic forecasts to the oceanic environment.
+\newblock {\em Bulletin of the American Meteorological Society},
+  94(12):1893--1905.
+
+\bibitem[\protect\astroncite{Baran and Lerch}{2018}]{baran2018combining}
+Baran, S. and Lerch, S. (2018).
+\newblock Combining predictive distributions for the statistical
+  post-processing of ensemble forecasts.
+\newblock {\em International Journal of Forecasting}, 34(3):477--496.
+
+\bibitem[\protect\astroncite{Bogner et~al.}{2017}]{bogner2017combining}
+Bogner, K., Liechti, K., and Zappa, M. (2017).
+\newblock Combining quantile forecasts and predictive distributions of
+  streamflows.
+\newblock {\em Hydrology and Earth System Sciences}, 21(11):5493--5502.
+
+\bibitem[\protect\astroncite{Bracher et~al.}{2021}]{bracher2021evaluating}
+Bracher, J., Ray, E.~L., Gneiting, T., and Reich, N.~G. (2021).
+\newblock Evaluating epidemic forecasts in an interval format.
+\newblock {\em PLoS computational biology}, 17(2):e1008618.
+
+\bibitem[\protect\astroncite{Brooks et~al.}{2020}]{brooks2020comparing}
+Brooks, L.~C., Ray, E.~L., Bien, J., Bracher, J., Rumack, A., Tibshirani,
+  R.~J., and Reich, N.~G. (2020).
+\newblock Comparing ensemble approaches for short-term probabilistic covid-19
+  forecasts in the us.
+\newblock {\em International Institute of Forecasters}.
+
+\bibitem[\protect\astroncite{Busetti}{2017}]{busetti2017quantile}
+Busetti, F. (2017).
+\newblock Quantile aggregation of density forecasts.
+\newblock {\em Oxford Bulletin of Economics and Statistics}, 79(4):495--512.
+
+\bibitem[\protect\astroncite{Camphausen et~al.}{2007}]{camphausen2007distr}
+Camphausen, F., Kohl, M., Ruckdeschel, P., Stabla, T., and Ruckdeschel, M.~P.
+  (2007).
+\newblock The distr package.
+
+\bibitem[\protect\astroncite{CDC}{2021}]{cdcflusight}
+CDC (2021).
+\newblock Flusight: Flu forecasting.
+
+\bibitem[\protect\astroncite{Chakraborty}{2015}]{chakraborty2015generating}
+Chakraborty, S. (2015).
+\newblock Generating discrete analogues of continuous probability
+  distributions-a survey of methods and constructions.
+\newblock {\em Journal of Statistical Distributions and Applications},
+  2(1):1--30.
+
+\bibitem[\protect\astroncite{Cramer et~al.}{2021a}]{Cramer2021-hub-dataset}
+Cramer, E.~Y., Huang, Y., Wang, Y., Ray, E.~L., Cornell, M., Bracher, J.,
+  Brennen, A., Castro~Rivadeneira, A.~J., Gerding, A., House, K., Jayawardena,
+  D., Kanji, A.~H., Khandelwal, A., Le, K., Niemi, J., Stark, A., Shah, A.,
+  Wattanachit, N., Zorn, M.~W., Reich, N.~G., and Consortium, U. C.-. F.~H.
+  (2021a).
+\newblock The united states covid-19 forecast hub dataset.
+\newblock {\em medRxiv}.
+
+\bibitem[\protect\astroncite{Cramer et~al.}{2021b}]{cramer2021evaluation}
+Cramer, E.~Y., Lopez, V.~K., Niemi, J., George, G.~E., Cegan, J.~C.,
+  Dettwiller, I.~D., England, W.~P., Farthing, M.~W., Hunter, R.~H., Lafferty,
+  B., et~al. (2021b).
+\newblock Evaluation of individual and ensemble probabilistic forecasts of
+  covid-19 mortality in the us.
+\newblock {\em medRxiv}.
+
+\bibitem[\protect\astroncite{Dominicy and Veredas}{2013}]{dominicy2013method}
+Dominicy, Y. and Veredas, D. (2013).
+\newblock The method of simulated quantiles.
+\newblock {\em Journal of Econometrics}, 172(2):235--247.
+
+\bibitem[\protect\astroncite{Gneiting et~al.}{2007}]{gneiting2007probabilistic}
+Gneiting, T., Balabdaoui, F., and Raftery, A.~E. (2007).
+\newblock Probabilistic forecasts, calibration and sharpness.
+\newblock {\em Journal of the Royal Statistical Society: Series B (Statistical
+  Methodology)}, 69(2):243--268.
+
+\bibitem[\protect\astroncite{Gneiting and
+  Katzfuss}{2014}]{gneiting2014probabilistic}
+Gneiting, T. and Katzfuss, M. (2014).
+\newblock Probabilistic forecasting.
+\newblock {\em Annual Review of Statistics and Its Application}, 1:125--151.
+
+\bibitem[\protect\astroncite{Gneiting and Raftery}{2007}]{gneiting2007strictly}
+Gneiting, T. and Raftery, A.~E. (2007).
+\newblock Strictly proper scoring rules, prediction, and estimation.
+\newblock {\em Journal of the American statistical Association},
+  102(477):359--378.
+
+\bibitem[\protect\astroncite{Gneiting and Ranjan}{2013}]{gneiting2013combining}
+Gneiting, T. and Ranjan, R. (2013).
+\newblock Combining predictive distributions.
+\newblock {\em Electronic Journal of Statistics}, 7:1747--1782.
+
+\bibitem[\protect\astroncite{Groen et~al.}{2013}]{groen2013real}
+Groen, J.~J., Paap, R., and Ravazzolo, F. (2013).
+\newblock Real-time inflation forecasting in a changing world.
+\newblock {\em Journal of Business \& Economic Statistics}, 31(1):29--44.
+
+\bibitem[\protect\astroncite{Hersbach}{2000}]{hersbach2000decomposition}
+Hersbach, H. (2000).
+\newblock Decomposition of the continuous ranked probability score for ensemble
+  prediction systems.
+\newblock {\em Weather and Forecasting}, 15(5):559--570.
+
+\bibitem[\protect\astroncite{Kemp}{2004}]{kemp2004classes}
+Kemp, A.~W. (2004).
+\newblock Classes of discrete lifetime distributions.
+
+\bibitem[\protect\astroncite{Krueger et~al.}{2016}]{krueger2016probabilistic}
+Krueger, F., Lerch, S., Thorarinsdottir, T.~L., and Gneiting, T. (2016).
+\newblock Probabilistic forecasting and comparative model assessment based on
+  markov chain monte carlo output.
+\newblock {\em arXiv preprint arXiv:1608.06802}, 12.
+
+\bibitem[\protect\astroncite{Lichtendahl~Jr
+  et~al.}{2013}]{lichtendahl2013better}
+Lichtendahl~Jr, K.~C., Grushka-Cockayne, Y., and Winkler, R.~L. (2013).
+\newblock Is it better to average probabilities or quantiles?
+\newblock {\em Management Science}, 59(7):1594--1611.
+
+\bibitem[\protect\astroncite{McAndrew and Reich}{2019}]{mcandrew2019adaptively}
+McAndrew, T. and Reich, N.~G. (2019).
+\newblock Adaptively stacking ensembles for influenza forecasting with
+  incomplete data.
+\newblock {\em arXiv preprint arXiv:1908.01675}.
+
+\bibitem[\protect\astroncite{McGowan et~al.}{2019}]{mcgowan2019collaborative}
+McGowan, C.~J., Biggerstaff, M., Johansson, M., Apfeldorf, K.~M., Ben-Nun, M.,
+  Brooks, L., Convertino, M., Erraguntla, M., Farrow, D.~C., Freeze, J., et~al.
+  (2019).
+\newblock Collaborative efforts to forecast seasonal influenza in the united
+  states, 2015--2016.
+\newblock {\em Scientific reports}, 9(1):1--13.
+
+\bibitem[\protect\astroncite{Nguyen and
+  McLachlan}{2019}]{nguyen2019approximations}
+Nguyen, H.~D. and McLachlan, G. (2019).
+\newblock On approximations via convolution-defined mixture models.
+\newblock {\em Communications in Statistics-Theory and Methods},
+  48(16):3945--3955.
+
+\bibitem[\protect\astroncite{Nirwan and
+  Bertschinger}{2020}]{nirwan2020bayesian}
+Nirwan, R.-S. and Bertschinger, N. (2020).
+\newblock Bayesian quantile matching estimation.
+\newblock {\em arXiv preprint arXiv:2008.06423}.
+
+\bibitem[\protect\astroncite{Peel and MacLahlan}{2000}]{peel2000finite}
+Peel, D. and MacLahlan, G. (2000).
+\newblock Finite mixture models.
+\newblock {\em John \& Sons}.
+
+\bibitem[\protect\astroncite{Quinonero-Candela
+  et~al.}{2005}]{quinonero2005evaluating}
+Quinonero-Candela, J., Rasmussen, C.~E., Sinz, F., Bousquet, O., and
+  Sch{\"o}lkopf, B. (2005).
+\newblock Evaluating predictive uncertainty challenge.
+\newblock In {\em Machine Learning Challenges Workshop}, pages 1--27. Springer.
+
+\bibitem[\protect\astroncite{Raftery et~al.}{2005}]{raftery2005using}
+Raftery, A.~E., Gneiting, T., Balabdaoui, F., and Polakowski, M. (2005).
+\newblock Using bayesian model averaging to calibrate forecast ensembles.
+\newblock {\em Monthly weather review}, 133(5):1155--1174.
+
+\bibitem[\protect\astroncite{Ratcliff}{1979}]{ratcliff1979group}
+Ratcliff, R. (1979).
+\newblock Group reaction time distributions and an analysis of distribution
+  statistics.
+\newblock {\em Psychological bulletin}, 86(3):446.
+
+\bibitem[\protect\astroncite{Ray and Reich}{2018}]{ray2018prediction}
+Ray, E.~L. and Reich, N.~G. (2018).
+\newblock Prediction of infectious disease epidemics via weighted density
+  ensembles.
+\newblock {\em PLoS computational biology}, 14(2):e1005910.
+
+\bibitem[\protect\astroncite{Ray et~al.}{2020}]{ray2020ensemble}
+Ray, E.~L., Wattanachit, N., Niemi, J., Kanji, A.~H., House, K., Cramer, E.~Y.,
+  Bracher, J., Zheng, A., Yamana, T.~K., Xiong, X., et~al. (2020).
+\newblock Ensemble forecasts of coronavirus disease 2019 (covid-19) in the us.
+\newblock {\em MedRXiv}.
+
+\bibitem[\protect\astroncite{Reich et~al.}{2019a}]{reich2019collaborative}
+Reich, N.~G., Brooks, L.~C., Fox, S.~J., Kandula, S., McGowan, C.~J., Moore,
+  E., Osthus, D., Ray, E.~L., Tushar, A., Yamana, T.~K., et~al. (2019a).
+\newblock A collaborative multiyear, multimodel assessment of seasonal
+  influenza forecasting in the united states.
+\newblock {\em Proceedings of the National Academy of Sciences},
+  116(8):3146--3154.
+
+\bibitem[\protect\astroncite{Reich et~al.}{2019b}]{reich2019accuracy}
+Reich, N.~G., McGowan, C.~J., Yamana, T.~K., Tushar, A., Ray, E.~L., Osthus,
+  D., Kandula, S., Brooks, L.~C., Crawford-Crudell, W., Gibson, G.~C., et~al.
+  (2019b).
+\newblock Accuracy of real-time multi-model ensemble forecasts for seasonal
+  influenza in the us.
+\newblock {\em PLoS computational biology}, 15(11):e1007486.
+
+\bibitem[\protect\astroncite{Schepen and Wang}{2015}]{schepen2015model}
+Schepen, A. and Wang, Q. (2015).
+\newblock Model averaging methods to merge operational statistical and dynamic
+  seasonal streamflow forecasts in australia.
+\newblock {\em Water Resources Research}, 51(3):1797--1812.
+
+\bibitem[\protect\astroncite{Taylor}{2021}]{taylor2021evaluating}
+Taylor, J.~W. (2021).
+\newblock Evaluating quantile-bounded and expectile-bounded interval forecasts.
+\newblock {\em International Journal of Forecasting}, 37(2):800--811.
+
+\bibitem[\protect\astroncite{Vrugt et~al.}{2008}]{vrugt2008ensemble}
+Vrugt, J.~A., Diks, C.~G., and Clark, M.~P. (2008).
+\newblock Ensemble bayesian model averaging using markov chain monte carlo
+  sampling.
+\newblock {\em Environmental fluid mechanics}, 8(5):579--595.
+
+\bibitem[\protect\astroncite{Wolpert}{1992}]{wolpert1992stacked}
+Wolpert, D.~H. (1992).
+\newblock Stacked generalization.
+\newblock {\em Neural networks}, 5(2):241--259.
+
+\bibitem[\protect\astroncite{Yamana et~al.}{2016}]{yamana2016superensemble}
+Yamana, T.~K., Kandula, S., and Shaman, J. (2016).
+\newblock Superensemble forecasts of dengue outbreaks.
+\newblock {\em Journal of The Royal Society Interface}, 13(123):20160410.
+
+\end{thebibliography}

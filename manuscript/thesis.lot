@@ -1,0 +1,24 @@
+\gdef \the@ipfilectr {@-1}
+\noaddvspace 
+\gdef \the@ipfilectr {}
+\gdef \the@ipfilectr {@-2}
+\gdef \the@ipfilectr {}
+\nobreakspace {}\hfill \textbf {Page}\par 
+\gdef \the@ipfilectr {@-3}
+\gdef \the@ipfilectr {}
+\gdef \the@ipfilectr {@-4}
+\gdef \the@ipfilectr {}
+\gdef \the@ipfilectr {@-5}
+\gdef \the@ipfilectr {}
+\contentsline {table}{\numberline {1}{\ignorespaces Parametric distribution storage}}{9}{table.caption.29}%
+\contentsline {table}{\numberline {2}{\ignorespaces Discretized bin distribution storage}}{14}{table.caption.38}%
+\contentsline {table}{\numberline {3}{\ignorespaces Quantile/interval and values storage}}{17}{table.caption.46}%
+\contentsline {table}{\numberline {4}{\ignorespaces Forecast representation comparison}}{20}{table.caption.50}%
+\contentsline {table}{\numberline {5}{\ignorespaces Influenza competition submission example}}{21}{table.caption.53}%
+\contentsline {table}{\numberline {6}{\ignorespaces Mixture distribution forecast submission example}}{22}{table.caption.54}%
+\contentsline {table}{\numberline {7}{\ignorespaces Toy prediction 1}}{23}{table.caption.56}%
+\contentsline {table}{\numberline {8}{\ignorespaces Toy prediction 2}}{23}{table.caption.57}%
+\contentsline {table}{\numberline {9}{\ignorespaces Discretized bin distribution cutoff values}}{29}{table.caption.67}%
+\contentsline {table}{\numberline {10}{\ignorespaces CDC influenza retro analysis results}}{31}{table.caption.68}%
+\contentsline {table}{\numberline {11}{\ignorespaces Quantile cutoff values}}{32}{table.caption.71}%
+\contentsline {table}{\numberline {12}{\ignorespaces COVID-19 Forecast Hub results}}{33}{table.caption.72}%
