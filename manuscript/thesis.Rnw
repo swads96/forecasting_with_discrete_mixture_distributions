@@ -16,22 +16,25 @@
 \chaptertitle
 % Old-style, thesis numbering down to subsubsection
 \alternate
-\nochap
+% \nochap
 \usepackage{rotating}
 % Bibliography without numbers or labels
 \usepackage{natbib}
 % Use the following line if you want square brackets and numbering system
-%\usepackage[square, numbers]{natbib}
-\lstset{language=R,
-    basicstyle=\small\ttfamily,
-    stringstyle=\color{DarkGreen},
-    otherkeywords={0,1,2,3,4,5,6,7,8,9},
-    morekeywords={TRUE,FALSE},
-    deletekeywords={data,frame,length,as,character},
-    keywordstyle=\color{blue},
-    commentstyle=\color{DarkGreen},
-}
+% \usepackage[square, numbers]{natbib}
+% \lstset{language=R,
+%     basicstyle=\small\ttfamily,
+%     stringstyle=\color{DarkGreen},
+%     otherkeywords={0,1,2,3,4,5,6,7,8,9},
+%     morekeywords={TRUE,FALSE},
+%     deletekeywords={data,frame,length,as,character},
+%     keywordstyle=\color{blue},
+%     commentstyle=\color{DarkGreen},
+% }
 \makeatletter
+
+
+
 
 \renewcommand{\bibfont}{\setstretch{1}\selectfont}
 \setlength{\bibsep}{13.2pt}
@@ -40,7 +43,7 @@
 \usepackage{chapterbib}
 %\renewcommand\bibsection{\section*{\ref name}}
 %\renewcommand\bibsection{\section*}
-\renewcommand{\bibsection}{\section{References}}
+\renewcommand{\bibsection}{\section*{}}
 
 
 
@@ -124,7 +127,7 @@
 
 \usepackage{amssymb}
 \usepackage[intoc, english]{nomencl}
-
+\renewcommand{\chaptername}{}
 \begin{document}
 \SweaveOpts{concordance=TRUE}
 \DeclareGraphicsExtensions{.jpg,.pdf,.mps,.png}
@@ -189,7 +192,8 @@
 
 
 
-\section{Introduction}
+\chapter{Introduction}
+
 Predicting the outcomes of prospective events is the object of much scientific
 inquiry and the basis for many decisions both public and private. Because 
 predictions of the future can almost never be precise, it is usually desirable
@@ -198,7 +202,7 @@ has become increasingly desirable that forecasts be probabilistic in order to
 account for uncertainty in predicted quantities or events 
 \cite{gneiting2014probabilistic}. Specific problems for 
 which probabilistic forecasting is used include weather forecasting
-\cite{baran2018combining}, economics \cite{groen2013real} and disease outbreaks
+\cite{baran2018combining}, economics \cite{groen2013real}, and disease outbreaks
 \cite{yamana2016superensemble}.
 
 A probabilistic forecast is a forecast to which probabilities are assigned to 
@@ -207,123 +211,144 @@ uncertainty may be represented. A common representation is either a continuous
 or
 discrete parametric distribution, given as a probability density/mass function 
 (pdf/pmf). Much of the literature 
-on calibration, sharpness and scoring of a forecast pertains to parametric 
+on calibration, sharpness, and scoring of a forecast pertains to parametric 
 distribution forecasts
 \cite{gneiting2007probabilistic,gneiting2013combining,baran2018combining}.
 Other common representations include samples \cite{krueger2016probabilistic}, 
-discretized bins \cite{mcgowan2019collaborative}
-and quantile or interval type forecasts \cite{taylor2021evaluating} 
-\cite{bracher2021evaluating}. Each representation may be more or less 
+discretized bin distributions \cite{mcgowan2019collaborative},
+and quantile forecasts \cite{taylor2021evaluating, bracher2021evaluating}. 
+Each representation may be more or less 
 appropriate than the others for a given problem but knowing how to interpret, 
-score and contruct ensemble forecasts for a selected representation is essential
-when multiple teams collaborate in the same forecasting project.
+score, and contruct ensemble forecasts for a selected representation is 
+essential when multiple teams collaborate in the same forecasting project.
 
 
 Two collaborative projects on forecasting disease outbreaks for which many 
 separate forecasts 
-are used include the United States Centers for Disease Control (CDC) hosted
-annual competition for forecasting influenza \cite{cdcflusight}
+are used include the United States Centers for Disease Control (CDC)
+annual competition for forecasting the influenza outbreak \cite{cdcflusight}
 and the COVID-19 Forecast Hub which has 
 continuously operated since the start of the COVID-19 pandemic in the US in 
 early 2020 \cite{Cramer2021-hub-dataset}.
 
-\subsection{CDC Influenza Like Illness}
+\section{CDC flu competition}
 
 Since the 2013-14 flu season, the CDC has hosted an annual competition for 
-predicting the timing, peak and intensity of the year's flu season. Forecasts
-for the different targets also include predictions for one, two, three and 
+forecasting the timing, peak, and intensity of the year's flu 
+season. The specific events to be forecasted are known as \emph{targets}.
+Forecasts
+for these different targets also include forecasts for one, two, three, and 
 four weeks ahead of the prediction time. National flu data is provided weekly 
-to outside academic teams who use that data to construct forecasts using 
-whatever methods they choose. Historically, the forecast predictions must be 
+to academic teams not directly affiliated with the CDC who use that data to 
+construct forecasts using 
+whatever methods they choose. Historically, the forecasts must be 
 submitted 
-in a discretized bin
-format. During previous flu seasons the binning scheme was on a bounded numeric 
-scale and the 
+in a discretized bin distribution
+format. A \emph{bin distribution} is a probability distribution represented by
+breaking the numeric range of an event into intervals or \emph{bins} and
+directly assigning the probability that the event falls within each bin.
+During previous flu seasons the \emph{binning scheme} or the assignment of 
+bin values was on a numeric 
+scale with a bounded range and the 
 prediction of a specific target was a set of probabilities assigned to each bin
 \cite{mcgowan2019collaborative}.
-These forecasts are then evaluated against actual flu activity, and at 
-the end of the season a winning team is declared \cite{cdcflusight}.
+These forecasts were then evaluated against actual flu activity, and at 
+the end of the season a winning team was declared \cite{cdcflusight}.
 
-This competition has provided the CDC, competing teams and other interested
-parties a chance to collaborate and improve forecasting each season. One 
+This competition has provided the CDC, competing teams, and other interested
+parties a chance to collaborate and improve their forecasting from season to
+season. One 
 proposed way to enhance prediction has been to aggregate the various teams'
-forecasts into a multi-model ensemble forecast 
-\cite{mcgowan2019collaborative,mcandrew2019adaptively,reich2019accuracy}.
+forecasts into a \emph{multi-model ensemble forecast} 
+\cite{mcgowan2019collaborative,mcandrew2019adaptively,reich2019accuracy},
+refered to hereafter as an ensemble forecast.
 
-A multi-model ensemble forecast is a combination of several component forecast 
+An \emph{ensemble forecast} is a combination of several component forecast 
 models into one model which often yields better predicting power than the 
 individual models \cite{cramer2021evaluation}. Such an ensemble made from 
 multiple influenza competition forecasts did in fact outperform the individual 
 component models \cite{reich2019accuracy}.
-In the COVID-19 Forecast Hub, construction of ensemble forecasts is a main
-priority.
+In the COVID-19 Forecast Hub, construction of ensemble forecasts to improve
+predicting power has been a priority.
 
 
 
-\subsection{COVID-19 Forecast Hub}
+\section{COVID-19 Forecast Hub}
 In March 2020, at the onset of the COVID-19 pandemic, the COVID-19 Forecast Hub
-was founded. Borrowing on work and 
-ideas from the CDC influenza competition, the Forecast Hub is a central site in 
+was founded. Borrowing from the work done in the CDC flu competition, the 
+COVID-19 Forecast Hub is a central site in 
 which dozens of academic teams collaborate to forecast the ongoing COVID-19 
 pandemic.
 Every week relevant
-pandemic data is provided to these teams who build probabilistic models for 
-their use in
-forecasting cases, hospitalizations and deaths due to COVID-19. Forecasts are 
+pandemic data is provided to these teams who construct forecasts models to 
+predict the targets cases, hospitalizations, and deaths due to COVID-19. 
+Forecasts are 
 made on the US county,
-state and national level with predictions for days, weeks and months ahead.
-These forecasts are combined into a single ensemble forecast. The model data,
-forecasts and the ensemble are passed along to the CDC for its use in official
+state, and national levels and for days, weeks, and months ahead.
+These forecasts are aggregated into a single ensemble forecast. The model data,
+forecasts, and the ensemble forecast are passed along to the CDC for its use in 
+official
 communication \cite{Cramer2021-hub-dataset}. See Figure \ref{fig:cdcoff}.
 
-Though similar to the forecasting in the influenza competition, the format of 
+Though similar to the forecasting in the CDC flu competition, the format of 
 the COVID-19 Forecast Hub has some key distinctions. For one this project has
 been operating continuously since it first began, so forecasts have been made
 for over 100 straight weeks. 
 As well due to the initial lack of understanding of the COVID-19 virus and the 
 time 
 pressure of
-creating forecasts, rather than requesting forecasts as binned probabilities
+creating forecasts, rather than requesting forecasts as bin distributions
 the forecasts are requested as the predictive median and 
 predictive intervals for various nominal levels depending on the target to be
-predicted \cite{bracher2021evaluating}. Collecting forecasts in this quantile
-or interval type format brings with it differences in how to score, construct 
-ensemble
-models and store the forecasts among other differences.
+predicted \cite{bracher2021evaluating}. Each value in a predictive interval
+is a value for a quantile at a specified nominal level. This makes a set of 
+predicitve intervals a \emph{quantile forecast} or a forecast made up of a set
+of quantiles and corresponding values.
+Collecting forecasts as quantile forecasts instead of bin forecasts brings with 
+it differences in how to score, construct an 
+ensemble forecast, and store the forecasts among other differences.
 
 \begin{figure}[htbp]
+\begin{center}
+\begin{minipage}{10cm}
+\captionsetup{font=scriptsize}
 \centerline{\includegraphics[scale=.12]{Images/8_30_21_cvd_deaths.jpeg}}
 \caption[Official CDC COVID-19 deaths report August 2021]{This image, 
-published on cdc.gov as official public communication 
+published on www.cdc.gov in August 2021 as official public communication 
 by the CDC, shows forecast models for national new weekly deaths due to COVID-19 
 in the top row and cumulative deaths on the bottom row. The plots in the left 
 column show prediction intervals from multiple teams whereas the plots on the 
 right show the intervals for an ensemble forecast model.}
 \label{fig:cdcoff}
+\end{minipage}
+\end{center}
 \end{figure}
 
-\subsection{}
+\section{Outline}
 In the context of collaborative forecasting like that of the CDC flu competition
-or the COVID-19 Forecast Hub, discretized bins and quantile forecasts have 
-proven useful and effective. Yet both types come with their drawbacks. Data 
+or the COVID-19 Forecast Hub, bin forecasts and quantile forecasts have become
+important representations to those involved in the projects. Yet both 
+representation types come 
+with their drawbacks. Data 
 storage for instance might be a concern if many bins are used for forecasting. 
-And scoring methods are limited if forecasts are made of prediction intervals.
+And scoring methods are limited if forecasts are quantile forecasts.
 
 In this paper, we propose the use of discrete mixture distributions as a means 
-of forecasting for projects similar to the CDC flu competition or the COVID-19
-Forecast Hub. In section \ref{section:representations}, 
+of forecasting for collaborative projects similar to the CDC flu competition or 
+the COVID-19
+Forecast Hub. In Section \ref{section:representations}, 
 popular probabilistic forecast representation 
-types are defined and reviewed. Methods of scoring, storing, building 
-ensembles and other aspects will be reviewed and compared for each 
+types are defined and reviewed. Methods of scoring, storing, constructing 
+ensembles, and other aspects will be reviewed and compared for each 
 representation type.
-In section \ref{section:conmixforc}, details for using discrete mixture 
+In Section \ref{section:conmixforc}, details for using discrete mixture 
 distributions in a collaborative forecast project are presented as well as tools
-which may be used for scoring and ensemble building.
+which may be used for scoring and constructing an ensemble.
 Section \ref{section:retrostud} is a retrospective study of the CDC flu 
-competition and COVID-19 
-forecast predictions and an attempt to assess whether any predictions 
-approximately come from well known continuous distributions. This paper is 
-concluded with a discussion.
+competition and COVID-19 Forecast Hub
+forecast and an attempt to assess whether any forecast models
+may be approximated by known continuous distributions. We conclude this 
+paper with a discussion.
 
 
 
@@ -346,19 +371,18 @@ concluded with a discussion.
 
 
 
-\section{Probabilistic Forecast Representations}
+\chapter{Probabilistic forecast representations}
 \label{section:representations}
 
-Before introducing discrete mixture distributions as a representation type for a
-probabilistic forecast, we review representations already commonplace in 
+In this section we review four forecast representations already commonplace in 
 forecasting. In a collaborative setting, certain aspects of each representation
-should be considered. With each representation presented, 
-commmon applications of 
-scoring, data storage and ensemble construction will be considered for
-as well as other notable properties.
+should be considered including scoring, computer storage, and how to construct
+an ensemble forecast. For each representation presented, applications of each of 
+those aspects are also presented.
 
-\subsection{Representation properties to consider in collaborative projects}
-\subsubsection{Scoring}
+
+\section{Representation aspects to consider in collaborative projects}
+\subsection{Scoring}
 Scoring rules are used to numerically evaluate or score a probability forecast. 
 The
 score is a measure of the accuracy of the forecast and where multiple forecasts
@@ -371,7 +395,7 @@ submission \cite{gneiting2007strictly}. This makes proper scoring rules ideal
 for evaluating forecasts. We will limit our review of scoring methods to rules
 which are proper.
 
-\subsubsection{Storage}
+\subsection{Storage}
 For a collaborative forecast project where many researchers are involved and 
 many predictions are collected, computer storage may need to be addressed. 
 As an example of required computer storage, the 
@@ -382,7 +406,7 @@ February 5, 2022 which required more than 11.6 gigabytes of storage!
 When determining the goals of a forecast project, there should be consideration 
 of the storage required for different forecast representation types.
 
-\subsubsection{Ensemble Modeling}
+\subsection{Ensemble Modeling}
 A multi-model ensemble is a statistical model made by combining information from
 two or more individual statistical models. Private and public decisions are 
 regularly made after combining information from multiple sources. For any given
@@ -412,8 +436,8 @@ distributions using weighted averages. This has been called stacking
 \cite{wolpert1992stacked} or weighted density ensembles 
 \cite{ray2018prediction}. 
 
-\subsection{Probabilistic Forecast Representation Types}
-\subsubsection{Parametric distributions}
+\section{Probabilistic Forecast Representation Types}
+\subsection{Parametric distributions}
 \label{section:pardist}
 A parametric distribution is a discrete or continuous probability distribution 
 described by a known function $p(x) := p(x|\theta)$ -pmf in the discrete case or 
@@ -568,7 +592,7 @@ which might be used to create a forecast model including some Bayesian methods
 where a posterior distribution cannot be computed in closed form.
 
 
-\subsubsection{Sample Distributions}
+\subsection{Sample Distributions}
 Some forecast model builders may want more flexibility in modeling than a 
 parametric 
 distribution can provide. Methods that require sampling from a posterior 
@@ -661,7 +685,7 @@ forecast prediction. For any project the size of the CDC flu competition or the
 COVID-19 Forecast Hub, the storage required would be large and potentially 
 expensive.
 
-\subsubsection{Discretized bin distributions}
+\subsection{Discretized bin distributions}
 An alternative to parametric distributions and sample distributions which allows
 for higher flexibility in distribution shape than a parametric distribution and 
 will usually require less storage space than samples is a discretized bin 
@@ -790,7 +814,7 @@ hard to produce.
 
 
 
-\subsubsection{Quantile representation}
+\subsection{Quantile representation}
 When deciding how forecasts should be represented in the COVID-19 Forecast Hub,
 the time pressure of generating forecasts and the consideration of the large
 range for possible outcomes both contributed to the COVID-19 Forecast Hub 
@@ -975,7 +999,7 @@ function. Green shows quantiles/intervals with corresponding values.}
 
 
 
-\subsection{Discrete mixture of parametric distributions}
+\section{Discrete mixture of parametric distributions}
 A discrete mixture of parametric distributions forecast representation may be an
 attractive alternative to the four types already discussed. A discrete mixture 
 would allow for many distribution shapes, a high resolution, storage comparable
@@ -1122,60 +1146,111 @@ storage requirement.
 
 
 
-\section{Mixture distributions in a collaborative forecast project}
+\chapter{Mixture distributions in a collaborative forecast project}
 \label{section:conmixforc}
 
 
 The CDC and the COVID-19 Forecast Hub as well as other collaborative projects
 have their own established systems for receiving, 
-evaluating and constructing ensemble forecasts. A transition from using binned 
-distributions or quantile forecasts to using discrete mixture distributions 
-nwould require
+scoring, and constructing ensemble forecasts. A transition from using bin or 
+quantile forecasts to using mixture distribution forecasts
+would require
 a few adjustments to those systems. In this section we outline how some of these
 adjustments may be implemented as well as present some tools which may be used
-to evaluate forecasts and construct ensemble forecasts from multiple models.
+to score forecasts and construct ensembles from multiple models.
 
-\subsection{Submission format}
+\section{Submission format}
 For a collaborative forecast project to run smoothly, model submissions from all 
-modelers should all follow the same format. For both the CDC flu forecasting and
-the COVID-19 Forecast Hub, teams are provided a .csv spreadsheet with columns 
+modelers should follow the same format. For both the CDC flu competition and
+the COVID-19 Forecast Hub, teams provide a \texttt{.csv} spreadsheet with 
+columns 
 similar to those in tables \ref{table:dbins} and \ref{table:qstor}. Additionally
-columns for Location, Target, Type and Unit are included which serve as
-indicators of the specific prediction. The values for all variables except 
-Value come from a specified list from the forecast center. Value is the 
-probability assigned to a bin when the Type is Bin.
+columns for \texttt{location}, \texttt{target}, \texttt{type}, and \texttt{unit} 
+are included.
+Here \texttt{location} defines the specific county, state, or country of the 
+forecast. The \texttt{target} variable defines what is forecasted for example
+season onset, deaths, hospitalizations, etc. The \texttt{type} variable defines
+the type for the \texttt{value} variable, \texttt{bin} or \texttt{quantile}.
+The \texttt{unit} variable defines the time frame of the forecast: week,
+two weeks, four weeks, etc. And the \texttt{value} variable is a number that 
+either gives probability for a bin or the value for a quantile. Table
+\ref{table:dstan} show what a few rows of a forecast 
+submission file for the CDC flu competition look like.
+For the quantile forecasts of the Forecast Hub, the main changes to Table
+\ref{table:dstan} are that the possible values for \texttt{type} 
+quantile, and rather than using a \texttt{bin} variable \texttt{quantile} is 
+used
+with values specified by the Hub. This is seen in Table \ref{table:qstan}
+
+A single submission may include many forecasts each aimed at predicting a 
+different combination of \texttt{location}, \texttt{target}, and \texttt{unit}. 
+A set of rows which share
+the same specific combination of \texttt{location}, \texttt{target}, and 
+\texttt{unit} constitute a single forecast. One forecast for the CDC flu
+competition may require up to 131 rows whereas in the COVID-19 Forecast Hub one 
+forecast may require up to 23 rows.
+
 
 \begin{table}[h!]
-\label{tab:dstan}
+\begin{center}
+\begin{minipage}{10cm}
+\captionsetup{font=scriptsize}
 \centering
  \begin{tabular}{|c|c|c|c|c|c|}
  \hline
-    Location & Target & Type & Unit & Bin & Value  \\ \hline
-    US National & Season Onset & Point & week & NA & . \\
-    US National & Season Onset & Bin & week & 0.0 & . \\
-    US National & Season Onset & Bin & week & 0.1 & . \\
+    location & target & type & unit & bin & value  \\ \hline
+    % US National & Season Onset & Point & week & NA & . \\
+    us national & season onset & bin & week & 0.0 & . \\
+    us national & season onset & bin & week & 0.1 & . \\
     ... & ... & ... & ... & ... & ... \\
  \hline
  \end{tabular}
- \caption[Influenza competition submission example]{Example of a submission file
- for an discretized forecast like those in the CDC influenza forecast 
- competition. To match a quantile submission format as used by
- the COVID-19 Forecast Hub, possible values for the variable Type are Point and
- Quantile, the Bin column is replaced with a Quantile column and Value is 
- the value of the specified quantile in the forecast.}
+ \caption[Influenza competition submission example]{This shows a few rows of a 
+ submission file
+ for a discretized forecast like those in the CDC influenza forecast 
+ competition. A set of rows which share the same combination of 
+ \texttt{location}, \texttt{target}, and \texttt{unit} make up a
+ single forecast. One submission may include many forecasts specified by 
+ differing combinations of those three columns.}
  \label{table:dstan}
+ \end{minipage}
+ \end{center}
 \end{table}
 
-For the quantile forecasts of the Forecast Hub, the main changes to table
-\ref{tab:dstan} are that the possible values for Type 
-are Point and Quantile, and rather than using a Bin variable Quantile is used
-with values specified by the Hub. Then Value rather than a probability is the
-forecasted value for the specified quantile. Per prediction there may be a 
-couple dozen rows, up to 24 in the Forecast Hub, or over 100 rows as in some
-flu forecasts. 
 
-In the discrete mixture format, an adjustment may be made to the format of table 
-\ref{table:dstan} where each 
+
+\begin{table}[h!]
+\begin{center}
+\begin{minipage}{11cm}
+\captionsetup{font=scriptsize}
+\centering
+ \begin{tabular}{|c|c|c|c|c|c|}
+ \hline
+    location & target & type & unit & quantile & value  \\ \hline
+    % US National & Season Onset & Point & week & NA & . \\
+    us national & season onset & quantile & week & 0.01 & . \\
+    us national & season onset & quantile & week & 0.025 & . \\
+    ... & ... & ... & ... & ... & ... \\
+ \hline
+ \end{tabular}
+ \caption[COVID-19 Forecast Hub competition submission example]{This shows
+ a few rows of a 
+ submission file
+ for a quantile forecast like those in the COVID-19 Forecast Hub. 
+ A set of rows which share the same combination of 
+ \texttt{location}, \texttt{target}, and \texttt{unit} make up a
+ single forecast. One submission may include many forecasts specified by 
+ differing combinations of those three columns.}
+ \label{table:qstan}
+ \end{minipage}
+ \end{center}
+\end{table}
+
+
+
+In the mixture distribution format, an adjustment may be made to the format of 
+Tables
+\ref{table:dstan} and \ref{table:qstan} where each 
 row
 represents a component in a mixture distribution.
 The variables Bin/Quantile and Value are removed and replaced with Family,
@@ -1187,7 +1262,7 @@ weight $w_i$ for that component.
 \centering
  \begin{tabular}{|c|c|c|c|c|c|c|c|c|}
  \hline
-    Location & Target & Type & Unit & Family & Param1 & Param2 & Weight
+    location & target & type & unit & family & param1 & param2 & weight
     \\ \hline
     US National & Season Onset & Dist & week & norm & $\mu_n$ & $\sigma_n$ & .\\
     US National & Season Onset & Dist & week & lnorm & $\mu_l$ & $\sigma_l$ &.\\
@@ -1197,7 +1272,7 @@ weight $w_i$ for that component.
  \caption[Mixture distribution forecast submission example]{Example of a 
  submission file
  for a disease outbreak forecast using mixture distribution representation}
- \label{table:dstan}
+ \label{table:mstan}
 \end{table}
 
 A forecast center may want to limit the number of components allowed per 
@@ -1213,7 +1288,7 @@ mixture distributions along with \texttt{R} code which will be given to
 demonstrate constructing a mixture distribution from a forecast submission, 
 scoring the forecast and building an ensemble forecast.
 
-\subsection{Mixture construction and scoring tools}
+\section{Mixture construction and scoring tools}
 \label{section:tools}
 
 From a submitted forecast, a prediction may be found by Location, Target and 
@@ -1338,7 +1413,7 @@ CRPS(pmdist1,y=ob) # => 0.6348212
 CRPS(pmdist2,y=ob) # => 0.5306083
 @
 
-\subsection{Ensemble construction}
+\section{Ensemble construction}
 
 
 To construct an ensemble distribution from multiple mixture distributions, the 
@@ -1436,7 +1511,7 @@ distributions shown}
 
 
 
-\section{Retrospective Analysis}
+\chapter{Retrospective Analysis}
 \label{section:retrostud}
 
 For large collaborative forecast projects having already established the 
@@ -1455,7 +1530,7 @@ and assessing fit do not exist. Thus any results stated here may not be stated
 in terms of statistical certainty.
 
 
-\subsection{CDC Influenza like Illness}
+\section{CDC Influenza like Illness}
 The CDC Retrospective Forecasts project at zoltrdata.com (cite??) contains over
 850,000 probabilistic influenza-like illness predictions for all combinations
 of eleven regions 
@@ -1596,7 +1671,7 @@ discretized froma truncated normal.}
 
 
 
-\subsection{COVID-19 Forecast Hub}
+\section{COVID-19 Forecast Hub}
 
 As of January 24, 2022 there were nearly 85,000,000 prediction distributions 
 from 114 different models submitted to the COVID-19 Forecast Hub (cite??). These 
@@ -1743,10 +1818,10 @@ straightforward.
 
 
 
-\newpage
 
 
-\section{Discussion}
+
+\chapter{Discussion}
 
 In this paper we have reviewed four representation types commonly used in
 probabilistic 
@@ -1809,12 +1884,45 @@ format in collaboration.
 % \include{Body/ch5/ch5_main}
 %\include{Body/ch6/ch6_future_and_conclusions}
 
+
 %\bibliographystyle{acm} % use for numbered citations along with options given in preamble. Look at the main thesis.tex file
+
+
+% \bibliographystyle{apa}
+% \bibliography{master_bib}
+
+% \section{Bibliography}
+% \bibliographystyle{apa}
+% % \vspace{-20pt}
+% \begingroup
+%     \setlength{\bibsep}{13.2pt}
+%     \linespread{1}\selectfont
+%     \bibliography{master_bib}
+% \endgroup
+% \clearpage
+% \pagebreak
+
+%%%%%% bibliographies
+
+\clearpage
+\nocite{*}
+\unappendixtitle
+\newpage
+\phantomsection
+\addcontentsline{toc}{chapter}{BIBLIOGRAPHY}
+\section*{BIBLIOGRAPHY}
 \bibliographystyle{apa}
+\vspace{-20pt}
+\begingroup
+   \setlength{\bibsep}{14.5pt}
+   \linespread{1}\selectfont
 \bibliography{master_bib}
+\endgroup
 
+\appendix
 
-\section{Appendix}
+\specialchapt{APPENDIX}
+
 
 The following is the code to make the \texttt{MakeDist()} function introduced 
 in \ref{section:tools}.
@@ -1868,33 +1976,9 @@ CRPS <- function(y,dist) {
 }
 @
 
-% \section{Bibliography}
-% \bibliographystyle{apa}
-% % \vspace{-20pt}
-% \begingroup
-%     \setlength{\bibsep}{13.2pt}
-%     \linespread{1}\selectfont
-%     \bibliography{master_bib}
-% \endgroup
-% \clearpage
-% \pagebreak
 
-%%%%%% bibliographies
 
-%\clearpage
-%% \nocite{*}
-%\unappendixtitle
-%\newpage
-%% % \phantomsection
-%\addcontentsline{toc}{chapter}{BIBLIOGRAPHY}
-%\section*{BIBLIOGRAPHY}
-%\bibliographystyle{apa}
-%\vspace{-20pt}
-%\begingroup
-%    \setlength{\bibsep}{14.5pt}
-%    \linespread{1}\selectfont
-    % \bibliography{master_bib}
-%\endgroup
+
 
 % Renders the citations but does not show the bibliography at the end of the thesis
 %\newsavebox\mytempbib
