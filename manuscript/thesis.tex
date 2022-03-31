@@ -16,22 +16,25 @@
 \chaptertitle
 % Old-style, thesis numbering down to subsubsection
 \alternate
-\nochap
+% \nochap
 \usepackage{rotating}
 % Bibliography without numbers or labels
 \usepackage{natbib}
 % Use the following line if you want square brackets and numbering system
-%\usepackage[square, numbers]{natbib}
-\lstset{language=R,
-    basicstyle=\small\ttfamily,
-    stringstyle=\color{DarkGreen},
-    otherkeywords={0,1,2,3,4,5,6,7,8,9},
-    morekeywords={TRUE,FALSE},
-    deletekeywords={data,frame,length,as,character},
-    keywordstyle=\color{blue},
-    commentstyle=\color{DarkGreen},
-}
+% \usepackage[square, numbers]{natbib}
+% \lstset{language=R,
+%     basicstyle=\small\ttfamily,
+%     stringstyle=\color{DarkGreen},
+%     otherkeywords={0,1,2,3,4,5,6,7,8,9},
+%     morekeywords={TRUE,FALSE},
+%     deletekeywords={data,frame,length,as,character},
+%     keywordstyle=\color{blue},
+%     commentstyle=\color{DarkGreen},
+% }
 \makeatletter
+
+
+
 
 \renewcommand{\bibfont}{\setstretch{1}\selectfont}
 \setlength{\bibsep}{13.2pt}
@@ -40,7 +43,7 @@
 \usepackage{chapterbib}
 %\renewcommand\bibsection{\section*{\ref name}}
 %\renewcommand\bibsection{\section*}
-\renewcommand{\bibsection}{\section{References}}
+\renewcommand{\bibsection}{\section*{}}
 
 
 
@@ -122,9 +125,10 @@
 \geometry{letterpaper, left=1in, top=1in, right=1in, bottom=1in, includehead=true} 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage[intoc, english]{nomencl}
-
+\renewcommand{\chaptername}{}
 \usepackage{Sweave}
 \begin{document}
 \input{thesis-concordance}
@@ -190,7 +194,8 @@
 
 
 
-\section{Introduction}
+\chapter{Introduction}
+
 Predicting the outcomes of prospective events is the object of much scientific
 inquiry and the basis for many decisions both public and private. Because 
 predictions of the future can almost never be precise, it is usually desirable
@@ -199,7 +204,7 @@ has become increasingly desirable that forecasts be probabilistic in order to
 account for uncertainty in predicted quantities or events 
 \cite{gneiting2014probabilistic}. Specific problems for 
 which probabilistic forecasting is used include weather forecasting
-\cite{baran2018combining}, economics \cite{groen2013real} and disease outbreaks
+\cite{baran2018combining}, economics \cite{groen2013real}, and disease outbreaks
 \cite{yamana2016superensemble}.
 
 A probabilistic forecast is a forecast to which probabilities are assigned to 
@@ -208,123 +213,144 @@ uncertainty may be represented. A common representation is either a continuous
 or
 discrete parametric distribution, given as a probability density/mass function 
 (pdf/pmf). Much of the literature 
-on calibration, sharpness and scoring of a forecast pertains to parametric 
+on calibration, sharpness, and scoring of a forecast pertains to parametric 
 distribution forecasts
 \cite{gneiting2007probabilistic,gneiting2013combining,baran2018combining}.
 Other common representations include samples \cite{krueger2016probabilistic}, 
-discretized bins \cite{mcgowan2019collaborative}
-and quantile or interval type forecasts \cite{taylor2021evaluating} 
-\cite{bracher2021evaluating}. Each representation may be more or less 
+discretized bin distributions \cite{mcgowan2019collaborative},
+and quantile forecasts \cite{taylor2021evaluating, bracher2021evaluating}. 
+Each representation may be more or less 
 appropriate than the others for a given problem but knowing how to interpret, 
-score and contruct ensemble forecasts for a selected representation is essential
-when multiple teams collaborate in the same forecasting project.
+score, and contruct ensemble forecasts for a selected representation is 
+essential when multiple teams collaborate in the same forecasting project.
 
 
 Two collaborative projects on forecasting disease outbreaks for which many 
 separate forecasts 
-are used include the United States Centers for Disease Control (CDC) hosted
-annual competition for forecasting influenza \cite{cdcflusight}
+are used include the United States Centers for Disease Control (CDC)
+annual competition for forecasting the influenza outbreak \cite{cdcflusight}
 and the COVID-19 Forecast Hub which has 
 continuously operated since the start of the COVID-19 pandemic in the US in 
 early 2020 \cite{Cramer2021-hub-dataset}.
 
-\subsection{CDC Influenza Like Illness}
+\section{CDC flu competition}
 
 Since the 2013-14 flu season, the CDC has hosted an annual competition for 
-predicting the timing, peak and intensity of the year's flu season. Forecasts
-for the different targets also include predictions for one, two, three and 
+forecasting the timing, peak, and intensity of the year's flu 
+season. The specific events to be forecasted are known as \emph{targets}.
+Forecasts
+for these different targets also include forecasts for one, two, three, and 
 four weeks ahead of the prediction time. National flu data is provided weekly 
-to outside academic teams who use that data to construct forecasts using 
-whatever methods they choose. Historically, the forecast predictions must be 
+to academic teams not directly affiliated with the CDC who use that data to 
+construct forecasts using 
+whatever methods they choose. Historically, the forecasts must be 
 submitted 
-in a discretized bin
-format. During previous flu seasons the binning scheme was on a bounded numeric 
-scale and the 
+in a discretized bin distribution
+format. A \emph{bin distribution} is a probability distribution represented by
+breaking the numeric range of an event into intervals or \emph{bins} and
+directly assigning the probability that the event falls within each bin.
+During previous flu seasons the \emph{binning scheme} or the assignment of 
+bin values was on a numeric 
+scale with a bounded range and the 
 prediction of a specific target was a set of probabilities assigned to each bin
 \cite{mcgowan2019collaborative}.
-These forecasts are then evaluated against actual flu activity, and at 
-the end of the season a winning team is declared \cite{cdcflusight}.
+These forecasts were then evaluated against actual flu activity, and at 
+the end of the season a winning team was declared \cite{cdcflusight}.
 
-This competition has provided the CDC, competing teams and other interested
-parties a chance to collaborate and improve forecasting each season. One 
+This competition has provided the CDC, competing teams, and other interested
+parties a chance to collaborate and improve their forecasting from season to
+season. One 
 proposed way to enhance prediction has been to aggregate the various teams'
-forecasts into a multi-model ensemble forecast 
-\cite{mcgowan2019collaborative,mcandrew2019adaptively,reich2019accuracy}.
+forecasts into a \emph{multi-model ensemble forecast} 
+\cite{mcgowan2019collaborative,mcandrew2019adaptively,reich2019accuracy},
+refered to hereafter as an ensemble forecast.
 
-A multi-model ensemble forecast is a combination of several component forecast 
+An \emph{ensemble forecast} is a combination of several component forecast 
 models into one model which often yields better predicting power than the 
 individual models \cite{cramer2021evaluation}. Such an ensemble made from 
 multiple influenza competition forecasts did in fact outperform the individual 
 component models \cite{reich2019accuracy}.
-In the COVID-19 Forecast Hub, construction of ensemble forecasts is a main
-priority.
+In the COVID-19 Forecast Hub, construction of ensemble forecasts to improve
+predicting power has been a priority.
 
 
 
-\subsection{COVID-19 Forecast Hub}
+\section{COVID-19 Forecast Hub}
 In March 2020, at the onset of the COVID-19 pandemic, the COVID-19 Forecast Hub
-was founded. Borrowing on work and 
-ideas from the CDC influenza competition, the Forecast Hub is a central site in 
+was founded. Borrowing from the work done in the CDC flu competition, the 
+COVID-19 Forecast Hub is a central site in 
 which dozens of academic teams collaborate to forecast the ongoing COVID-19 
 pandemic.
 Every week relevant
-pandemic data is provided to these teams who build probabilistic models for 
-their use in
-forecasting cases, hospitalizations and deaths due to COVID-19. Forecasts are 
+pandemic data is provided to these teams who construct forecasts models to 
+predict the targets cases, hospitalizations, and deaths due to COVID-19. 
+Forecasts are 
 made on the US county,
-state and national level with predictions for days, weeks and months ahead.
-These forecasts are combined into a single ensemble forecast. The model data,
-forecasts and the ensemble are passed along to the CDC for its use in official
+state, and national levels and for days, weeks, and months ahead.
+These forecasts are aggregated into a single ensemble forecast. The model data,
+forecasts, and the ensemble forecast are passed along to the CDC for its use in 
+official
 communication \cite{Cramer2021-hub-dataset}. See Figure \ref{fig:cdcoff}.
 
-Though similar to the forecasting in the influenza competition, the format of 
+Though similar to the forecasting in the CDC flu competition, the format of 
 the COVID-19 Forecast Hub has some key distinctions. For one this project has
 been operating continuously since it first began, so forecasts have been made
 for over 100 straight weeks. 
 As well due to the initial lack of understanding of the COVID-19 virus and the 
 time 
 pressure of
-creating forecasts, rather than requesting forecasts as binned probabilities
+creating forecasts, rather than requesting forecasts as bin distributions
 the forecasts are requested as the predictive median and 
 predictive intervals for various nominal levels depending on the target to be
-predicted \cite{bracher2021evaluating}. Collecting forecasts in this quantile
-or interval type format brings with it differences in how to score, construct 
-ensemble
-models and store the forecasts among other differences.
+predicted \cite{bracher2021evaluating}. Each value in a predictive interval
+is a value for a quantile at a specified nominal level. This makes a set of 
+predicitve intervals a \emph{quantile forecast} or a forecast made up of a set
+of quantiles and corresponding values.
+Collecting forecasts as quantile forecasts instead of bin forecasts brings with 
+it differences in how to score, construct an 
+ensemble forecast, and store the forecasts among other differences.
 
 \begin{figure}[htbp]
+\begin{center}
+\begin{minipage}{10cm}
+\captionsetup{font=scriptsize}
 \centerline{\includegraphics[scale=.12]{Images/8_30_21_cvd_deaths.jpeg}}
 \caption[Official CDC COVID-19 deaths report August 2021]{This image, 
-published on cdc.gov as official public communication 
+published on www.cdc.gov in August 2021 as official public communication 
 by the CDC, shows forecast models for national new weekly deaths due to COVID-19 
 in the top row and cumulative deaths on the bottom row. The plots in the left 
 column show prediction intervals from multiple teams whereas the plots on the 
 right show the intervals for an ensemble forecast model.}
 \label{fig:cdcoff}
+\end{minipage}
+\end{center}
 \end{figure}
 
-\subsection{}
+\section{Outline}
 In the context of collaborative forecasting like that of the CDC flu competition
-or the COVID-19 Forecast Hub, discretized bins and quantile forecasts have 
-proven useful and effective. Yet both types come with their drawbacks. Data 
+or the COVID-19 Forecast Hub, bin forecasts and quantile forecasts have become
+important representations to those involved in the projects. Yet both 
+representation types come 
+with their drawbacks. Data 
 storage for instance might be a concern if many bins are used for forecasting. 
-And scoring methods are limited if forecasts are made of prediction intervals.
+And scoring methods are limited if forecasts are quantile forecasts.
 
 In this paper, we propose the use of discrete mixture distributions as a means 
-of forecasting for projects similar to the CDC flu competition or the COVID-19
-Forecast Hub. In section \ref{section:representations}, 
+of forecasting for collaborative projects similar to the CDC flu competition or 
+the COVID-19
+Forecast Hub. In Section \ref{section:representations}, 
 popular probabilistic forecast representation 
-types are defined and reviewed. Methods of scoring, storing, building 
-ensembles and other aspects will be reviewed and compared for each 
+types are defined and reviewed. Methods of scoring, storing, constructing 
+ensembles, and other aspects will be reviewed and compared for each 
 representation type.
-In section \ref{section:conmixforc}, details for using discrete mixture 
+In Section \ref{section:conmixforc}, details for using discrete mixture 
 distributions in a collaborative forecast project are presented as well as tools
-which may be used for scoring and ensemble building.
+which may be used for scoring and constructing an ensemble.
 Section \ref{section:retrostud} is a retrospective study of the CDC flu 
-competition and COVID-19 
-forecast predictions and an attempt to assess whether any predictions 
-approximately come from well known continuous distributions. This paper is 
-concluded with a discussion.
+competition and COVID-19 Forecast Hub
+forecast and an attempt to assess whether any forecast models
+may be approximated by known continuous distributions. We conclude this 
+paper with a discussion.
 
 
 
@@ -347,19 +373,18 @@ concluded with a discussion.
 
 
 
-\section{Probabilistic Forecast Representations}
+\chapter{Probabilistic forecast representations}
 \label{section:representations}
 
-Before introducing discrete mixture distributions as a representation type for a
-probabilistic forecast, we review representations already commonplace in 
+In this section we review four forecast representations already commonplace in 
 forecasting. In a collaborative setting, certain aspects of each representation
-should be considered. With each representation presented, 
-commmon applications of 
-scoring, data storage and ensemble construction will be considered for
-as well as other notable properties.
+should be considered including scoring, computer storage, and how to construct
+an ensemble forecast. For each representation presented, applications of each of 
+those aspects are also presented.
 
-\subsection{Representation properties to consider in collaborative projects}
-\subsubsection{Scoring}
+
+\section{Representation aspects to consider in collaborative projects}
+\subsection{Scoring}
 Scoring rules are used to numerically evaluate or score a probability forecast. 
 The
 score is a measure of the accuracy of the forecast and where multiple forecasts
@@ -372,173 +397,188 @@ submission \cite{gneiting2007strictly}. This makes proper scoring rules ideal
 for evaluating forecasts. We will limit our review of scoring methods to rules
 which are proper.
 
-\subsubsection{Storage}
+\subsection{Storage}
 For a collaborative forecast project where many researchers are involved and 
 many predictions are collected, computer storage may need to be addressed. 
 As an example of required computer storage, the 
 repository for the
-COVID-19 Forecast Hub predictions contained 85 million predictions as of 
+COVID-19 Forecast Hub contained 85 million forecasts as of 
 February 5, 2022 which required more than 11.6 gigabytes of storage!
 (cite zoltar??)
 When determining the goals of a forecast project, there should be consideration 
 of the storage required for different forecast representation types.
 
-\subsubsection{Ensemble Modeling}
+\subsection{Ensemble construction}
 A multi-model ensemble is a statistical model made by combining information from
 two or more individual statistical models. Private and public decisions are 
 regularly made after combining information from multiple sources. For any given
 situation, information from one source may provide insight on a subject which 
 other
 sources fail to capture. Likewise one statistical model may provide insight
-that another model does not, so that when they are combined in an ensemble the 
-ensemble model outperforms the individual component models.
+that another model does not so that when they are combined into an ensemble the 
+ensemble outperforms the individual component models.
 
 As probabilistic forecasting becomes more commonplace, so too does ensemble 
-modeling. Multi-model ensembles have been used extensively in weather and
-climate modeling \cite[for example]{baran2018combining}, 
+modeling. Ensembles have been used extensively in weather and
+climate modeling \cite{baran2018combining}, 
 and they have been used increasingly in modeling infectious disease outbreaks
-see \cite[for example]{yamana2016superensemble}. 
-Multi-model ensembles allow for an incorporation of multiple signals -
+\cite{yamana2016superensemble}. 
+Ensembles allow for an incorporation of multiple signals -
 often from differing data sources- and sometimes individual model biases are 
 canceled
-out or reduced by biases in others \cite[see references
+out or reduced by biases from other models \cite[see references
 therein]{reich2019accuracy}. 
-In several disease outbreak studies, multi-model ensemble forecasts have been 
+In several disease outbreak studies, ensemble forecasts have been 
 shown to outperform individual model forecasts 
 \cite[see
 references therein]{cramer2021evaluation}.
 
 Construction of an ensemble may be done by combining individual forecast 
-distributions using weighted averages. This has been called stacking 
+models using weighted averages. This has been called stacking 
 \cite{wolpert1992stacked} or weighted density ensembles 
 \cite{ray2018prediction}. 
 
-\subsection{Probabilistic Forecast Representation Types}
-\subsubsection{Parametric distributions}
+\section{Probabilistic forecast representation types}
+\subsection{Parametric distributions}
 \label{section:pardist}
 A parametric distribution is a discrete or continuous probability distribution 
-described by a known function $p(x) := p(x|\theta)$ -pmf in the discrete case or 
-pdf in the continuous case. Here $\theta$ is a vector of known or unkown 
-parameters 
-contained in a parameter space. 
+described by a known function $p(x) := p(x|\theta)$. The function $p(x)$ is 
+called a pmf if the distribution is discrete and is called a
+pdf if the distribution is continuous. Here $\theta$ is a vector of known or 
+unkown parameters contained in the parameter space of the distribution. 
 
 The value of $p(\cdot)$ evaluated at $x$ is defined as 
 $p(x) = P(X = x)$ or the probability that the random variable $X$ takes
 on $x$ in the space of the random variable. In the continuous case 
 $P(X = x) = 0$ for all $x$, but the probability 
-that $X$ falls within an interval $(a,b)$ is calculated as
+that $X$ falls within an interval $(a,b)$ is calculated by 
+\eqref{equation:prob}.
 
 \begin{equation}
-\label{eq:prob}
+\label{equation:prob}
   P(a < X < b) = \int_a^b p(x) dx
 \end{equation}
 
 Other functions classified by a parameteric distribution include the cumulative
 distribution function (CDF) and the inverse CDF or quantile function. The CDF 
-in the continuous case is defined as
+in the continuous case is defined in \eqref{eq:ccdf} and is defined in the 
+discrete case in \eqref{eq:dcdf}. Here $x_n$ is the largest value of X less than 
+or equal to $x$.
+The quantile function is defined in \eqref{eq:quant} which returns a quantile 
+value where $p$ is a given probability such that $0\leq p \leq 1$.
 
 \begin{equation}
 \label{eq:ccdf}
   F(x) = P(X \leq b) = \int_{-\infty}^x p(t) dt
 \end{equation}
-or in the discrete case 
 
 \begin{equation}
 \label{eq:dcdf}
   F(x) = P(X \leq b) = \sum_{k=1}^n p(x_k) dt
 \end{equation}
-where $x_n$ is the largest value of X less than or equal to $x$.
-The quantile function is defined as
+
 \begin{equation}
 \label{eq:quant}
   Q(p) = \inf \{ y \in \mathbb{R} : p \leq F(x) \}
 \end{equation}
-returning a quantile value where $p$ is a given probability $0\leq p \leq 1$.
 
-% \subsubsubsection{Scoring}
-For a forecast represented as a parametric function with pmf/pdf $p_m(x)$, 
-the accuracy of the forecast may be measured as how likely realized value $x^*$
+
+
+For a forecast represented as a parametric function with pmf/pdf $p_m(\cdot)$, 
+the accuracy of the forecast may be measured by how likely realized value $x^*$
 is to occur. Commonly used proper scoring rules for parametric distributions
-include the Logarithmic score (LogS), 
+include the logarithmic score (LogS), the
 continuous rank probability score (CRPS) \cite{hersbach2000decomposition}
-\cite{alves2013ncep} and the interval/Brier 
+\cite{alves2013ncep}, and the interval/Brier 
 score (IS) \cite{gneiting2007strictly} among 
 others. See also \cite{gneiting2014probabilistic}
-section 3 for more on proper scoring functions. Unless otherwise noted, the 
-following
-definitions can be found in the review by Krueger.
+Section 3 for more on proper scoring functions. The definitions 
+\eqref{eq:logs} and \eqref{eq:crps} are found in the review by Krueger.
 
-For a forecast with pdf/pmf $p_m(x)$, the LogS evaluates the 
-probability of the observed value $x^*$. It is defined as
+For a forecast with pdf/pmf $p_m(\cdot)$, the LogS evaluates the 
+probability of the observed value $x^*$. It is defined in \eqref{eq:logs}.
 
 \begin{equation}
 \label{eq:logs}
-  LS(p_m,x*) = -log\;p_m(x^*)
+  LogS(p_m,x*) = -log\;p_m(x^*)
 \end{equation}
-The goal is to minimize the LogS, so a forecast $p^{'}_m(x^*)$ is considered 
+The goal for a forecaster is to minimize the LogS, so a forecast $p^{'}_m(x^*)$ 
+is considered 
 superior to $p_m(x^*)$ if
-$LS(p^{'}_m, x^*) < LS(p_m, x^*)$.
+$LogS(p^{'}_m, x^*) < LogS(p_m, x^*)$.
 The LogS is limited to scoring forecasts with density functions and
 evaluating those densities only at the point $x^*$.
 
 The CRPS is a function of a CDF $F$
 and so it may
 be used more extensively than the LogS. 
-For the CDF $F_m$, the CRPS is defined as
+For the CDF $F_m$, the CRPS is defined in \eqref{eq:crps}.
+Here too a smaller score indicates a more accurate forecast.
 
 \begin{equation}
 \label{eq:crps}
   CRPS(F_m, x^*) = \int_{-\infty}^{\infty} (F_m(x)- 1_{\{x*\leq x\}})^2 dy
 \end{equation}
-Here too a smaller score indicates a better forecast.
+
 
 Besides evaluating forecasts, the CRPS may also be used for optimizing weights 
 used
 to build ensembles under Bayesian model averaging (BMA). Considered the 
 state-of-the-art techniques for combining 
 component distributions
-into a multi-model ensemble are nonhomogeneous regression (NR), also known as
+into an ensemble distribution are nonhomogeneous regression (NR), also known as
 ensemble model output statistics (EMOS), and ensemble
 BMA, both of which are defined in \cite{gneiting2014probabilistic}.
 
 In the context of an ensemble made from component models submitted from various
 sources,
-BMA is the better option. In BMA, the final model does not have to be specified
+BMA may be preferrable because it does not require that modeling methods for 
+individual components be the same. 
+In BMA, the final model does not have to be specified
 beforehand and the resulting forecast will be a discrete mixture distribution
 of all component forecasts. The general form for an ensemble distribution $p^E$
-is
+is in \eqref{eq:bma}. Here $p_m$ is the $m^{th}$ component forecast 
+distribution and 
+$0 \leq w_m \leq 1$ is a weight assigned to that component where $\sum w_m = 1$.
+Methods for estimating weights include Maximum Likelihood estimation
+\cite{raftery2005using}, MCMC 
+sampling \cite{vrugt2008ensemble},
+and minimizing the CRPS of the ensemble
+\cite{baran2018combining}.
 
 \begin{equation}
 \label{eq:bma}
   p^E(x) = \sum_{m=1}^M w_mp_m(x)
 \end{equation}
-where $p_m$ is the $m^{th}$ component forecast distribution and 
-$0 \leq w_m \leq 1$ is a weight assigned to that component where $\sum w_m = 1$.
-Methods for estimating weights include Maximum Likelihood estimation
-\cite{raftery2005using}, MCMC 
-sampling see \cite{vrugt2008ensemble}
-and minimizing the ensemble CRPS see
-\cite{baran2018combining}.
 
-For selecting distribution weights, the CRPS has some nice properties, but can 
-sometimes be
+
+For selecting distribution weights, minimizing the CRPS has some nice 
+properties, but it can also be
 difficult to compute. For example, when the forecast is a mixture of a 
 truncated normal distribution (TN) and a truncated lognormal (TL) the CRPS is 
 not available in closed form \cite{baran2018combining}.
 
-Generally computation and evaluation of parametric distributions is not hard. 
+Generally computation and evaluation of parametric distribution functions is not 
+hard. 
 For most commonly used parametric distributions -normal, lognormal, Poisson,
 gamma, etc.- there is software readily available to compute density, 
-distribution and quantile values. Likewise, requirements for storage are low 
+distribution, and quantile values. 
+A completely defined continuous parametric distribution may be evaluated at a
+continuously
+infinite number of values. We will call this an infinite resolution.
+And requirements for storage are low 
 compared to other representation types that will be discussed. The most common
 parametric distributions can be fully defined with three or pieces of data
 including
-the distribution family and two or three parameters. Table \ref{table:pstor} 
+the distribution family and two parameters. Table \ref{table:pstor} 
 contains
-enough information to completely define a $Lognormal(1,0.4)$ distribution.
+enough information to completely define a $\mbox{Lognormal(1,0.4)}$ 
+distribution.
 
 \begin{table}[h!]
-
+\begin{center}
+\begin{minipage}{10cm}
+\captionsetup{font=scriptsize}
 \centering
  \begin{tabular}{|c c c|} 
  \hline
@@ -547,43 +587,43 @@ enough information to completely define a $Lognormal(1,0.4)$ distribution.
  lnorm & 1 & 0.4 \\ 
  \hline
  \end{tabular}
- \caption[Parametric distribution storage]{Storage example of parametric 
- lognormal 
+ \caption[Parametric distribution storage]{This is an example of data required
+ for a lognormal 
  distribution with 
  parameters $\mu = $ 1 and $\sigma =$ 0.4}
  \label{table:pstor}
+ \end{minipage}
+ \end{center}
 \end{table}
-
-A completely defined continuous parametric distribution can be evaluated at an
-infinite number of values. We will call this an infinite resolution.
 
 
 A drawback of representing a forecast in a parametric distribution is the lack 
 of flexibility in the model selection. Easy computation and evaluation of these 
 models is limited to what is available in software, so certain distributional
-shapes may unattainable. The distribution may also assign probability to values
-outside the range of the forecast. There are remedies for this such as 
-truncation, but these increase the complexity in evaluation and scoring.
+shapes may unattainable.
 Requiring a parametric forecast also bars the use of some statistical methods
 which might be used to create a forecast model including some Bayesian methods
 where a posterior distribution cannot be computed in closed form.
 
 
-\subsubsection{Sample Distributions}
-Some forecast model builders may want more flexibility in modeling than a 
+\subsection{Sample distributions}
+Forecast model builders may want more flexibility in modeling than a 
 parametric 
 distribution can provide. Methods that require sampling from a posterior 
 distribution or Bootstrap sampling to obtain a sample distribution are examples
-where parametric distributions may not be appropriate for modeling.
+where parametric distributions may not be appropriate for modeling because of 
+the lack of flexibility in distribution shape.
 
 A sample distribution is made of a sample of random variables 
-$(X_1,...,X_n)$ where $X_i \sim D$ and $D$ is a distribution. From this, sample
-statistics such as mean, median, variance and quantiles may be calculated. 
+$(X_1,...,X_n)$ where $X_i \sim D$ and $D$ is some distribution. From this 
+sample,
+statistics such as mean, median, variance, and quantiles may be calculated. 
 An empirical cumulative distribution function (ECDF) may also be calculated as
+in \eqref{eq:ecdf}.
 
 \begin{equation}
 \label{eq:ecdf}
-  F_n(x) = \frac{1}{n} \sum_{i=1}^n \mathbb{I}(X_i \leq x)
+  ECDF = F_n(x) = \frac{1}{n} \sum_{i=1}^n \mathbb{I}(X_i \leq x)
 \end{equation}
 
 According to the Strong Law of Large numbers, the sample mean will converge to
@@ -591,7 +631,7 @@ the expected value of the distribution as $n \rightarrow \infty$ as long as the
 expected value of that distribution exists. Likewise by the same law the 
 ECDF will converge to the true CDF 
 as $n \rightarrow \infty$. Thus, if a sufficiently large 
-sample is generated from a distribution with an expectation, 
+sample is generated from a distribution with for which an expectation exists, 
 the sample will closely approximate the 
 true distribution. 
 
@@ -600,56 +640,56 @@ existing functions in \texttt{R} and other programming platforms. For some
 distributions 
 for which the mathematical formula is unkown or is not in closed form, more 
 sophisticated methods may be required to generate samples. Bayesian analyses may 
-require a Gibbs or Metropolis-Hastings algorithm, among others, to generate a 
+require a Gibbs sampling or a Metropolis-Hastings algorithm, among others, 
+to generate a 
 sample. Such samples are useful in that the true distribution may be closely 
 approximated without knowing the true mathematical form. 
 
-Under the samle distribution format, the options that a researcher has for 
-constructing a forecast are more than
-if they are asked to submit a parametric distribution and the range 
-characterisitcs 
-and shapes of distributions is larger.
+Under the sample distribution representation, the options that a researcher has 
+for constructing a forecast are more than
+if they are asked to submit a parametric distribution, and the range of possible 
+shapes for a distribution is larger.
 In the last few decades, increased computing power and improvements in MCMC
 sampling have greatly contributed to growth in the use of
-predictive distributions \cite{gneiting2007strictly}
+sample distributions for forecasting \cite{gneiting2007strictly}
 \cite[see examples listed therein]{krueger2016probabilistic}.
 
 To properly score a forecast represented by a sample distribution, both the CRPS
 and LogS may be used. The CRPS has the advantage here of scoring the sample 
-distribution directly since the CDF in  (\ref{eq:crps}) may be replaced by the 
+distribution directly since the CDF in  (\ref{eq:crps}) may be replaced with the 
 ECDF in
 (\ref{eq:ecdf}). To use the LogS to score a forecast, a density function for the 
 sample must be approximated. Common approximations include a kernel density (KD)
 or Gaussian approximation (GA).
 
-KD is defined by Krueger et. al as
+The KD in \eqref{eq:kd} is defined by Krueger et. al 
+where $K$ is a kernel function, and $h_n$ is a suitable bandwidth. The GA is 
+defined in \eqref{eq:ga} where $\Phi$ is the standard normal CDF and 
+$\hat{\mu}_n$ and $\hat{\sigma}_n$
+are the empirical mean and standard deviation of the sample $(X_i)$
+\cite[see also for a comparison of scoring MCMC drawn forecasts between the CRPS 
+and the LogS]{krueger2016probabilistic}.
 
 \begin{equation}
 \label{eq:kd}
   \hat{p}_n(x) = \frac{1}{n h_n} \sum_{i=1}^n K \left( \frac{x-X_i}{h_n} \right) 
 \end{equation}
-where $K$ is a kernel function, and $h_n$ is a suitable bandwidth. GA is defined
-as 
 
 \begin{equation}
 \label{eq:ga}
   \hat{F}_n(x) = \Phi  \left( \frac{x-\hat{\mu}_n}{\hat{\sigma}_n} \right)
 \end{equation}
-where $\Phi$ is the standard normal CDF and $\hat{\mu}_n$ and $\hat{\sigma}_n$
-are the empirical mean and standard deviation of the sample $(X_i)$
-\cite{krueger2016probabilistic}.
 
-Krueger et. al compare scoring of MCMC drawn forecast distributions using CRPS 
-and LogS over samples directly using ECDF or over density approximations using
-KD or GA.
+
+
 
 To build an ensemble model from sample distribution forecasts, the BMA 
-construction from (\ref{eq:bma}) may be used only replacing $p_m$ with 
-$\hat{p}_{n_m}^{KD}$ or $\hat{p}_{n_m}^{GA}$ -approximate KD and GA densities. 
+construction from (\ref{eq:bma}) may be used only replacing $p_m$ with the
+approximate KD or GA pdf functions
+-$\hat{p}_{n_m}^{KD}$ or $\hat{p}_{n_m}^{GA}$  
 Here as well the optimal weights 
-$w_m$ may be estimated by maximizing the likelihood or minimizing CRPS. Then 
-the ensemble distribution would take the form of a continuous or discrete
-probability mixture distribution. If the desire is that the ensemble still be
+$w_m$ may be estimated by maximizing the likelihood or minimizing CRPS. 
+If the desire is that the ensemble still be
 a sample distribution, after selecting weights, a sample may be selected by 
 randomly selecting a sample from $(X_n)_m$ with probability $w_m$.
 
@@ -662,53 +702,55 @@ forecast prediction. For any project the size of the CDC flu competition or the
 COVID-19 Forecast Hub, the storage required would be large and potentially 
 expensive.
 
-\subsubsection{Discretized bin distributions}
+\subsection{Bin distributions}
 An alternative to parametric distributions and sample distributions which allows
 for higher flexibility in distribution shape than a parametric distribution and 
-will usually require less storage space than samples is a discretized bin 
+will usually require less storage space than samples is a bin 
 distribution.
 
-A discretized bin probability distribution may be constructed over a set 
+A bin distribution may be constructed over a set 
 $A = [a, b]$ by partitioning $A$ into a set of $K$ bins $\{B_i\}_{i=1}^{K}$
 where $B_i = [b_{i-1}, b_i)$ and $\cup_{i=1}^{K} B_i = A$. Based on the problem
 to be forecasted, researchers will determine the possible range $A$ and 
 select the number of bins and the sizes for each bin. It may be the case
 that a collaborative project will set the width of all bins to be equal so that 
 $\Delta = b_i - b_{i-1}$ is the same width for all $i$ 
-\cite[see for example]{mcgowan2019collaborative}.
-To complete the construction, a probability $p_i$ is assigned to each $b_i$ 
+\cite{mcgowan2019collaborative}.
+To complete the construction, a probability $p_i$ is assigned to each $B_i$ 
 where $\sum_{i=1}^{K}p_i = 1$. These probabilities are determined by the 
 forecasters. 
-This discrete representation with a given bin and assigned probability is in
-essence a probability mass function in that the calculation of moments and the 
+This representation with a given bin and assigned probability may be 
+treated like a discrete distribution with a pmf in that the calculations of 
+moments and of the 
 the cumulative distribution are done the same as for a discrete parametric 
-distribution. For a random variable $X$ from a binned distribution to calculate
-the $j^{th}$ moment we may use
+distribution. For a random variable $X$ from a binned distribution 
+the $j^{th}$ moment may be calculated as in \eqref{eq:bev}. 
+Here $\beta_i$ is a value corresponding to bin $B_i$ (such as $\beta_i = b_i$,
+$\beta_i = b_{i-1}$ or $\beta_i$ is the mean or mid value in $B_i$). The 
+cumulative distribution may be calculated as in \eqref{eq:bcdf}.
+Here $p_n$ is the probability for the bin $B_n$ where $b \in B_n$.
 
 \begin{equation}
 \label{eq:bev}
   EX^j = \sum_{i=1}^n \beta_i^j p_i
 \end{equation}
-where $\beta_i$ is a value corresponding to bin $B_i$ (such as $\beta_i = b_i$,
-$\beta_i = b_{i-1}$ or $\beta_i$ is the mean or mid value in $B_i$). The 
-cumulative distribution may be calculated as
+
 
 \begin{equation}
 \label{eq:bcdf}
   P(X \leq b) = \sum_{i=1}^n p_i
 \end{equation}
-where $p_n$ is the probability for the bin $B_n$ where $b \in B_n$.
 
-If the value to be forecasted takes on discrete values, a common discrete 
+
+If the value to be forecasted takes on discrete values a common discrete 
 distribution, such as a binary or Poisson distribution, may sometimes be used to 
 assign probabilities to each of the bins. When the values to be forecasted are
 continuous, a forecaster may need to employ a method of discretization to a 
 forecast distribution. There are a number of possible ways to do this including
 those outlined by Chakraborty and Subrata \cite{chakraborty2015generating}.
 
-The CDC has used a discretized bin distribution representation as the 
-format
-for their annual influenza forecasting competition and other disease outbreak
+The CDC flu competition has used a bin distributions as the forecast 
+representation. The CDC has also used it for other disease outbreak
 forecast projects.
 In that context it has become the standard representation 
 \cite{brooks2020comparing}. Much work has been done in evaluating 
@@ -729,26 +771,41 @@ supplementary material within for details]{reich2019accuracy}.
 The exact amount of information required for a discretized bin forecast will 
 vary depending on the permitted range of the forecast and the desired 
 resolution. 
-In the CDC flu contest, a forecast might have 131 bins between 0\% and 13\% 
--bins having increments of 0.1 or 0.001\%- with 
+In the CDC flu contest, a forecast might have 131 bins between 0\% and 13.1\% 
+-bins having increments of 0.1 or 0.01\%- with 
 corresponding probabilities in each. This makes 262 pieces of information per
 prediction. For any binning scheme of more than two bins, the information 
-requirement for discretized bins will be higher than for parametric distrbutions.
+requirement for bin distributions will be higher than for parametric 
+distributions.
 Table \ref{table:dbins} illustrates what a discretized 
-Lognormal$(1,0.4)$ distribution truncated over $[0,8]$
-looks like in 41 equally spaced discretized bins. The discretization was done
-such that 
+$\mbox{Lognormal(1,0.4)}$ distribution truncated over $[0,8]$
+looks like in 41 equally spaced bins. The discretization was done
+such that the probabilities $p_i$ are calculated as in \eqref{eq:disc}
+where $p^{TL}$ is the pdf of a truncated $\mbox{Lognormal(1,0.4)}$. This is 
+similar
+to Methodology-IV from Chakraborty 
+\cite{chakraborty2015generating,kemp2004classes}.
 
 \begin{equation}
 \label{eq:disc}
   p_i = \int_{b_{i-1}}^{b_i} p^{TL}(x) dx
 \end{equation}
-where $p^{TL}$ is the pdf of a truncated Lognormal$(1,0.4)$. This is similar
-to Methodology-IV from Chakraborty 
-\cite{chakraborty2015generating,kemp2004classes}.
+
+
+Submitted as a forecast prediction, the distribution illustrated in table 
+\ref{table:dbins} 
+includes 82 pieces of data. For parts 
+of the CDC influenza competition some forecasts included up to 262. This is 
+far less storage than the possible thousands of draws from a sample 
+distribution but is 
+still much larger than the three or five data pieces required to report a 
+lognormal
+or truncated lognormal distribution.
 
 \begin{table}[h!]
-
+\begin{center}
+\begin{minipage}{10cm}
+\captionsetup{font=scriptsize}
 \centering
  \begin{tabular}{|c|c|} 
  \hline
@@ -763,25 +820,25 @@ to Methodology-IV from Chakraborty
  \hline
 
  \end{tabular}
-  \caption[Discretized bin distribution storage]{Storage example of discretized
-  lognormal with $\mu = 1$ and $\sigma = 0.4$}
+  \caption[Discretized bin distribution storage]{This is a storage example of a
+  discretized
+  lognormal with $\mu = 1$ and $\sigma = 0.4$ truncated over $[0,8]$.}
 \label{table:dbins}
+\end{minipage}
+\end{center}
 \end{table}
-Submitted as a forecast prediction, the distribution in table \ref{table:dbins} 
-includes 82 pieces of data. For parts 
-of the CDC influenza competition some forecasts included up to 262. This is 
-far less storage than the possible thousands of draws from a sample 
-distribution but is 
-still much larger than the three or five data pieces required to report a 
-lognormal
-or truncated lognormal distribution.
 
-Depending on what is known about the problem to be solved, creating the right 
+
+
+Besides potentially large amount of information required per forecast,
+creating the right 
 binning scheme may be a challenge. Because there must be a finite number of
-bins, forecast distributions often have a finite support. Where the range of 
+bins, forecast distributions often have a finite support. And where the range of 
 possible outcomes to a problem is not well known, the right binning scheme may 
 be
-hard to produce.
+hard to produce. This may depend on the details of the event to be forecasted, 
+but in the case of the COVID-19 outbreak choosing the right set of bins posed
+a few problems.
 
 
 
@@ -791,29 +848,31 @@ hard to produce.
 
 
 
-\subsubsection{Quantile representation}
+\subsection{Quantile representation}
 When deciding how forecasts should be represented in the COVID-19 Forecast Hub,
-the time pressure of generating forecasts and the consideration of the large
+the time pressure of generating forecasts and the large
 range for possible outcomes both contributed to the COVID-19 Forecast Hub 
 decision
-to forego trying to create the right binning scheme and use sets of prediction
-intervals to represent uncertainty in predictions \cite{bracher2021evaluating}.
-
-The Forecast Hub requires predictions to be submitted as 11 or three nominal 
+to forego trying to create the right binning scheme and use quantile forecasts
+to forecast the COVID-19 pandemic \cite{bracher2021evaluating}.
+The COVID-19 Forecast Hub requires predictions to be submitted as 11 or three 
+nominal 
 intervals -depending on the specific target and unit to forecast- and a median.
 Using this interval or quantile representation leads to a number of changes in 
 the scoring and ensemble building of forecasts.
 
-A quantile forecast is constructed as follows.
-For $N$ given quantiles $\alpha_1,..., \alpha_N$; $q_1,..., q_N$ are the values
-such that 
+A quantile forecast is constructed as in \eqref{eq:quantiles}.
+Here for $N$ given quantiles $\alpha_1,..., \alpha_N$; $q_1,..., q_N$ are the 
+values such that 
+When the quantiles are reported as prediction intervals we have 
+\eqref{eq:intervals}.
 
 \begin{equation}
 \label{eq:quantiles}
   P(Y \leq q_1) = \alpha_1, P(Y \leq q_2) = \alpha_2, ..., 
   P(Y \leq q_N) = \alpha_N
 \end{equation}
-When the quantiles are reported as prediction intervals we have
+
 
 \begin{equation}
 \label{eq:intervals}
@@ -822,32 +881,27 @@ When the quantiles are reported as prediction intervals we have
 \end{equation}
 
 What is possible for scoring forecasts
-or building ensemble models in other representations is often not possible with
+or constructing ensemble in other representations is often not possible with
 quantile forecasts. The shape of a distribution is also not known and in fact,
 nothing is known about the tails or the uncertainty beyond the most 
-extreme reported quantile values. In the Forecast Hub predictions, nothing 
+extreme reported quantile values. In the COVID-19 Forecast Hub predictions, 
+nothing 
 is reported about the range below the $1^{st}$ quantile or above the $99^{th}$.
 Yet the quantile representation has its advantages. 
 
-Quantile representation allows for forecasters to submit fairly detailed
+Quantile FORECASTS allows for forecasters to submit fairly detailed
 forecasts without restricting the range of possible values.
 Since quantiles are easily calculated from any regular distribution type
--e.g. quantile function for parametric functions or calculating sample 
+-using the quantile function for parametric functions or calculating sample 
 quantiles- we consider quantile forecasts to be highly flexible in terms of 
 what methods forecasters may employ in modeling.
 
-To score predictions from a quantile or prediction interval format, 
+To score a quantile forecast, 
 neither the LogS nor the CRPS may be used, 
 but another proper scoring rule the IS may be used.
 For an observed outcome $x^*$ and a prediction interval $(l,r)$ 
 where $l$ and $r$ are the $\alpha/2$ and $(1-\alpha/2)$ quantiles that bound
-the central $(1-\alpha)$ prediction interval the IS is defined as
-
-\begin{equation}
-\label{eq:is}
-  IS_{\alpha}(l,r; x^*) = (r-l) + \frac{2}{\alpha}(l-x^*)1\{x^*<l\} 
-  + \frac{2}{\alpha}(y-r)1\{x^* > r\}
-\end{equation}
+the central $(1-\alpha)$ prediction interval the IS is defined in \eqref{eq:is}.
 This is a sum -weighted by 
 $\alpha$- of the width of the
 interval and the distance between $x^*$ and the interval (if $x^*$ is not 
@@ -855,23 +909,32 @@ captured in the interval) \cite{gneiting2014probabilistic}.
 The IS requires only a single central 
 $(1-\alpha) \times 100$ prediction interval.
 
-When an interval forecast is made up of multiple intervals each with different
-$\alpha$ levels, the weighted interval score (WIS) may be evaluated. Bracher et.
-al use the WIS to evaluate COVID-19 inverval forecasts 
+\begin{equation}
+\label{eq:is}
+  IS_{\alpha}(l,r; x^*) = (r-l) + \frac{2}{\alpha}(l-x^*)1\{x^*<l\} 
+  + \frac{2}{\alpha}(y-r)1\{x^* > r\}
+\end{equation}
+
+
+When an quantile forecast is made up of multiple intervals each with different
+$\alpha$ levels, the weighted interval score (WIS) may be used as it was by
+Bracher et.
+al use the WIS to score COVID-19 quantile forecasts 
 \cite{bracher2021evaluating}.
 There are multiple versions of the WIS -some of 
 which are described in Bracher et. al- but the version used by the COVID-19 
 Forecast
-Hub for a forecast of $K$ intervals is defined as follows
+Hub for a forecast of $K$ intervals is defined in \eqref{eq:wis}.
+Here $w_k = \alpha_k/2$ is the weight on the $k^{th}$
+interval. With that selection of weights, it may be shown that the
+WIS approximates the CRPS \cite[see S1 Text therein]{bracher2021evaluating}.
 
 \begin{equation}
 \label{eq:wis}
   WIS_{0,K}(F_m,y^*) = \frac{1}{K + 1/2} \times (w_0, \times |y^*-med|+
   \sum_{k=1}^K \{ w_k \times IS_{\alpha_k}(F_m,y) \} )
 \end{equation}
-where $w_k = \alpha_k/2$ is the weight on the $k^{th}$
-interval. With that choice of weights, it may be shown that the
-WIS approximates the CRPS \cite[see S1 Text therein]{bracher2021evaluating}.
+
 
 Bogner, Liechti and Zappa compared scoring forecasts of quantiles with the 
 Quantile Score (QS) similar to the interval score and scoring distribution functions
@@ -890,60 +953,69 @@ equally-weighted average of forecasts from the component models. More
 specifically, each quantile value of the ensemble was the average of values from
 all models corresponding to the same quantile \cite{ray2020ensemble}. For $M$ 
 models each with $K$ quantiles, the $k^{th}$ ensemble quantile $q^E_k$ is 
-calculated as
+calculated as in \eqref{eq:qa}
+where $\nu_m$ is the weight assigned to each forecast and $\sum \nu_m = 1$. In
+the COVID-19 Forecast Hub model, $\nu_m = \nu = 1/M$. Where the overall mean or 
+a weighted mean may be used, the median may also be used.
+Brooks et. al compare performance of the COVID-19 ensemble
+using equally-weighted means, weighted means, and median value constructions
+\cite{brooks2020comparing}.
+In their report, they show that weighted means and median constructions tend
+to outperform an equally-weighted mean construction. To come up with optimal 
+weights, they select values $\nu_m$ from (\ref{eq:qa}) which minimize the WIS of 
+the ensemble forecast.
+Averaging quantiles in this way is the same as quantile averaging or Vincentization
+only with an incomplete quantile function. It thus carries with it many of the
+same characteristics.
 
 \begin{equation}
 \label{eq:qa}
   q^E_k = \sum_{m=1}^M \nu_m q_k^m 
 \end{equation}
-where $\nu_m$ is the weight assigned to each forecast and $\sum \nu_m = 1$. In
-the Forecast Hub model, $\nu_m = \nu = 1/M$. Where the overall mean or a
-weighted mean may be used, the median may also be used.
-Brooks et. al compare performance of the COVID-19 ensemble
-between equally-weighted means, weighted means and median value constructions.
-\cite{brooks2020comparing} (is is appropriate to cite this blog??)
-In their report, they show that weighted means and median constructions tend
-to outperform an equally-weighted mean construction. To come up with optimal 
-weights, they select values $\nu_m$ from (\ref{eq:qa}) which minimize the WIS of 
-the ensemble forecast.
 
-Averaging quantiles in this way is the same as quantile averaging or Vincentization
-only with an incomplete quantile function. It thus carries with it many of the
-same characteristics.
-Quantile averaging or Vincentization for a complete distribution is defined as 
+
+
+Quantile averaging or Vincentization for a complete distribution is defined as
+in \eqref{eq:vinc}
+where $F_m^{-1} (\alpha) = \inf \{y:F_m(y) \geq \alpha\}$ for 
+$0 < \alpha \leq 1$. Some notable characteristics are that it is more likely for
+the ensemble distribution
+to be unimodal than it is under linear averaging of densities like BMA 
+\cite{busetti2017quantile}. Under some circumstances, such as when member
+distributions are exponential, Weibull, or logisitic the aggregated distribution
+is of the same family \cite{ratcliff1979group}. Quantile averagin produces 
+smoother
+distributions than BMA according to Schepen and Wang \cite{schepen2015model}.
+And Lichtendahl et. al conclude that quantile averaging produces sharper 
+forecasts
+and tends to perform better in scoring than probability averaging, BMA,
+\cite{lichtendahl2013better}.
 
 \begin{equation}
 \label{eq:vinc}
   F_v^{-1}(\alpha) = \sum_{m=i}^M w_m F_m^{-1} (\alpha)
 \end{equation}
-where $F_m^{-1} (\alpha) = \inf \{y:F_m(y) \geq \alpha\}$ for 
-$0 < \alpha \leq 1$. Some notable characteristics are that it is more likely for
-the ensemble distribution
-to be unimodal than it is under linear averaging of densities like BMA 
-\cite{busetti2017quantile} Under some circumstances, such as when member
-distributions are exponential, Weibull or logisitic the aggregated distribution
-is the same \cite{ratcliff1979group}. It produces smoother
-distributions than BMA according to Schepen and Wang \cite{schepen2015model}.
-Lichtendahl et. al conclude that quantile averaging produces sharper forecasts
-and tends to perform better in scoring than probability averaging
-\cite{lichtendahl2013better}.
 
-As in sample distributions and binned distributions, 
+
+As in sample distributions and bin distributions, 
 data storage for interval forecasts will
 depend on the desired clarity of resolution. For the COVID-19 forecasts 
-submitted to the Forecast Hub, 23 quantile values are requested for 
-the quantiles (0.01, 0.025, 0.05, 0.10, …, 0.95, 0.975, 0.99). This included a 
-median along with eleven confidence intervals \cite{bracher2021evaluating}. This
-requires forecasters to submit 46 values in each short-term forecast 
+submitted to the COVID-19 Forecast Hub, 23 quantile values are requested for 
+quantiles (0.01, 0.025, 0.05, 0.10, …, 0.95, 0.975, 0.99). This includes a 
+median along with 11 predictive intervals \cite{bracher2021evaluating}. 
+Forecasters are thus required to submit 46 values in each short-term forecast 
 (some of the longer term forecasts only include seven quantiles). In terms of 
 storage, this is an improvement over requirements for the flu contest. Table
 \ref{table:qstor} shows what a submission of 23 quantiles from a 
-$Lognormal(1,0.4)$ looks like.
+$\mbox{Lognormal(1,0.4)}$ might look like.
 
 
 
 \begin{table}[h!]
 \centering
+\begin{center}
+
+\captionsetup{font=scriptsize}
 
  \begin{tabular}{|c||c|c|c|c|c|c|c|c|c|}
  \hline
@@ -953,9 +1025,12 @@ $Lognormal(1,0.4)$ looks like.
     
  \hline
  \end{tabular}
+ \begin{minipage}{10cm}
  \caption[Quantile/interval and values storage]{Storage example of quantiles 
  and values of lognormal with $\mu = 1$ and $\sigma = 0.4$}
  \label{table:qstor}
+ \end{minipage}
+ \end{center}
 \end{table}
 
 
@@ -976,7 +1051,7 @@ function. Green shows quantiles/intervals with corresponding values.}
 
 
 
-\subsection{Discrete mixture of parametric distributions}
+\section{Discrete mixture of parametric distributions}
 A discrete mixture of parametric distributions forecast representation may be an
 attractive alternative to the four types already discussed. A discrete mixture 
 would allow for many distribution shapes, a high resolution, storage comparable
@@ -1123,60 +1198,111 @@ storage requirement.
 
 
 
-\section{Mixture distributions in a collaborative forecast project}
+\chapter{Mixture distributions in a collaborative forecast project}
 \label{section:conmixforc}
 
 
 The CDC and the COVID-19 Forecast Hub as well as other collaborative projects
 have their own established systems for receiving, 
-evaluating and constructing ensemble forecasts. A transition from using binned 
-distributions or quantile forecasts to using discrete mixture distributions 
-nwould require
+scoring, and constructing ensemble forecasts. A transition from using bin or 
+quantile forecasts to using mixture distribution forecasts
+would require
 a few adjustments to those systems. In this section we outline how some of these
 adjustments may be implemented as well as present some tools which may be used
-to evaluate forecasts and construct ensemble forecasts from multiple models.
+to score forecasts and construct ensembles from multiple models.
 
-\subsection{Submission format}
+\section{Submission format}
 For a collaborative forecast project to run smoothly, model submissions from all 
-modelers should all follow the same format. For both the CDC flu forecasting and
-the COVID-19 Forecast Hub, teams are provided a .csv spreadsheet with columns 
+modelers should follow the same format. For both the CDC flu competition and
+the COVID-19 Forecast Hub, teams provide a \texttt{.csv} spreadsheet with 
+columns 
 similar to those in tables \ref{table:dbins} and \ref{table:qstor}. Additionally
-columns for Location, Target, Type and Unit are included which serve as
-indicators of the specific prediction. The values for all variables except 
-Value come from a specified list from the forecast center. Value is the 
-probability assigned to a bin when the Type is Bin.
+columns for \texttt{location}, \texttt{target}, \texttt{type}, and \texttt{unit} 
+are included.
+Here \texttt{location} defines the specific county, state, or country of the 
+forecast. The \texttt{target} variable defines what is forecasted for example
+season onset, deaths, hospitalizations, etc. The \texttt{type} variable defines
+the type for the \texttt{value} variable, \texttt{bin} or \texttt{quantile}.
+The \texttt{unit} variable defines the time frame of the forecast: week,
+two weeks, four weeks, etc. And the \texttt{value} variable is a number that 
+either gives probability for a bin or the value for a quantile. Table
+\ref{table:dstan} show what a few rows of a forecast 
+submission file for the CDC flu competition look like.
+For the quantile forecasts of the Forecast Hub, the main changes to Table
+\ref{table:dstan} are that the possible values for \texttt{type} 
+quantile, and rather than using a \texttt{bin} variable \texttt{quantile} is 
+used
+with values specified by the Hub. This is seen in Table \ref{table:qstan}
+
+A single submission may include many forecasts each aimed at predicting a 
+different combination of \texttt{location}, \texttt{target}, and \texttt{unit}. 
+A set of rows which share
+the same specific combination of \texttt{location}, \texttt{target}, and 
+\texttt{unit} constitute a single forecast. One forecast for the CDC flu
+competition may require up to 131 rows whereas in the COVID-19 Forecast Hub one 
+forecast may require up to 23 rows.
+
 
 \begin{table}[h!]
-\label{tab:dstan}
+\begin{center}
+\begin{minipage}{10cm}
+\captionsetup{font=scriptsize}
 \centering
  \begin{tabular}{|c|c|c|c|c|c|}
  \hline
-    Location & Target & Type & Unit & Bin & Value  \\ \hline
-    US National & Season Onset & Point & week & NA & . \\
-    US National & Season Onset & Bin & week & 0.0 & . \\
-    US National & Season Onset & Bin & week & 0.1 & . \\
+    location & target & type & unit & bin & value  \\ \hline
+    % US National & Season Onset & Point & week & NA & . \\
+    us national & season onset & bin & week & 0.0 & . \\
+    us national & season onset & bin & week & 0.1 & . \\
     ... & ... & ... & ... & ... & ... \\
  \hline
  \end{tabular}
- \caption[Influenza competition submission example]{Example of a submission file
- for an discretized forecast like those in the CDC influenza forecast 
- competition. To match a quantile submission format as used by
- the COVID-19 Forecast Hub, possible values for the variable Type are Point and
- Quantile, the Bin column is replaced with a Quantile column and Value is 
- the value of the specified quantile in the forecast.}
+ \caption[Influenza competition submission example]{This shows a few rows of a 
+ submission file
+ for a discretized forecast like those in the CDC influenza forecast 
+ competition. A set of rows which share the same combination of 
+ \texttt{location}, \texttt{target}, and \texttt{unit} make up a
+ single forecast. One submission may include many forecasts specified by 
+ differing combinations of those three columns.}
  \label{table:dstan}
+ \end{minipage}
+ \end{center}
 \end{table}
 
-For the quantile forecasts of the Forecast Hub, the main changes to table
-\ref{tab:dstan} are that the possible values for Type 
-are Point and Quantile, and rather than using a Bin variable Quantile is used
-with values specified by the Hub. Then Value rather than a probability is the
-forecasted value for the specified quantile. Per prediction there may be a 
-couple dozen rows, up to 24 in the Forecast Hub, or over 100 rows as in some
-flu forecasts. 
 
-In the discrete mixture format, an adjustment may be made to the format of table 
-\ref{table:dstan} where each 
+
+\begin{table}[h!]
+\begin{center}
+\begin{minipage}{11cm}
+\captionsetup{font=scriptsize}
+\centering
+ \begin{tabular}{|c|c|c|c|c|c|}
+ \hline
+    location & target & type & unit & quantile & value  \\ \hline
+    % US National & Season Onset & Point & week & NA & . \\
+    us national & season onset & quantile & week & 0.01 & . \\
+    us national & season onset & quantile & week & 0.025 & . \\
+    ... & ... & ... & ... & ... & ... \\
+ \hline
+ \end{tabular}
+ \caption[COVID-19 Forecast Hub competition submission example]{This shows
+ a few rows of a 
+ submission file
+ for a quantile forecast like those in the COVID-19 Forecast Hub. 
+ A set of rows which share the same combination of 
+ \texttt{location}, \texttt{target}, and \texttt{unit} make up a
+ single forecast. One submission may include many forecasts specified by 
+ differing combinations of those three columns.}
+ \label{table:qstan}
+ \end{minipage}
+ \end{center}
+\end{table}
+
+
+
+In the mixture distribution format, an adjustment may be made to the format of 
+Tables
+\ref{table:dstan} and \ref{table:qstan} where each 
 row
 represents a component in a mixture distribution.
 The variables Bin/Quantile and Value are removed and replaced with Family,
@@ -1188,7 +1314,7 @@ weight $w_i$ for that component.
 \centering
  \begin{tabular}{|c|c|c|c|c|c|c|c|c|}
  \hline
-    Location & Target & Type & Unit & Family & Param1 & Param2 & Weight
+    location & target & type & unit & family & param1 & param2 & weight
     \\ \hline
     US National & Season Onset & Dist & week & norm & $\mu_n$ & $\sigma_n$ & .\\
     US National & Season Onset & Dist & week & lnorm & $\mu_l$ & $\sigma_l$ &.\\
@@ -1198,7 +1324,7 @@ weight $w_i$ for that component.
  \caption[Mixture distribution forecast submission example]{Example of a 
  submission file
  for a disease outbreak forecast using mixture distribution representation}
- \label{table:dstan}
+ \label{table:mstan}
 \end{table}
 
 A forecast center may want to limit the number of components allowed per 
@@ -1214,7 +1340,7 @@ mixture distributions along with \texttt{R} code which will be given to
 demonstrate constructing a mixture distribution from a forecast submission, 
 scoring the forecast and building an ensemble forecast.
 
-\subsection{Mixture construction and scoring tools}
+\section{Mixture construction and scoring tools}
 \label{section:tools}
 
 From a submitted forecast, a prediction may be found by Location, Target and 
@@ -1334,7 +1460,7 @@ LogS, the forecast from table \ref{tab:preddf1} outperforms that from table
 \end{Sinput}
 \end{Schunk}
 
-\subsection{Ensemble construction}
+\section{Ensemble construction}
 
 
 To construct an ensemble distribution from multiple mixture distributions, the 
@@ -1431,7 +1557,7 @@ distributions shown}
 
 
 
-\section{Retrospective Analysis}
+\chapter{Retrospective Analysis}
 \label{section:retrostud}
 
 For large collaborative forecast projects having already established the 
@@ -1450,7 +1576,7 @@ and assessing fit do not exist. Thus any results stated here may not be stated
 in terms of statistical certainty.
 
 
-\subsection{CDC Influenza like Illness}
+\section{CDC Influenza like Illness}
 The CDC Retrospective Forecasts project at zoltrdata.com (cite??) contains over
 850,000 probabilistic influenza-like illness predictions for all combinations
 of eleven regions 
@@ -1591,7 +1717,7 @@ discretized froma truncated normal.}
 
 
 
-\subsection{COVID-19 Forecast Hub}
+\section{COVID-19 Forecast Hub}
 
 As of January 24, 2022 there were nearly 85,000,000 prediction distributions 
 from 114 different models submitted to the COVID-19 Forecast Hub (cite??). These 
@@ -1738,10 +1864,10 @@ straightforward.
 
 
 
-\newpage
 
 
-\section{Discussion}
+
+\chapter{Discussion}
 
 In this paper we have reviewed four representation types commonly used in
 probabilistic 
@@ -1804,12 +1930,45 @@ format in collaboration.
 % \include{Body/ch5/ch5_main}
 %\include{Body/ch6/ch6_future_and_conclusions}
 
+
 %\bibliographystyle{acm} % use for numbered citations along with options given in preamble. Look at the main thesis.tex file
+
+
+% \bibliographystyle{apa}
+% \bibliography{master_bib}
+
+% \section{Bibliography}
+% \bibliographystyle{apa}
+% % \vspace{-20pt}
+% \begingroup
+%     \setlength{\bibsep}{13.2pt}
+%     \linespread{1}\selectfont
+%     \bibliography{master_bib}
+% \endgroup
+% \clearpage
+% \pagebreak
+
+%%%%%% bibliographies
+
+\clearpage
+\nocite{*}
+\unappendixtitle
+\newpage
+\phantomsection
+\addcontentsline{toc}{chapter}{BIBLIOGRAPHY}
+\section*{BIBLIOGRAPHY}
 \bibliographystyle{apa}
+\vspace{-20pt}
+\begingroup
+   \setlength{\bibsep}{14.5pt}
+   \linespread{1}\selectfont
 \bibliography{master_bib}
+\endgroup
 
+\appendix
 
-\section{Appendix}
+\specialchapt{APPENDIX}
+
 
 The following is the code to make the \texttt{MakeDist()} function introduced 
 in \ref{section:tools}.
@@ -1866,33 +2025,9 @@ section \ref{section:tools}.
 \end{Sinput}
 \end{Schunk}
 
-% \section{Bibliography}
-% \bibliographystyle{apa}
-% % \vspace{-20pt}
-% \begingroup
-%     \setlength{\bibsep}{13.2pt}
-%     \linespread{1}\selectfont
-%     \bibliography{master_bib}
-% \endgroup
-% \clearpage
-% \pagebreak
 
-%%%%%% bibliographies
 
-%\clearpage
-%% \nocite{*}
-%\unappendixtitle
-%\newpage
-%% % \phantomsection
-%\addcontentsline{toc}{chapter}{BIBLIOGRAPHY}
-%\section*{BIBLIOGRAPHY}
-%\bibliographystyle{apa}
-%\vspace{-20pt}
-%\begingroup
-%    \setlength{\bibsep}{14.5pt}
-%    \linespread{1}\selectfont
-    % \bibliography{master_bib}
-%\endgroup
+
 
 % Renders the citations but does not show the bibliography at the end of the thesis
 %\newsavebox\mytempbib
