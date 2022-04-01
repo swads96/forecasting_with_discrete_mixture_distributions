@@ -2,6 +2,7 @@
 \documentclass[11pt,notitlepage]{isuthesis}
 % notitlepage is used because \begin{abstract} uses titlepage by default, which resets the page numbers
 
+
 \usepackage[pdftex]{graphicx}
 
 \usepackage{framed}
@@ -9,6 +10,7 @@
 \usepackage{amsfonts}
 \usepackage{listings}
 \usepackage[svgnames]{xcolor}
+
 \usepackage{graphicx}
 \usepackage{subfig}
 % Standard, old-style thesis
@@ -129,10 +131,17 @@
 \usepackage{amssymb}
 \usepackage[intoc, english]{nomencl}
 \renewcommand{\chaptername}{}
+
+
 \usepackage{Sweave}
 \begin{document}
 \input{thesis-concordance}
+\DefineVerbatimEnvironment{Sinput}{Verbatim} {xleftmargin=2em,
+                                              frame=single}
+\DefineVerbatimEnvironment{Soutput}{Verbatim}{xleftmargin=2em,
+                                              frame=single}
 \DeclareGraphicsExtensions{.jpg,.pdf,.mps,.png}
+
 %\begin{singlespace}
 \def\@makechapterheada{\vspace*{-2cm}\titlepage} % in order to reduce the space between margin and heading in titlepage
 \include{Preface/titlepage}
@@ -1356,8 +1365,8 @@ weight $w_i$ for that component.
  \hline
     location & target & type & unit & family & param1 & param2 & weight
     \\ \hline
-    US National & Season Onset & Dist & week & norm & $a_n$ & $b_n$ & $w_1$\\
-    US National & Season Onset & Dist & week & lnorm & $a_l$ & $b_l$ & $w_2$\\
+    us national & season onset & dist & week & norm & $a_n$ & $b_n$ & $w_1$\\
+    us national & season onset & dist & week & lnorm & $a_l$ & $b_l$ & $w_2$\\
     ... & ... & ... & ... & ... & ... & ... & ...\\
  \hline
  \end{tabular}
@@ -1446,8 +1455,15 @@ LogS or CRPS.
     Norm & 2.1 & 1 & NA & 0.7 \\
  \hline
  \end{tabular}
- \caption[Illustrative forecast 1]{Toy prediction 1}
+  \begin{minipage}{11cm}
+\captionsetup{font=scriptsize}
+ \caption[Illustrative forecast 1]{This is an illustrative example of a
+ mixture distribution
+ forecast where the distribution is described in a data frame. The first 
+ component is a Lognormal$(2,1)$ with a weight of 0.3 in the mixture and the 
+ second component is a Normal$(2.1,1)$ with a weight of 0.7.}
  \label{tab:preddf1}
+ \end{minipage}
 \end{table}
 
 \begin{table}[h!]
@@ -1460,18 +1476,40 @@ LogS or CRPS.
     Norm & 4 & 2 & NA & 0.6 \\
  \hline
  \end{tabular}
- \caption[Illustrative forecast 2]{Toy prediction 2}
+  \begin{minipage}{11cm}
+\captionsetup{font=scriptsize}
+ \caption[Illustrative forecast 2]{This is a second
+ illustrative example of a mixture distribution
+ forecast where the distribution is described in a data frame. The first 
+ component is a Normal$(1.5,1)$ with a weight of 0.4 in the mixture and the 
+ second component is a Normal$(4,2)$ with a weight of 0.6.}
  \label{tab:preddf2}
+ \end{minipage}
 \end{table}
+
+\begin{figure}[htbp]
+\centerline{\includegraphics[scale=.15]{Images/toyfors12.png}}
+\begin{center}
+ \begin{minipage}{11cm}
+\captionsetup{font=scriptsize}
+\caption[Example mixture distributions]{These plots show the density functions 
+of
+the two example mixture distribution forecasts along with the component density
+functions scaled by the corresponding weights}
+\label{fig:toymixs}
+\end{minipage}
+\end{center}
+\end{figure}
 
 Here we include code to illustrate the process of constructing and scoring two 
 separate forecasts. We suppose that Table \ref{tab:preddf1} represents a 
 submitted forecast from one forecaster and Table \ref{tab:preddf2} represents
-a forecast of the same event from a second forecaster.
+a forecast of the same event from a second forecaster. Table \ref{fig:toymixs}
+shows plots of the pdfs for both mixture forecasts.
 Note the additional \texttt{param3} variable
 in Tables \ref{tab:preddf1} and \ref{tab:preddf1}. This variable is included
 in the table because of the functionality of the \texttt{MakeDist()} function
-which allows for component distributions of three parameters.
+which allows for component distributions of up to three parameters.
 The code here shows these two forecasts as \texttt{data.frame}s and how the 
 \texttt{MakeDist()} 
 function is used to create the distributions in \texttt{R}. Once the 
@@ -1479,23 +1517,37 @@ distributions are created as \texttt{AbscontDistribution} objects, then
 functions for evaluating a pdf and a CDF for each are created.
 
 
+
+
+
+
+
 \begin{Schunk}
 \begin{Sinput}
 > preddf1
-> #  family param1 param2 param3 weights
-> #1  Lnorm    2.0      1     NA     0.3
-> #2   Norm    2.1      1     NA     0.7
-> 
+\end{Sinput}
+\begin{Soutput}
+  family param1 param2 param3 weights
+1  Lnorm    2.0      1     NA     0.3
+2   Norm    2.1      1     NA     0.7
+\end{Soutput}
+\begin{Sinput}
 > preddf2
-> #  family param1 param2 param3 weights
-> #1   Norm    1.5      1     NA     0.4
-> #2   Norm    4.0      2     NA     0.6
-> 
-> 
-> 
+\end{Sinput}
+\begin{Soutput}
+  family param1 param2 param3 weights
+1   Norm    1.5      1     NA     0.4
+2   Norm    4.0      2     NA     0.6
+\end{Soutput}
+\begin{Sinput}
 > #make mixture distributions from prediction submissions
 > mdist1 <- MakeDist(preddf1)
 > mdist2 <- MakeDist(preddf2)
+\end{Sinput}
+\end{Schunk}
+
+\begin{Schunk}
+\begin{Sinput}
 > #make pdfs for mixture predictions
 > dmdist1 <- function(x) {distr::d(mdist1)(x)}
 > dmdist2 <- function(x) {distr::d(mdist2)(x)}
@@ -1505,48 +1557,76 @@ functions for evaluating a pdf and a CDF for each are created.
 \end{Sinput}
 \end{Schunk}
 
-\begin{figure}[htbp]
-\centerline{\includegraphics[scale=.15]{Images/toyfors12.png}}
-\caption[Toy mixture distributions]{These plots show the density functions of
-the two toy mixture distribution forecasts along with the component density
-functions scaled by the corresponding weights}
-\label{fig:toymixs}
-\end{figure}
+
 
 
 The LogS or the CRPS may then be calculated for each forecast using the pdf
-and cdf functions respectively. Here will will assume that the realized value
-which both forecasts attempted to predict was 3. The \texttt{CRPS()} function 
-here is 
-included in the appendix of this manuscript. It can be seen here that by the 
-LogS, the forecast from table \ref{tab:preddf1} outperforms that from table
-\ref{tab:preddf2}. Yet under the CRPS the performance is the other way around.
+and CDF functions respectively. Here will will assume that the realized value
+which both forecasts attempted to predict was \texttt{3}. 
+The \texttt{CRPS()} function
+here is one that we wrote and is
+included in the APPENDIX. It is seen in the code below that under the
+LogS, forecast 1 from table \ref{tab:preddf1} outperforms forecast 2 from table
+\ref{tab:preddf2} with scores of 1.547 and 
+1.849 respectively. 
+However, under the CRPS forecast 2 outperforms forecast 1
+with scores 0.635 and 
+0.635 respectively. We continue to use these same
+forecasts in Section \ref{section:enscon} to construct an ensemble forecast.
 
 \begin{Schunk}
 \begin{Sinput}
 > #realized observation
 > ob <- 3
 > #LogS for predictions at the realized observation
-> -log(dmdist1(ob)) # => 1.547238
-> -log(dmdist2(ob)) # => 1.848796
-> #CRPS for predictions at the realized observation
-> CRPS(pmdist1,y=ob) # => 0.6348212
-> CRPS(pmdist2,y=ob) # => 0.5306083
+> -log(dmdist1(ob))
 \end{Sinput}
+\begin{Soutput}
+[1] 1.547238
+\end{Soutput}
+\begin{Sinput}
+> -log(dmdist2(ob))
+\end{Sinput}
+\begin{Soutput}
+[1] 1.848796
+\end{Soutput}
+\end{Schunk}
+
+\begin{Schunk}
+\begin{Sinput}
+> #CRPS for predictions at the realized observation
+> CRPS(pmdist1,y=ob)
+\end{Sinput}
+\begin{Soutput}
+[1] 0.6348212
+\end{Soutput}
+\begin{Sinput}
+> CRPS(pmdist2,y=ob)
+\end{Sinput}
+\begin{Soutput}
+[1] 0.5306083
+\end{Soutput}
 \end{Schunk}
 
 \section{Ensemble construction}
+\label{section:enscon}
 
 
 To construct an ensemble distribution from multiple mixture distributions, the 
-\texttt{UnivarMixingDistribution} is again a useful tool. The function takes 
+\texttt{UnivarMixingDistribution()} is again a useful tool. The function takes 
 two or more
-\texttt{AbscontDistribution} or mixture distributions and a vector of weights 
-corresponding to each mixture. A new \texttt{AbscontDistribution} object is 
-returned as an ensemble of mixture distributions see (\ref{eq:bma}). 
+\texttt{AbscontDistribution} distribution objects and a vector of weights 
+corresponding to each object. A new \texttt{AbscontDistribution} object is 
+returned as an ensemble of mixture distributions as in (\ref{eq:bma}). 
+Since they are \texttt{AbscontDistribution} objects \texttt{mdist1} and 
+\texttt{mdist2} created in the code
+in Section \ref{section:tools} may be input as arguments into the function
+\texttt{UnivarMixingDistribution()}, but weights for each object need to also
+be determined.
 
-At the onset of a collaborative forecast before the various models can be scored
-based on true observations, it may make sense to assign equal weight to each 
+At the onset of a collaborative forecast before there are true event 
+observations which the forecasts can be scored on, 
+it may make sense to assign an equal weight to each 
 component distribution in an ensemble. As a project progresses however, 
 assigning weights based on past performance may be desired. As mentioned in 
 section \ref{section:pardist}, weights may be selected by maximizing the
@@ -1554,30 +1634,40 @@ likelihood of (\ref{eq:bma}) or by minimizing the CRPS. Another method of
 selecting weights is to use the posterior model probability. 
 
 If we have $T$ models ($M_t$) the posterior model probability of $M_t$ is 
-defined as 
+defined as in \eqref{eq:pmp} where $p(\cdot |M_t) := p_m(\cdot)$ is the density 
+function of the model and 
+$p(M_j)$ is the prior probability assigned to the model. A common approach is to
+assume the prior
+probabilities for each model are equal or $p(M_t) = 1/T$ for all $t$ in which 
+case
+(\ref{eq:pmp}) is reduced to \eqref{eq:pmpeq}. In this case the posterior model 
+probability for model $t$ is equal to the exponential of its negative LogS or
+$p(M_t|x) = e^{-LogS(p(M_t|x))}$, so the performance of a forecast based on the
+LogS is directly related to posterior model probability and may be used as an 
+ensemble weight. For an observed event $x^*$, ensemble weights $(w_t)$ from 
+\eqref{eq:bma} may be defined as $w_t := p(M_t|x^*)$.
+
 
 \begin{equation}
 \label{eq:pmp}
 p(M_t|x) = \frac{p(x|M_t)p(M_t)}{p(x)}
          = \frac{p(x|M_t)p(M_t)}{\sum_{k=1}^T p(x|M_k)p(M_k)}
 \end{equation}
-where $p(\cdot |M_t) := p_m(\cdot)$ is the density function of the model and 
-$p(M_j)$ is the prior probability assigned to the model. Where the prior
-probabilities for each model are equal or $p(M_t) = 1/T$ for all $t$ 
-(\ref{eq:pmp}) is reduced to 
+
 
 \begin{equation}
 \label{eq:pmpeq}
 p(M_t|x) =  \frac{p(x|M_t)}{\sum_{k=1}^Tp(x|M_k)}
 \end{equation}
 
-The posterior model probability $p(M_t|x^*)$ for an already observed event $x^*$
-are then used as weights for a yet unrealized event being forecasted i.e.
-$w_t := p(M_t|x^*)$ see (\ref{eq:bma}). 
 
-From the same toy problem in the previous section, the following code shows how
+
+Using the illustrative example from Section \ref{section:tools}, 
+the following code shows how
 to use the posterior model probability to select weights and construct an 
-ensemble distribution and score the ensemble forecast. The ensemble distribution
+ensemble distribution and score the ensemble forecast. Here again we take the 
+observed value to be \texttt{3}.
+The ensemble distribution
 with components is show in figure \ref{fig:mixense}.
 
 \begin{Schunk}
@@ -1585,9 +1675,18 @@ with components is show in figure \ref{fig:mixense}.
 > #posterior model probability for calculating weights
 > w1 <- pmdist1(ob)/(pmdist1(ob) + pmdist2(ob))
 > w2 <- 1-w1
-> #w1 => 0.5286434
-> #w2 => 0.4713566
-> 
+> w1
+\end{Sinput}
+\begin{Soutput}
+[1] 0.5286434
+\end{Soutput}
+\begin{Sinput}
+> w2
+\end{Sinput}
+\begin{Soutput}
+[1] 0.4713566
+\end{Soutput}
+\begin{Sinput}
 > #build ensemble with calculated weights
 > ensdist <- distr::UnivarMixingDistribution(mdist1,
 +                                            mdist2,
@@ -1596,17 +1695,28 @@ with components is show in figure \ref{fig:mixense}.
 > densdist <- function(x) {(distr::d(ensdist)(x))}
 > pensdist <- function(x) {(distr::p(ensdist)(x))}
 > #LogS for predictions at the realized observation
-> -log(densdist(ob)) # => 1.678156
-> #CRPS for predictions at the realized observation
-> CRPS(pensdist,y=ob) # => 0.5486368
+> -log(densdist(ob))
 \end{Sinput}
+\begin{Soutput}
+[1] 1.678156
+\end{Soutput}
+\begin{Sinput}
+> #CRPS for predictions at the realized observation
+> CRPS(pensdist,y=ob)
+\end{Sinput}
+\begin{Soutput}
+[1] 0.5486368
+\end{Soutput}
 \end{Schunk}
 
 
 \begin{figure}[htbp]
 \centerline{\includegraphics[scale=.15]{Images/mix_ense.png}}
-\caption[Toy ensemble forecast]{Toy ensemble forecast with component mixture
-distributions shown}
+\caption[Toy ensemble forecast]{Ensemble forecast made from forecast 1 and 
+forecast 2 from Section \ref{section:tools}. The green line is the density 
+component of mixture forecast 1 with weight 0.529. The 
+red line is the density component of mixture forecast 2 with weight 
+0.471. The blue line is the density of the ensemble.}
 \label{fig:mixense}
 \end{figure}
 
@@ -1632,95 +1742,124 @@ distributions shown}
 
 
 
-\chapter{Retrospective Analysis}
+\chapter{Retrospective analysis}
 \label{section:retrostud}
 
 For large collaborative forecast projects having already established the 
 representation formats for forecasting, it may be difficult for individual
-forecast teams to adjust to a discrete mixture distribution format. Exact 
-methods for modeling and forecasting may not cater well to submitting a forecast
-as a discrete parametric mixture distribution.
-
+forecast teams to adjust to a mixture distribution format. There may be several
+reasons for this, including that not all 
+forecast modeling methods will produce forecasts which may conveniently be
+represented by a mixture distribution.
 In this section we attempt to assess whether or not any forecasts from the CDC
-influenza forecast competition and the COVID-19 Forecast Hub were generated from
-common continuous parametric distributions. The forecasts we assess are in the 
-forms of discretized bin predictions or sets of predictive intervals. In these
-formats, not knowing anything about distributions or samples,  formal 
-statistical methods for fitting to parametric distributions 
-and assessing fit do not exist. Thus any results stated here may not be stated
-in terms of statistical certainty.
+flu competition and the COVID-19 Forecast Hub were generated from one component
+mixture distribution models. We do this by fitting one component mixture 
+distributions to the forecasts and assessing how well the fit models represent
+the forecasts.
+
+Forecasters in both the CDC flu competition and the COVID-19 Forecast Hub do 
+not include with their forecast submissions information about modeling methods 
+or 
+distributional assumptions. Thus the only information we have for fitting
+distributions are bin
+forecasts and quantile forecasts. We are unaware of formal statistical 
+methods for fitting parametric distributions or mixture distributions to bin
+distributions. Methods of fitting a distribution to quantiles 
+include Bayesian Quantile Matching
+\cite{nirwan2020bayesian}, step interpolation with exponential tails 
+\cite{quinonero2005evaluating},
+and the Method of Simulated Quantiles 
+\cite{dominicy2013method}. These studies however lack claims that the methods
+for fitting are statistically formal.
+Because of this it should be noted that any conclusions made in 
+this section may not be 
+stated in terms of statistical certainty.
 
 
-\section{CDC Influenza like Illness}
+
+\section{CDC flu competition}
 The CDC Retrospective Forecasts project at zoltrdata.com (cite??) contains over
-850,000 probabilistic influenza-like illness predictions for all combinations
-of eleven regions 
-in the United States and seven targets from twenty-seven different models. These
-include predictions during Influenza season between October 2010 and December
-2018. All predictions are in the form of discretized probability bins. 
+869,638 probabilistic influenza-like illness forecasts for all combinations
+of 11 regions 
+in the United States and seven targets from 27 different modeling teams. These
+include forecasts made during all flu seasons between October 2010 and December
+2018. All forecasts are represented by bin distributions. 
+We wanted to determine whether or not any of these forecasts were
+generated from one component mixture distributions of continuous uniform, 
+truncated normal (TN), truncated
+lognormal (TL), or truncated gamma (TG) distribution families.
+The process we followed for determining if a forecast was generated by one of
+these common families was to first fit a distribution of that family to the bin
+forecast and then measure close the fit was. The decsion to fit truncated 
+distributions was due to all bin forecasts being assessed having a finite 
+support.
 
-We wanted to determine whether or not some or any of these binned forecasts were
-generated from known uniform, normal, 
-lognormal or gamma continuous distribution families. 
-The process we followed for making such a claim was
-to fit a distribution to the probabilities provided in the forecast by
-minimizing
-
-\begin{equation}
-  \sum_{i=1}^K (p_i - [F(b_i; \theta) - F(b_{i-1}; \theta)])^2
-  \label{eq:mds}
-\end{equation}
-
-Here $F(\cdot; \hat{\theta})$ is a CDF, $p_i$ is the reported probability for 
+To fit a distribution to a forecast we first minimize \eqref{eq:msd}. We call
+\eqref{eq:msd} the mean square difference (MSD).
+Here $F(\cdot| \hat{\theta})$ is a CDF, $p_i$ is the reported probability for 
 the $i^{th}$ bin $B_i := [b_{i-1}, b_i)$ and $K$ is the number of bins.
 The fitted parameter vector $\hat{\theta}$ is the solution to 
+\eqref{eq:discfit}.
+If a distribution was fit to the submitted binned 
+prediction
+and the MSD was less than a 
+specified cutoff value, we
+concluded that the bin forecast may have been discretized from the 
+distribution.
 
 \begin{equation}
-\arg\min_{\theta}\sum_{i=1}^K (p_i - 
+  MSD = \sum_{i=1}^K (p_i - [F(b_i| \hat{\theta}) - F(b_{i-1}| \hat{\theta})])^2
+  \label{eq:msd}
+\end{equation}
+
+
+\begin{equation}
+\hat{\theta} = \arg\min_{\theta}\sum_{i=1}^K (p_i - 
 [F(b_i; \theta) - F(b_{i-1}; \theta)])^2
 \label{eq:discfit}
 \end{equation}
 
-If a well known continuous distribution was fit to the submitted binned 
-prediction
-and the mean sum of squared differences (MSD) or \ref{eq:msd} fell below a 
-specified cutoff value, we
-considered that the binned predictions were plausibly discretized from the 
-continuous distribution.
+
 
 
 To determine what values to use as cutoffs we conducted a study where 
-binned distributions were discretized from known continuous distributions, 
-parameters were fit to the binned distrubtions and the MSD was calculated.
+bin distributions were discretized from known distributions, 
+parameters were fit to the binned distrubtions and the MSD was calculated. This 
+was done 1,000 times for the four distrubtion families considered and the cutoff 
+value for each family was set as the value under which 95\% of MSD values fell.
+The exact process is as follows.
 
-For each of uniform, truncated normal (TN), truncated lognormal (TL) and 
-truncated gamma (TG) distributions the following was
-done 1,000 times. A set of 131 bins with interval lengths of 
-0.1 between 0 and 13.1 was constructed. 
-A value $\mu$ was selected from a $Uniform(a,b)$ distribution and $\sigma$ from 
-a $Uniform(.05,1.6)$ distribution. $\mu$ and $\sigma$ were taken as respectively 
+For each of uniform, TN, TL, and 
+TG distributions the following was
+done 1,000 times. A set of 131 bins with interval widths of 
+0.1 between 0 and 13 was constructed. 
+A value $u$ was selected from a $\mbox{Unif(0,13)}$ distribution and $y$ from 
+a $\mbox{Unif(.05,1.6)}$ distribution. 
+$u$ and $y$ were taken as respectively 
 the center and scale parameters of a TN distribution. 
-For uniform, TL and TG family
-distributions, model parameters were solved for so that $\mu$ and $\sigma$ 
-were roughly the mean and standard deviation. The minimization was done using 
+For uniform, TL, and TG family
+distributions, model parameters were solved for so that $u$ and $y$ 
+were roughly the mean and standard deviation.
+% Had we accounted for the changes
+% in moment values from the truncation, the means and standard deviations could 
+% have been exactly $\mu$ and $\sigma$. But we considered the differences small 
+% enough that it didn't matter for our purpose.
+With a known distribution with $\theta = (u,y)$, 
+probabilities $p_i =F(b_i| \theta) - F(b_{i-1})$ 
+where, were
+calculated for each bin. A distribution from the same
+family was fit to the bins by minimizing \eqref{eq:msd} with the resulting
+distribution function $F(\cdot| \hat{\theta})$. 
+The minimization was done using 
 the \texttt{optim} function in the \texttt{R} \texttt{stats} package.
-Had we accounted for the changes
-in moment values from the truncation, the means and standard deviations could 
-have been exactly $\mu$ and $\sigma$. But we considered the differences small 
-enough that it didn't matter for our purpose.
-
-With a known distribution, probabilities $p_i =F(b_i; \theta) - F(b_{i-1})$ were
-calculated for each bin. A uniform or truncated distribution from the same
-family was fit to the bins by minimizing \ref{eq:msd} with the resulting
-distribution function $F(\cdot; \hat{\theta})$. From the fitted distribution
+From the fit distribution
 $\hat{p_i} = F(b_i; \hat{\theta}) - F(b_{i-1}; \hat{\theta})$ was computed for 
-each of the 131 bins. Finally the mean sum of squared probability differences
-$\frac{1}{K}\sum_{i=1}^K (\hat{p_i} - p_i)^2$ was calculated. 
+each of the 131 bins. Finally the MSD was calculated. 
 Table \ref{table:bincutoffs}
 below shows MSD value for which 95\% of all 1,000 MSDs fell below. Those values 
 were selected as the 
-cutoff values for declaring whether or not a binned distribution was discretized
-from a common continuous distribution.
+cutoff values for declaring whether or not a bin distribution was discretized
+from from a one component mixture distribution of that family.
 
 
 \begin{table}[h!]
@@ -1733,27 +1872,38 @@ from a common continuous distribution.
   Truncated Lognormal   & 3.877829e-06  \\
   Truncated Gamma       & 1.500152e-06  \\
   \end{tabular}
-  \caption[Discretized bin distribution cutoff values]{If a binned 
-  distribution is fit to a parametric distribution and the MSD is smaller than
-  the corresponding cutoff value listed here, we consider that binned 
-  distribution to have been discretized from the fit parametric distribution.}
+  \begin{center}
+\begin{minipage}{10cm}
+\captionsetup{font=scriptsize}
+  \caption[Bin distribution cutoff values]{If a binned 
+  one component mixture distribution is fit to a bin forecast
+  and the MSD is smaller than
+  the corresponding cutoff value listed here, we consider that bin 
+  distribution to have been discretized from the fit mixture distribution.}
   \label{table:bincutoffs}
+  \end{minipage}
+  \end{center}
 \end{table}
 
 
 
 
 Of the 869,638 predictions from the CDC Retrospective Forecast project, we fit
-each of Uniform, TN, TL and TG distributions to 11,715 of the individual 
-predictions. The MSD between the prediction probabilities and the fit
-discretized probabilities was calcuated. For each prediction, the fitted 
-distribution with the lowest MSD was considered the best fit and if the MSD fell
+each of uniform, TN, TL, and TG distributions to 11,715 of the individual 
+predictions. From each of the 27 teams represented, we randomly selected 1,944
+forecasts to fit. In many cases the \texttt{optim} function used to fit the 
+distributions failed to converge, so of all forecasts we were only able to 
+successfully fit distributions to 11,715 of them.
+We calculated the MSD, and for each forecast the fit
+distribution with the lowest of the four MSDs was considered the best fit. If 
+the MSD from the best fit fell
 below the corresponding cutoff value listed in \ref{table:bincutoffs} we 
-considered that 
-the prediction was discretized from the fit distribution. 
+concluded that 
+the forecast was discretized from the fit distribution. 
 
-Of the 11,715 binned distributions fit to continuous parametric distributions,
-2,502 of those fits producted MSD values below the values listed in table
+Table \ref{table:bincutoffs} shows the results of this analysis. 
+Of the 11,715 binned distributions fit to the mixture distributions,
+2,502 of those fits had MSD values below the values listed in Table
 \ref{table:bincutoffs}. Thus we conclude that a proportion of 0.214 of those
 forecasts were generated from a common parametric distribution. The results for 
 the
@@ -1761,7 +1911,7 @@ the
 fit to and whether or not the fits produce an MSD below the cutoff value, 
 are seen in table \ref{table:cdcresults}. Figure \ref{fig:binparamfits} is an
 example of
-the best fit distributions to the same binned probability distribution.
+the fit distributions to the same bin forecast.
 
 \begin{table}[h!]
   \centering
@@ -1774,9 +1924,18 @@ the best fit distributions to the same binned probability distribution.
   Truncated Lognormal   & 4,501    & 1,340 & 0.289 \\
   Truncated Gamma       & 2,514    & 295   & 0.117 \\
   \end{tabular}
-  \caption[CDC influenza retro analysis results]{Results for CDC influenza
-  forecast retro analysis}
+  \begin{center}
+\begin{minipage}{10cm}
+\captionsetup{font=scriptsize}
+  \caption[CDC flu retro analysis results]{Of the 11,715
+forecasts 864 were best fit by a uniform distribution, 3,804 by a TN, 
+4,501 by a TL, and 2,514 by a TG. Of those forecasts, 669 appear to have
+come from a uniform distribution, 198 from a TN, 1,340 from a TL, and 295 from
+a TG.
+}
   \label{table:cdcresults}
+  \end{minipage}
+  \end{center}
 \end{table}
 
 \begin{figure}[htbp]
@@ -1786,7 +1945,8 @@ the plots of fits from each a uniform, truncated normal, truncated lognormal
 and truncated gamma distributions to the same binned probability distribution.
 In this case, the fit to the normal distribution produced an MSD below the 
 normal cutoff value, so we conclude that the binned distribution may have been
-discretized froma truncated normal.}
+discretized froma truncated normal. Proportions of distributions with MSDs 
+below the cutoff values are also included.}
 \label{fig:binparamfits}
 \end{figure}
 
@@ -1794,32 +1954,45 @@ discretized froma truncated normal.}
 
 \section{COVID-19 Forecast Hub}
 
-As of January 24, 2022 there were nearly 85,000,000 prediction distributions 
-from 114 different models submitted to the COVID-19 Forecast Hub (cite??). These 
-distributions covered all combinations of 3,202 municipalities (mostly counties) 
+As of April 1, 2022 there were 89.8 million forecasts  
+from 117 different modeling teams submitted to the COVID-19 Forecast Hub (cite??). 
+These 
+forecasts covered all combinations of 3,202 municipalities (mostly counties) 
 in the United States with 441 targets. The first of these forecasts was 
-submitted in March of 2020 shortly after the initial outbreak of the virus in 
-the US and forecasts had been received weekly since. The forecast representation
-for these predictions is the quantile representation where a point estimated is
-submitted along with a number of confidence intervals -three or 11 for most
-targets. So the predictions typically include seven or 23 quantiles.
+submitted in March of 2020 shortly after the initial outbreak of the COVID-19 
+virus in 
+the US and forecasts have been received weekly since. 
+The forecasts are all quantile forecasts made up of three or 11 predictive 
+intervals -depending on the specific time frame for the forecast-
+and a median. In the forecasts include seven or 23 quantiles.
 
-To assess whether or not a quantile based forecast was calculated from a well
-known continuous distribution, we minimized the mean square error (MSE) between 
-the CDF and the given quantiles. The estimated parameters are the 
-solution to $argmin_{\theta} \sum_{i=1}^m (q_i - F(y; \theta))$ where $q_i$ is
-the $i^{th}$ given quantile value and $F(y; \theta)$ is the CDF with parameter
-$\theta$. This least squares estimating is a more common way to fit a model but
-other methods have been presented including Bayesian Quantile Matching
-\cite{nirwan2020bayesian}, step interpolation with exponential tails 
-\cite{quinonero2005evaluating}
-and the Method of Simulated Quantiles 
-\cite{dominicy2013method}.
+To assess whether or not a quantile forecast was calculated from a well
+known continuous distribution, we minimized the mean square error (MSE)  
+in \eqref{eq:mse} between where $q_i$ is
+the $i^{th}$ quantile value from a forecast and $F(y| \theta)$ is a fit CDF with 
+parameter $\hat{\theta}$. The parameter $\hat{\theta}$ is the solution to 
+\eqref{eq:minithet}.
+a fit CDF and the given quantiles.
 
-For each prediction used, we fit the quantiles to a uniform, normal, lognormal,
-gamma and location-scale t CDF. We included the t distribution in case of any
+\begin{equation}
+  MSE = \sum_{i=1}^m (q_i - F(y| \hat{\theta}))
+  \label{eq:mse}
+\end{equation}
+
+\begin{equation}
+  \hat{\theta} = \arg\min_{\theta} \sum_{i=1}^m (q_i - F(y| \theta))
+  \label{eq:minthet}
+\end{equation}
+
+
+
+
+For each forecast assessed, we fit the quantiles to a uniform, normal, 
+lognormal,
+gamma, and location-scale t CDF. Unlike in the previous section, we felt no need
+to the distributions as truncated because there is no range limit to these 
+forecasts. We included the t distribution to account for any
 symmetric forecasts with heavier tails than in a normal distribution.
-
 If the MSE between a given forecast and a fit CDF fell below a certain cutoff,
 we considered the quantiles as approximately coming from the fit CDF. To
 determine the cutoff values, for each of the five distribution families the same
@@ -1828,20 +2001,26 @@ procedure was followed 1,000 times.
 A decision was randomly made on creating a quantile distribution with seven 
 quantiles or 23
 quantiles with probabilities 1/3 and 2/3 respectively. This was done because 
-in the COVID-19 Forecast Hub certain targets require seven quantiles and others 
-require 23. After that decision was made, a random value $\mu$ was drawn from
-a $Uniform(2,000,\; 25,000)$ distribution and another value $\sigma$ was drawn
+in the COVID-19 Forecast Hub certain target/time frame combinations require 
+seven quantiles and others 
+require 23. After that decision was made, a random value $u$ was drawn from
+a $\mbox{Unif(2,000,\; 25,000)}$ distribution and another value $v$ was drawn
 from a $Uniform(3, 200)$ distribution. These values were taken as the mean and
-standard deviation and for each of the distribution families considered, the
+standard deviation and for each of the distribution families considered. The
 proper transformations computed to find model parameters corresponding to the 
-distribution. Quantile values were calculated for each quantile. When using a 
-t distribution, a value for degrees of freedom was drawn from a 
-$Uniform(2,35)$ distribution. A CDF
-was fit by minimizing $\sum_{i=1}^m (q_i - F(y; \theta))$ over the parameter
-vector $\theta$ and the MSE value $\sum_{i=1}^m (q_i - F(y; \hat{\theta}))$ was 
+distribution. Quantile values were calculated for then each quantile. When using 
+a t distribution, a value for degrees of freedom was drawn from a 
+$\mbox{Unif(2,35)}$ distribution. A CDF
+was fit by minimizing \eqref{eq:minthet} over the parameter
+vector $\theta$ and the MSE value from \eqref{eq:mse} was 
 calculated. The MSE value for which 95\% of the 1,000 simulated distributions
-fell below was considered the cutoff and is seen in table 
-\ref{table:quantcutoffs}.
+fell below was considered the cutoff for that family and is seen in table 
+\ref{table:quantcutoffs}. It is immediately noticeable that the cutoff value 
+for the location-scale t family is several orders of magnitude higher than for 
+the other distribution families. We believe this is related to the fact that 
+that is a three parameter family where as the other four families are two 
+parameter families. Thus influencing the optimization methods used enough to 
+make such a difference in the cutoff value. 
 
 \begin{table}[h!]
   \centering
@@ -1854,11 +2033,16 @@ fell below was considered the cutoff and is seen in table
   Gamma                 & 2.953370e-05  \\
   Location-scale T      & 0.4894471 \\
   \end{tabular}
+  \begin{center}
+\begin{minipage}{10cm}
+\captionsetup{font=scriptsize}
   \caption[Quantile cutoff values]{If a set of quantiles
   is fit to a parametric distribution CDF and the MSE is smaller than
   the corresponding cutoff value listed here, we consider the quantiles to 
   have been calculated parametric distribution.}
   \label{table:quantcutoffs}
+  \end{minipage}
+  \end{center}
 \end{table}
 
 
@@ -1890,9 +2074,14 @@ for different distribution fits to the same set of quantiles.
   Gamma                 & 597      & 0    & 0    \\
   Location-scale T      & 365      & 25   & 0.068    \\
   \end{tabular}
+  \begin{center}
+\begin{minipage}{10cm}
+\captionsetup{font=scriptsize}
   \caption[COVID-19 Forecast Hub results]{Results for COVID-19 Forecast Hub
   retro analysis}
   \label{table:cresults}
+  \end{minipage}
+  \end{center}
 \end{table}
 
 
