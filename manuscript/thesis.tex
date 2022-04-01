@@ -532,7 +532,7 @@ BMA, both of which are defined in \cite{gneiting2014probabilistic}.
 
 In the context of an ensemble made from component models submitted from various
 sources,
-BMA may be preferrable because it does not require that modeling methods for 
+BMA may be preferable because it does not require that modeling methods for 
 individual components be the same. 
 In BMA, the final model does not have to be specified
 beforehand and the resulting forecast will be a discrete mixture distribution
@@ -1026,43 +1026,55 @@ $\mbox{Lognormal(1,0.4)}$ might look like.
  \hline
  \end{tabular}
  \begin{minipage}{10cm}
- \caption[Quantile/interval and values storage]{Storage example of quantiles 
- and values of lognormal with $\mu = 1$ and $\sigma = 0.4$}
+ \caption[Quantiles and values storage]{This shows six quantiles
+ and values from a lognormal distribution with $\mu = 1$ and $\sigma = 0.4$}
  \label{table:qstor}
  \end{minipage}
  \end{center}
 \end{table}
 
-
+Figure \ref{fig:denscomp} illustrates how the densities and CDFs compare 
+between parametric distributions, sample distributions, bin distributions, and
+quantiles. 
 
 \begin{figure}[htbp]
+\begin{center}
+
+\captionsetup{font=scriptsize}
 \centerline{\includegraphics[scale=.1]{Images/dens_cum_comp.png}}
+\begin{minipage}{10cm}
 \caption[Density/CDF comparison between parametric distribution, sample 
 distribution, discretized bin distribution and quantiles]{This figure compares 
 the
 densities and CDFs of forecast representation types discussed in the left and 
-right columns respectively. Each is generated from a lognorma(1,0.4) 
+right columns respectively. Each is generated from a Lognorma(1,0.4) 
 distribution. Blue shows the density and CDF functions. Purple shows a 
 histogram and ECDF of 1,000 samples. Red shows bin probabilities and the CDF
-function. Green shows quantiles/intervals with corresponding values.}
+function for a bin distribution. Green shows quantiles
+with corresponding values.}
 \label{fig:denscomp}
+\end{minipage}
+\end{center}
 \end{figure}
 
 
+\newpage
 
-
-\section{Discrete mixture of parametric distributions}
-A discrete mixture of parametric distributions forecast representation may be an
-attractive alternative to the four types already discussed. A discrete mixture 
+\section{Mixture distributions}
+A discrete mixture of parametric distributions forecast -which we will refer to
+as a mixture distribution forecast- representation is an
+attractive alternative to the four representations already discussed. 
+A mixture distribution forecast
 would allow for many distribution shapes, a high resolution, storage comparable
-to that of discretized bins and quantile representations and the use of the more
-common methods for scoring and ensemble building.
+to that of bin and quantile forecasts, and the more common methods for scoring
+and ensemble construction may be used.
 
-A discrete mixture distribution may be constructed in the same way as the
-ensemble described in section \ref{section:pardist} in equation 
+A mixture distribution may be constructed in the same way as the
+ensemble described in section \ref{section:pardist} 
 (\ref{eq:bma}) 
 where for $T$ distributions
-with pdfs $p_t(x)$ and $z_t > 0$ and $\sum_{t=1}^{T} z_t = 1$
+with pdfs $p_t(x)$ and $z_t > 0$ and $\sum_{t=1}^{T} z_t = 1$ we have 
+\eqref{eq:dmd}.
  
 
 \begin{equation}
@@ -1073,12 +1085,13 @@ with pdfs $p_t(x)$ and $z_t > 0$ and $\sum_{t=1}^{T} z_t = 1$
 
 
 
-Like the standard parametric model, a discrete mixture may be evaluated with
-exisiting software (like distr \texttt{R} package \cite{camphausen2007distr}). 
+Like the parametric, a mixture distribution may be evaluated with
+existing software like \texttt{distr} package in \texttt{R} 
+\cite{camphausen2007distr}. 
 And 
-scoring may be done by 
-using the LogS, CRPS and IS. The resolution of a discrete mixture is infinite 
-and the support need not be limited by submission requirements. 
+scoring may be done  
+using the LogS, CRPS and IS. A mixture distribution, like its parametric 
+distribution components, has an infinite resolution.
 
 A mixture distribution may be much more flexible than a single component 
 parametric distribution in 
@@ -1089,41 +1102,51 @@ well
 any continuous distribution \cite{peel2000finite} (see also 
 \cite{nguyen2019approximations}). Thus, for an unconventional probability
 distribution -such as MCMC posterior samples- it may be reasonable to 
-approximate the distribution by constructing a mixture of normals.
-% See section \ref{section:conmix} for an example.
+approximate the distribution by fitting those samples to a mixture of normal
+distributions.
+Depending on the number of components a forecaster includes in a mixture 
+forecast, the amount of storage per forecast might be as little as for a 
+parametric forecast or as permitted in the specific forecast project. 
 
-An ensemble model may be built by using (\ref{eq:bma}) only replacing $p_m$
-with $p_m^M$ in \ref{eq:dmd}. Solving for weights may also be done similarly, 
-though with the 
+An ensemble model may be built by using \eqref{eq:bma} only replacing $p_m$
+with $p_m^M$ in \eqref{eq:dmd}. Solving for weights may also be done by 
+maximizing
+the likelihood of the forecast or minimizing the CRPS. However with the 
 added complexity of component models being mixture distributions the 
-computation is likely to be more expensive. An example where this may be
-especially true is when minimizing of CRPS, but the exact mixture doesn't 
-result in CRPS in closed form \cite{baran2018combining}. In large projects like
+computation is likely to be more expensive. An example where this is
+true is when trying to minimize the CRPS but the exact mixture doesn't 
+produce a closed form CRPS \cite{baran2018combining}. In large projects like
 the COVID-19 Forecast Hub, if an equal weight is not assigned to each component,
 it may be determined that models not reaching a certain standard of predictive
 performance are
 assigned an ensemble weight of 0. This would simplify an ensemble model to 
 include only the best performing forecasts.
 
-Depending on the number of components a forecaster includes in a mixture 
-forecast, the amount of storage per forecast might be as little as for a 
-parametric forecast and as much as a forecast hub will allow. In section
-\ref{section:conmixforc} we show how a mixture distribution may be constructed,
-scored and used to construct an ensemble using software available in 
-\texttt{R}.
+
 
 Table \ref{table:repscomp} shows how a discrete mixture distribution forecast 
 compares with the other formats discussed in terms of methods for scoring,
-information and resolution provided, methods for ensemble building and computer
-storage requirement.
+information and resolution provided, methods for ensemble building, and computer
+storage requirement. To summarize, a continuous mixture distribution has the 
+infinite resolution of a parametric distribution with the flexibility of a bin
+distribution, a sample distribution, and a set of quantiles. The common proper
+scoring rules LogS and CRPS may be used to score it. The storage requirement is
+comparable to that of a bin distribution or a set of quantiles. And BMA may be 
+used for building an ensemble.
+In Section
+\ref{section:conmixforc} we show how a mixture distribution may be constructed,
+scored and used to construct an ensemble using software available in 
+\texttt{R}.
 
 
 
 
 
 \begin{flushleft}
+
   \begin{table}
-    % \begin{adjustwidth}{-3cm}{-1cm}
+    \begin{center}
+    \captionsetup{font=scriptsize}
     \begin{tabular}{ | p{2.4cm} || p{3cm} | p{4cm} | p{3cm} | p{3.5cm} |}
     \hline
     \textbf{Representation} & \textbf{Scoring} & 
@@ -1131,17 +1154,19 @@ storage requirement.
     \textbf{Storage Requirement}
     \\ \hline \hline
 
-    Parametric & LogS, CRPS, IS & Limited to common distribution families. 
+    Parametric distribution & LogS, CRPS, IS & Limited to common 
+    distribution families. 
     Infinite resolution
     & BMA & Low 3-6 values per prediction \\ \hline
     
-    Samples & CRPS and IS. LogS after smoothing & Any shape. Resolution may be
+    Sample distribution & CRPS and IS. LogS after smoothing & Any shape. 
+    Resolution may be
     very high but depends on sample size & BMA after smoothing. Resampling 
     otherwise & 
     Hundreds or thousands of values per prediction
     \\ \hline
     
-    Discretized bins & LogS, CRPS, IS &
+    Bin distribution & LogS, CRPS, IS &
     Any shape allowed, but limited by binning scheme. Range also may be limited
     & BMA &
     Depends on binning scheme but dozens to hundreds of values
@@ -1154,7 +1179,8 @@ storage requirement.
     requested quantiles. Perhaps dozens of values
     \\ \hline
     
-    Discrete Mixture & LogS, CRPS, IS. May be more limited by computation & With
+    Mixture distribution & LogS, CRPS, IS. May be more limited by computation & 
+    With
     enough component distributions may
     approximate any distribution shape. Infinite resolution& BMA 
     & 3 values to dozens per forecast depending on number of components
@@ -1164,10 +1190,19 @@ storage requirement.
    
 	 \end{tabular}
 	 % \end{adjustwidth}
+    \begin{minipage}{14cm}
    \caption[Forecast representation comparison]{This table compares scoring,
-   information, ensemble building and storage requirements for the different
-   forecast representations discussed.}
+   information, ensemble building, and storage requirements for the different
+   forecast representations discussed. To summarize 
+   a continuous mixture distribution has the 
+infinite resolution of a parametric distribution with the flexibility of a bin
+distribution, a sample distribution, and a set of quantiles. The common proper
+scoring rules LogS and CRPS may be used to score it. The storage requirement is
+comparable to that of a bin distribution or a set of quantiles. And BMA may be 
+used for building an ensemble.}
    \label{table:repscomp}
+   \end{minipage}
+   \end{center}
    \end{table}
 	 
 \end{flushleft}
@@ -1202,23 +1237,27 @@ storage requirement.
 \label{section:conmixforc}
 
 
-The CDC and the COVID-19 Forecast Hub as well as other collaborative projects
+The CDC flu competition and the COVID-19 Forecast Hub as well as other 
+collaborative projects
 have their own established systems for receiving, 
 scoring, and constructing ensemble forecasts. A transition from using bin or 
 quantile forecasts to using mixture distribution forecasts
 would require
 a few adjustments to those systems. In this section we outline how some of these
 adjustments may be implemented as well as present some tools which may be used
-to score forecasts and construct ensembles from multiple models.
+to build forecasts from submissions, score those forecasts, and construct 
+ensembles from them.
 
 \section{Submission format}
-For a collaborative forecast project to run smoothly, model submissions from all 
-modelers should follow the same format. For both the CDC flu competition and
-the COVID-19 Forecast Hub, teams provide a \texttt{.csv} spreadsheet with 
-columns 
-similar to those in tables \ref{table:dbins} and \ref{table:qstor}. Additionally
-columns for \texttt{location}, \texttt{target}, \texttt{type}, and \texttt{unit} 
-are included.
+For a collaborative forecast project to run smoothly, forecast submissions from 
+all forecasters 
+should follow the same format. For both the CDC flu competition and
+the COVID-19 Forecast Hub, teams provide a \texttt{.csv} spreadsheet which 
+contains the distributional information for one or multiple forecasts. Tables
+\ref{table:dstan} and \ref{table:qstan} show what variables are included and a
+couple rows to illustrate possible values.
+The column variables include \texttt{location}, \texttt{target}, \texttt{type},
+\texttt{unit}, \texttt{bin} or \texttt{quantile} and \texttt{value}.
 Here \texttt{location} defines the specific county, state, or country of the 
 forecast. The \texttt{target} variable defines what is forecasted for example
 season onset, deaths, hospitalizations, etc. The \texttt{type} variable defines
