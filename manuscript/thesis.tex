@@ -1257,24 +1257,22 @@ contains the distributional information for one or multiple forecasts. Tables
 \ref{table:dstan} and \ref{table:qstan} show what variables are included and a
 couple rows to illustrate possible values.
 The column variables include \texttt{location}, \texttt{target}, \texttt{type},
-\texttt{unit}, \texttt{bin} or \texttt{quantile} and \texttt{value}.
+\texttt{unit}, \texttt{bin} or \texttt{quantile}, and \texttt{value}.
 Here \texttt{location} defines the specific county, state, or country of the 
-forecast. The \texttt{target} variable defines what is forecasted for example
+forecast. The \texttt{target} variable defines what is forecasted with levels
 season onset, deaths, hospitalizations, etc. The \texttt{type} variable defines
-the type for the \texttt{value} variable, \texttt{bin} or \texttt{quantile}.
-The \texttt{unit} variable defines the time frame of the forecast: week,
-two weeks, four weeks, etc. And the \texttt{value} variable is a number that 
-either gives probability for a bin or the value for a quantile. Table
-\ref{table:dstan} show what a few rows of a forecast 
-submission file for the CDC flu competition look like.
-For the quantile forecasts of the Forecast Hub, the main changes to Table
-\ref{table:dstan} are that the possible values for \texttt{type} 
-quantile, and rather than using a \texttt{bin} variable \texttt{quantile} is 
-used
-with values specified by the Hub. This is seen in Table \ref{table:qstan}
+the type for the \texttt{value} variable with levels of \texttt{point}, 
+bin, or quantile.
+The \texttt{unit} variable defines the time frame of the forecast with levels of
+week,
+two weeks, four weeks, etc. The variables \texttt{bin} and \texttt{quantile}
+give a specific bin or a specific quantile. And the \texttt{value} variable is a 
+number that 
+either gives the probability associated with a bin or the value associated 
+with a quantile.
 
-A single submission may include many forecasts each aimed at predicting a 
-different combination of \texttt{location}, \texttt{target}, and \texttt{unit}. 
+A single submission may include many forecasts aimed at forecasting a 
+different combinations of \texttt{location}, \texttt{target}, and \texttt{unit}. 
 A set of rows which share
 the same specific combination of \texttt{location}, \texttt{target}, and 
 \texttt{unit} constitute a single forecast. One forecast for the CDC flu
@@ -1339,14 +1337,17 @@ forecast may require up to 23 rows.
 
 
 
-In the mixture distribution format, an adjustment may be made to the format of 
-Tables
-\ref{table:dstan} and \ref{table:qstan} where each 
-row
-represents a component in a mixture distribution.
-The variables Bin/Quantile and Value are removed and replaced with Family,
-Param1, Param2 and Weight where Family is the distribution family,
-Params are the parameters for the component distribution and Weight is the 
+Table \ref{table:mstan} illustrates adjustments made to the submission formats
+from 
+Tables \ref{table:dstan} and \ref{table:qstan} which make a useable submission 
+format for mixture distribution forecasts. In such a format, each row represents
+a component used in a mixture distribution.
+The variables \texttt{bin} or \texttt{quantile} and \texttt{value} are removed 
+and replaced with \texttt{family},
+\texttt{param1}, \texttt{param2}, and \texttt{weight} where \texttt{family} is 
+the distribution family of the component,
+\texttt{param1} and \texttt{param2} are the parameters for the component 
+distribution, and \texttt{weight} is the 
 weight $w_i$ for that component.
 
 \begin{table}[h!]
@@ -1355,59 +1356,85 @@ weight $w_i$ for that component.
  \hline
     location & target & type & unit & family & param1 & param2 & weight
     \\ \hline
-    US National & Season Onset & Dist & week & norm & $\mu_n$ & $\sigma_n$ & .\\
-    US National & Season Onset & Dist & week & lnorm & $\mu_l$ & $\sigma_l$ &.\\
-    ... & ... & ... & ... & ... & ... & ... & .\\
+    US National & Season Onset & Dist & week & norm & $a_n$ & $b_n$ & $w_1$\\
+    US National & Season Onset & Dist & week & lnorm & $a_l$ & $b_l$ & $w_2$\\
+    ... & ... & ... & ... & ... & ... & ... & ...\\
  \hline
  \end{tabular}
- \caption[Mixture distribution forecast submission example]{Example of a 
+ \begin{minipage}{11cm}
+\captionsetup{font=scriptsize}
+ \caption[Mixture distribution forecast submission example]{This is an example 
+ of a 
  submission file
- for a disease outbreak forecast using mixture distribution representation}
+ for a disease outbreak forecast using a mixture distribution representation.
+ Each row represents a component of a mixture distribution. The variables
+ location, target, and unit specify what is being forecasted. The variable type
+ specifies that the row represents a parametric distribution. The variables
+ family, param1, and param2 specify the exact distribution. And the variable 
+ weight specifies the weight $w_i$ that the component distribution has in the
+ mixture distribution. Here two components are shown with distributions
+ Normal$(a_n, b_n)$, Lognormal$(a_l, b_l)$ and weights $w_1$ and $w_2$.}
  \label{table:mstan}
+ \end{minipage}
 \end{table}
 
-A forecast center may want to limit the number of components allowed per 
-prediction. For reference, a mixture distribution prediction following the 
-format in table \ref{table:dstan} with 18 
-components would require $18 \times 8 = 144$ cells submitted. This is the same 
-number of cells
-submitted for a Forecast Hub forecast with 23 quantiles and a point prediction 
-according to the format in table \ref{table:dstan}.
+For reasons of storage and computation, a forecast project may have a limit to 
+the number of components allowed per forecast.
+For reference, a mixture distribution forecast following the 
+format in table \ref{table:dstan} with 17
+components would require $17 \times 8 = 136$ cells submitted per forecast. 
+A submission to the COVID-19 Forecast Hub forecast 23 quantiles
+according to the format in table \ref{table:dstan} requires
+$23 \times 6 = 138$ cells. Thus if the COVID-19 Forecast Hub were to change the
+forecast representation from quantile forecasts to mixture forecasts but 
+continue allowing the same amount of data per forecast, 
+a mixture distribution with 17 components could be used in one forecast. That
+many components could allow for a large range of distribution shapes and 
+flexible forecasts.
 
 Throughout the remainder of this section, explanations of how to work with 
-mixture distributions along with \texttt{R} code which will be given to 
-demonstrate constructing a mixture distribution from a forecast submission, 
-scoring the forecast and building an ensemble forecast.
+mixture distributions submitted according to Table \ref{table:mstan} is 
+given. Also given is
+\texttt{R} code which 
+demonstrates constructing a mixture distribution from a forecast submission, 
+scoring the forecast, and building an ensemble from two separate submissions.
 
 \section{Mixture construction and scoring tools}
 \label{section:tools}
 
-From a submitted forecast, a prediction may be found by Location, Target and 
-Unit (or whatever other indication variables are used by collaborators) and 
-evaluated. We found
-the \texttt{distr} package \cite{camphausen2007distr}
-useful for constructing a mixture distribution given
-information like that from table \ref{table:dstan}. 
+A single \texttt{.csv} submission file of the format in Table \ref{table:mstan} 
+may contain multiple forecasts forecasting different combinations of location,
+target, and unit. Selecting only rows which share a specific combination of 
+location, target, and unit will produce a table representing a single forecast.
+That table may look like Tables \ref{tab:preddf1} and 
+\ref{tab:preddf1}. If the table is saved as a standard \texttt{data.frame} in 
+\texttt{R}, then tools based on the \texttt{distr} package 
+\cite{camphausen2007distr} may be used for evaluating a mixture distribution 
+with the components in the table. 
 
-The function 
-\texttt{UnivarMixingDistribution} takes as arguments a list of distributions
+
+The \texttt{distr} package contains a function 
+\texttt{UnivarMixingDistribution()} takes as arguments a list of distributions
 and a vector of weights for each distribution and a object of class 
-\texttt{AbscontDistribution} is returned. The object is in essence a mixture
-distribution of the form of (\ref{eq:dmd}). Functions for density, 
-distribution
-and quantile functions as well as for random sampling may then be used on the
-mixture distribution object for evaluation. Using those functions and the 
-created object, LogS and CRPS are easily calculable. 
+\texttt{AbscontDistribution} is returned. An \texttt{AbscontDistribution} class
+is a mother class which defines a random number generator, pdf,
+CDF, and quantile function for continuous distributions from common
+families contained in the \texttt{distr} and for mixture distributions with 
+component distributions from those families.
+We wrote a function \texttt{MakeDist()} (see APPENDIX)
+which takes on a \texttt{data.frame} with variables
+family, param1, param2, param3, and weight and where each row represents a
+component distribution in a mixture distribution. The function 
+\texttt{MakeDist()} calls on the \texttt{UnivarMixingDistribution()} function
+and returns a mixture distribution object of class \texttt{AbscontDistribution}.
 
-We wrote a function \texttt{MakeDist} (see Appendix)
-which takes on a data frame with variables
-Family, Param1, Param2, Param3 and Weight and returns a mixture distribution 
-of component distributions specified in the rows.
+If a forecast such as in Table \ref{tab:preddf1} is taken as an argument in 
+\texttt{MakeDist()}, the resulting mixture distribution may then be evaluated 
+with functions for the pdf, CDF, quantile function, and random samples from the
+mixture distribution may be drawn. Thus the distribution may be scored using the
+LogS or CRPS.
 
-Beginning with two forecast submissions of the form of table \ref{table:dstan}, 
-say we select from each a prediction of an event for the same location, target
-and unit. The following two data frames \texttt{preddf1} and \texttt{preddf2}
-are the resulting predictions.
+
 
 \begin{table}[h!]
 \centering
@@ -1419,7 +1446,7 @@ are the resulting predictions.
     Norm & 2.1 & 1 & NA & 0.7 \\
  \hline
  \end{tabular}
- \caption[Toy prediction 1]{Toy prediction 1}
+ \caption[Illustrative forecast 1]{Toy prediction 1}
  \label{tab:preddf1}
 \end{table}
 
@@ -1433,13 +1460,22 @@ are the resulting predictions.
     Norm & 4 & 2 & NA & 0.6 \\
  \hline
  \end{tabular}
- \caption[Toy prediction 2]{Toy prediction 2}
+ \caption[Illustrative forecast 2]{Toy prediction 2}
  \label{tab:preddf2}
 \end{table}
 
-The code here shows these two data frames and how the \texttt{MakeDist} 
+Here we include code to illustrate the process of constructing and scoring two 
+separate forecasts. We suppose that Table \ref{tab:preddf1} represents a 
+submitted forecast from one forecaster and Table \ref{tab:preddf2} represents
+a forecast of the same event from a second forecaster.
+Note the additional \texttt{param3} variable
+in Tables \ref{tab:preddf1} and \ref{tab:preddf1}. This variable is included
+in the table because of the functionality of the \texttt{MakeDist()} function
+which allows for component distributions of three parameters.
+The code here shows these two forecasts as \texttt{data.frame}s and how the 
+\texttt{MakeDist()} 
 function is used to create the distributions in \texttt{R}. Once the 
-distributions are created as \texttt{AbscontDistribution} classes, then 
+distributions are created as \texttt{AbscontDistribution} objects, then 
 functions for evaluating a pdf and a CDF for each are created.
 
 
@@ -2007,6 +2043,7 @@ format in collaboration.
 \appendix
 
 \specialchapt{APPENDIX}
+\label{section:append}
 
 
 The following is the code to make the \texttt{MakeDist()} function introduced 
