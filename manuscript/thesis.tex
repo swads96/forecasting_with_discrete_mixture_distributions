@@ -1865,7 +1865,7 @@ from from a one component mixture distribution of that family.
 \begin{table}[h!]
   \centering
   \begin{tabular}{l*{6}{c}r}
-  Distribution          & MSD 95\%  \\
+  Distribution          & MSD 95\% Cutoff \\
   \hline
   Uniform               & 8.809460e-05   \\
   Truncated Normal      & 1.126683e-07  \\
@@ -1890,8 +1890,10 @@ from from a one component mixture distribution of that family.
 
 Of the 869,638 predictions from the CDC Retrospective Forecast project, we fit
 each of uniform, TN, TL, and TG distributions to 11,715 of the individual 
-predictions. From each of the 27 teams represented, we randomly selected 1,944
-forecasts to fit. In many cases the \texttt{optim} function used to fit the 
+predictions. From each of the 27 teams represented, there is a list of forecast
+submissions from which we randomly selected 12. From each submission, we 
+we randomly selected six forecasts.
+In many cases the \texttt{optim} function used to fit the 
 distributions failed to converge, so of all forecasts we were only able to 
 successfully fit distributions to 11,715 of them.
 We calculated the MSD, and for each forecast the fit
@@ -1941,11 +1943,15 @@ a TG.
 \begin{figure}[htbp]
 \centerline{\includegraphics[scale=.15]{Images/flu_fit_17_10_3.png}}
 \caption[Parametric distribution fits to binned distribution]{This figure shows
-the plots of fits from each a uniform, truncated normal, truncated lognormal
-and truncated gamma distributions to the same binned probability distribution.
+the plots of fits from each a uniform, TN, TL,
+and TG distributions to the same bin distribution. The title of this forecast
+given by the submission team is Bayesian Model Averaging. This forecast was
+submitted to the CDC on May 15, 2017 and is a three week ahead forecast of
+percent of hospital patients due to an influenza like illness for a specific
+region of the United States.
 In this case, the fit to the normal distribution produced an MSD below the 
-normal cutoff value, so we conclude that the binned distribution may have been
-discretized froma truncated normal. Proportions of distributions with MSDs 
+TN cutoff value, so we conclude that the bin forecast may have been
+discretized from a TN. Proportions of distributions with MSDs 
 below the cutoff values are also included.}
 \label{fig:binparamfits}
 \end{figure}
@@ -1963,7 +1969,7 @@ submitted in March of 2020 shortly after the initial outbreak of the COVID-19
 virus in 
 the US and forecasts have been received weekly since. 
 The forecasts are all quantile forecasts made up of three or 11 predictive 
-intervals -depending on the specific time frame for the forecast-
+intervals -depending on the specific unit for the forecast-
 and a median. In the forecasts include seven or 23 quantiles.
 
 To assess whether or not a quantile forecast was calculated from a well
@@ -2001,11 +2007,12 @@ procedure was followed 1,000 times.
 A decision was randomly made on creating a quantile distribution with seven 
 quantiles or 23
 quantiles with probabilities 1/3 and 2/3 respectively. This was done because 
-in the COVID-19 Forecast Hub certain target/time frame combinations require 
+in the COVID-19 Forecast Hub certain target/unit combinations require 
 seven quantiles and others 
 require 23. After that decision was made, a random value $u$ was drawn from
 a $\mbox{Unif(2,000,\; 25,000)}$ distribution and another value $v$ was drawn
-from a $Uniform(3, 200)$ distribution. These values were taken as the mean and
+from a $\mbox{Unif(3, 200)}$ distribution. These values were taken as the mean 
+and
 standard deviation and for each of the distribution families considered. The
 proper transformations computed to find model parameters corresponding to the 
 distribution. Quantile values were calculated for then each quantile. When using 
@@ -2025,7 +2032,7 @@ make such a difference in the cutoff value.
 \begin{table}[h!]
   \centering
   \begin{tabular}{l*{6}{c}r}
-  Distribution          & Mean Square Error 95\%  \\
+  Distribution          & MSE 95\% Cutoff \\
   \hline
   Uniform               & 7.220667e-07   \\
   Normal                & 3.097645e-05  \\
@@ -2036,30 +2043,44 @@ make such a difference in the cutoff value.
   \begin{center}
 \begin{minipage}{10cm}
 \captionsetup{font=scriptsize}
-  \caption[Quantile cutoff values]{If a set of quantiles
-  is fit to a parametric distribution CDF and the MSE is smaller than
-  the corresponding cutoff value listed here, we consider the quantiles to 
-  have been calculated parametric distribution.}
+  \caption[Quantile cutoff values]{If a one component mixture distribution of a
+  certain distribution family
+  is fit to a quantile forecast and the MSE is smaller than
+  the corresponding cutoff value listed here, we conclude the quantiles to 
+  have been calculated from the fit distribution.}
   \label{table:quantcutoffs}
   \end{minipage}
   \end{center}
 \end{table}
 
 
-With these cutoff values selected, models were then fit to quantile forecasts
-from the COVID-19 Forecasts on zoltardata.com. This was a computationally more
-difficult problem than fitting distributions to the binned forecasts of the 
-influenza project, so the number of predictions fit is much smaller. The 
-predictions fit were selected from each of the 115 models with model weeks, 
-targets and units selected randomly. In total 2,504 predictions were fit to each
-of the five distributions, the MSE was calculated for each and the fit with the
+With these cutoff values selected, distributions were then fit to quantile 
+forecasts
+from the COVID-19 Forecasts on zoltardata.com.?? 
+From 115 modeling teams we randomly selected four forecast submissions. From 
+those submissions we randomly selected three units and attempted to assess
+forecasts for all targets under than unit.
+This was a computationally more
+difficult problem than fitting distributions to the bin forecasts from the CDC
+flu competition, so the number of forecasts where convergence for fitting was
+met was much smaller. In total distributions from all five families of interest
+were fit to 2,504 forecasts. 
+The MSE was calculated for each and the fit with the
 lowest MSE was selected as the closest fit. If the MSE fell below the cutoff
-specified above, we considered that the quantile prediction was approximately
-from the same distribution as the fit distribution. Of the 2,504 fits, 99 of 
-them produced an MSE value below the corresponding cutoff. Results for fits by
-distribution are seen in table \ref{table:cresults}.
+specified above, we concluded that the quantile forecast was approximately
+from the same distribution as the fit distribution. 
+
+Table \ref{table:cresults} show the results of the analysis by distribution
+family.
+Of the 2,504 fits, 99 of 
+them had an MSE value below the corresponding cutoff listed in Table
+\ref{table:quantcutoffs}. Thus we conclude that a proportion of 0.04 of the 
+forecasts assessed came from distributions fit to them.
+Results for fits by
+distribution are seen in Table \ref{table:cresults}.
 Figures \ref{fig:qqfits} and \ref{fig:cdffits} show the QQ plots and CDF plots
 for different distribution fits to the same set of quantiles.
+
 
 
 \begin{table}[h!]
@@ -2086,30 +2107,48 @@ for different distribution fits to the same set of quantiles.
 
 
 \begin{figure}[htbp]
-\centerline{\includegraphics[scale=.15]{Images/qq_11_12_5.png}}
+\centerline{\includegraphics[scale=.15]{Images/qq_gleam_110121_1wkincdeath_st16.png}}
+\begin{center}
+\begin{minipage}{10cm}
+\captionsetup{font=scriptsize}
 \caption[QQ plot for quantile fit]{This figure shows qq plots for a set of
 submitted quantiles against the quantiles the continuous distribution to which
-it was fit. In no case here was the MSE below the cutoff value of the 
+it was fit. 
+The name of this forecast given by the team who submitted it is Gleam COVID-19.
+This forecast was submitted to the C0VID-19 Forecast Hub on November 1, 2021
+and is forecasting deaths one in the next week in a certain US state due to the
+virus.
+In no case here was the MSE below the cutoff value of the 
 corresponding distribution.}
 \label{fig:qqfits}
+\end{minipage}
+\end{center}
 \end{figure}
 
 \begin{figure}[htbp]
-\centerline{\includegraphics[scale=.15]{Images/cdf_11_12_5.png}}
+\centerline{\includegraphics[scale=.15]{Images/cdf_gleam_110121_1wkincdeath_st16.png}}
+% i=11,j=12,k=5
+\begin{center}
+\begin{minipage}{10cm}
+\captionsetup{font=scriptsize}
 \caption[CDF plot for quantile fit]{This figure shows the CDF plots for 
 distributions fit to a set of quantiles. The grey line is a line of connected 
-dots from the submitted quantiles and values. 
+dots from the submitted quantiles and values and is the same in all four plots.
+This is the same set of forecasts as is \ref{fig:qqfits}.
 In no case here was the MSE below the cutoff value of the 
 corresponding distribution.}
 \label{fig:cdffits}
+\end{minipage}
+\end{center}
 \end{figure}
 
 
 
-The results in the previous two studies suggest that in some cases, forecasters
-are using methods which produce simple parametric distribution forecasts. Many
-likely are not. To improve upon these studies, one could fit the binned 
-influenza forecasts or the COVID-19 quantile forecasts to discrete mixture 
+The results from these two studies suggest that in some cases, forecasters
+are using methods which produce may produce one component mixture distribution
+forecasts. Many
+likely are not. To expand upon these studies, one could attempt to fit the 
+bin forecasts or the quantile forecasts to mixture 
 distributions with multiple components. Forecasts that are very close to 
 a mixture distribution may suggest that the forecasters already have models that
 make transition to a discrete mixture distribution forecast format easy or
@@ -2135,33 +2174,43 @@ straightforward.
 
 In this paper we have reviewed four representation types commonly used in
 probabilistic 
-forecasting including proper scoring, data storage and ensemble model 
-construction for each type. We presented the discrete mixture distribution
+forecasting including proper scoring, data storage, and ensemble model 
+construction for each type. We presented the mixture distribution
 representation and we argue that its use in collaborative probabilistic 
 forecasting is preferable to the other representations.
-In terms of model flexibility, storage and 
+In terms of model flexibility, storage, and 
 ensemble building it is
-comparable to discretized bins and interval forecasts but also provides a 
-forecast with a infinite nominal resolution. Thus we advocate its use in
-future forecasting projects like those done by the CDC and COVID-19 Forecast 
-Hub.
+comparable to discretized bins and quantile forecasts but also provides a 
+forecast with a infinite nominal resolution. Based on a retrospective analysis,
+we argue that among the teams participating in the CDC flu
+competition and the COVID-19 Forecast Hub, there are already some which produce
+forecasts already resembling single component mixture distributions making the 
+transition from past and current formats to a mixture distribution format 
+straightforward.
+We thus advocate for the use of mixture distributions in
+future forecasting projects like those done in the CDC flu competition or in the
+COVID-19 Forecast Hub.
 
 For a number of reasons, the adoption of finite mixture distributions as the
-submission format may face hurdles. A collaborative forecast center, along with 
+submission format may be avoided. A collaborative forecast center, along with 
 forecasters, using a 
 different representation may simply not want to break from tradition. The 
 implementation of new scoring and ensemble construction methods may be a 
-barrier. One aspect of ensemble construction which received little attention in 
+barrier. Development of tools beyond what was used in Section 
+\ref{section:tools} would assist in making a transition to using mixture 
+distributions more straightforward.
+One aspect of ensemble construction which received little attention in 
 this paper is the selection of weights for components of an ensemble where each
 of the components is mixture distribution. Computing requirements could become a
 concern in such a problem and further research on this may provide
 ideas of best methods for weight selection.
 
-Another area of recommended research is the use of joint distributions for 
+Another area of recommended research is the use of joint mixture distributions 
+for 
 forecasting. We have only considered here probabilistic forecasting of one 
 event at a time. Number of new infections in one week at one specific location
 for example. This forecast is presented as a marginal distribution for that 
-specific target, time and location. A joint distribution for forecasting 
+specific target, time, and location. A joint distribution for forecasting 
 multiple targets, times or locations may sometime be desirable and may require
 further consideration on how joint mixture distributions could be used as a 
 format in collaboration.
