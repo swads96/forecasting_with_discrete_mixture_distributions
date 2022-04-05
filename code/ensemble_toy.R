@@ -1,4 +1,6 @@
 library(scoringutils)
+library(mixtools)
+library(boot)
 
 md1 <- distr::UnivarMixingDistribution(distr::Norm(1.5,1), 
                                        distr::Norm(4,2),

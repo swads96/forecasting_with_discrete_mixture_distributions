@@ -211,23 +211,23 @@ predictions of the future can almost never be precise, it is usually desirable
 that a level of uncertainty be attached to any prediction. In recent years, it
 has become increasingly desirable that forecasts be probabilistic in order to 
 account for uncertainty in predicted quantities or events 
-\cite{gneiting2014probabilistic}. Specific problems for 
+\cite[]{gneiting2014probabilistic}. Specific problems for 
 which probabilistic forecasting is used include weather forecasting
-\cite{baran2018combining}, economics \cite{groen2013real}, and disease outbreaks
-\cite{yamana2016superensemble}.
+\cite[]{baran2018combining}, economics \cite[]{groen2013real}, and disease outbreaks
+\cite[]{yamana2016superensemble}.
 
 A probabilistic forecast is a forecast to which probabilities are assigned to 
 various possible outcomes. There are a number of ways whereby probabilities or 
 uncertainty may be represented. A common representation is either a continuous 
 or
-discrete parametric distribution, given as a probability density/mass function 
-(pdf/pmf). Much of the literature 
+discrete parametric distribution, given as a probability density/mass function. 
+Much of the literature 
 on calibration, sharpness, and scoring of a forecast pertains to parametric 
 distribution forecasts
-\cite{gneiting2007probabilistic,gneiting2013combining,baran2018combining}.
-Other common representations include samples \cite{krueger2016probabilistic}, 
-discretized bin distributions \cite{mcgowan2019collaborative},
-and quantile forecasts \cite{taylor2021evaluating, bracher2021evaluating}. 
+\cite[]{gneiting2007probabilistic,gneiting2013combining,baran2018combining}.
+Other common representations include samples \cite[]{krueger2016probabilistic}, 
+discretized bin distributions \cite[]{mcgowan2019collaborative},
+and quantile forecasts \cite[]{taylor2021evaluating, bracher2021evaluating}. 
 Each representation may be more or less 
 appropriate than the others for a given problem but knowing how to interpret, 
 score, and contruct ensemble forecasts for a selected representation is 
@@ -237,10 +237,10 @@ essential when multiple teams collaborate in the same forecasting project.
 Two collaborative projects on forecasting disease outbreaks for which many 
 separate forecasts 
 are used include the United States Centers for Disease Control (CDC)
-annual competition for forecasting the influenza outbreak \cite{cdcflusight}
+annual competition for forecasting the influenza outbreak \cite[]{cdcflusight}
 and the COVID-19 Forecast Hub which has 
 continuously operated since the start of the COVID-19 pandemic in the US in 
-early 2020 \cite{Cramer2021-hub-dataset}.
+early 2020 \cite[]{Cramer2021-hub-dataset}.
 
 \section{CDC flu competition}
 
@@ -256,31 +256,29 @@ whatever methods they choose. Historically, the forecasts must be
 submitted 
 in a discretized bin distribution
 format. A \emph{bin distribution} is a probability distribution represented by
-breaking the numeric range of an event into intervals or \emph{bins} and
+breaking the numeric range of an outcome into intervals or \emph{bins} and
 directly assigning the probability that the event falls within each bin.
 During previous flu seasons the \emph{binning scheme} or the assignment of 
 bin values was on a numeric 
 scale with a bounded range and the 
 prediction of a specific target was a set of probabilities assigned to each bin
-\cite{mcgowan2019collaborative}.
+\cite[]{mcgowan2019collaborative}.
 These forecasts were then evaluated against actual flu activity, and at 
-the end of the season a winning team was declared \cite{cdcflusight}.
+the end of the season a winning team was declared \cite[]{cdcflusight}.
 
 This competition has provided the CDC, competing teams, and other interested
 parties a chance to collaborate and improve their forecasting from season to
 season. One 
 proposed way to enhance prediction has been to aggregate the various teams'
 forecasts into a \emph{multi-model ensemble forecast} 
-\cite{mcgowan2019collaborative,mcandrew2019adaptively,reich2019accuracy},
+\cite[]{mcgowan2019collaborative,mcandrew2019adaptively,reich2019accuracy},
 refered to hereafter as an ensemble forecast.
 
 An \emph{ensemble forecast} is a combination of several component forecast 
 models into one model which often yields better predicting power than the 
-individual models \cite{cramer2021evaluation}. Such an ensemble made from 
+individual models \cite[]{cramer2021evaluation}. Such an ensemble made from 
 multiple influenza competition forecasts did in fact outperform the individual 
-component models \cite{reich2019accuracy}.
-In the COVID-19 Forecast Hub, construction of ensemble forecasts to improve
-predicting power has been a priority.
+component models \cite[]{reich2019accuracy}.
 
 
 
@@ -299,7 +297,9 @@ state, and national levels and for days, weeks, and months ahead.
 These forecasts are aggregated into a single ensemble forecast. The model data,
 forecasts, and the ensemble forecast are passed along to the CDC for its use in 
 official
-communication \cite{Cramer2021-hub-dataset}. See Figure \ref{fig:cdcoff}.
+communication \cite[]{Cramer2021-hub-dataset}. Figure \ref{fig:cdcoff} is an 
+official CDC report from August 2021 showing forecasts from the COVID-19 
+Forecast Hub of increment deaths and cumulative deaths due to COVID-19.
 
 Though similar to the forecasting in the CDC flu competition, the format of 
 the COVID-19 Forecast Hub has some key distinctions. For one this project has
@@ -311,25 +311,29 @@ pressure of
 creating forecasts, rather than requesting forecasts as bin distributions
 the forecasts are requested as the predictive median and 
 predictive intervals for various nominal levels depending on the target to be
-predicted \cite{bracher2021evaluating}. Each value in a predictive interval
+predicted \cite[]{bracher2021evaluating}. Each value in a predictive interval
 is a value for a quantile at a specified nominal level. This makes a set of 
-predicitve intervals a \emph{quantile forecast} or a forecast made up of a set
+predictve intervals a \emph{quantile forecast} or a forecast made up of a set
 of quantiles and corresponding values.
 Collecting forecasts as quantile forecasts instead of bin forecasts brings with 
 it differences in how to score, construct an 
 ensemble forecast, and store the forecasts among other differences.
+Ray et. al show that ensemble forecasts in the COVID-19 Forecast Hub provide
+precise short-term forecasts which decline in accuracy in longer term forecasts
+approaching four weeks \cite[]{ray2020ensemble}.
 
 \begin{figure}[htbp]
+\centerline{\includegraphics[scale=.24]{Images/8_30_21_cvd_deaths.jpeg}}
 \begin{center}
 \begin{minipage}{10cm}
 \captionsetup{font=scriptsize}
-\centerline{\includegraphics[scale=.12]{Images/8_30_21_cvd_deaths.jpeg}}
 \caption[Official CDC COVID-19 deaths report August 2021]{This image, 
 published on www.cdc.gov in August 2021 as official public communication 
 by the CDC, shows forecast models for national new weekly deaths due to COVID-19 
 in the top row and cumulative deaths on the bottom row. The plots in the left 
 column show prediction intervals from multiple teams whereas the plots on the 
-right show the intervals for an ensemble forecast model.}
+right show the intervals for an ensemble forecast model with gray lines
+predicting individual model point forecasts.}
 \label{fig:cdcoff}
 \end{minipage}
 \end{center}
@@ -340,26 +344,31 @@ In the context of collaborative forecasting like that of the CDC flu competition
 or the COVID-19 Forecast Hub, bin forecasts and quantile forecasts have become
 important representations to those involved in the projects. Yet both 
 representation types come 
-with their drawbacks. Data 
-storage for instance might be a concern if many bins are used for forecasting. 
-And scoring methods are limited if forecasts are quantile forecasts.
+with their drawbacks. Computer
+storage for instance might be a concern if many bin distributions are used for 
+forecasting, 
+and scoring methods are limited if forecasts are quantile forecasts.
 
-In this paper, we propose the use of discrete mixture distributions as a means 
+In this paper, we propose the use of finite mixture distributions as a means 
 of forecasting for collaborative projects similar to the CDC flu competition or 
 the COVID-19
-Forecast Hub. In Section \ref{section:representations}, 
+Forecast Hub. A finite mixture distribution -which we will refer to as a
+\emph{mixture distribution}- is distribution constructed by combining a finite 
+collection of other distributions. In this paper, we focus on the case where the
+collection of distributions are parametric distributions.
+
+In Section \ref{section:representations}, 
 popular probabilistic forecast representation 
 types are defined and reviewed. Methods of scoring, storing, constructing 
 ensembles, and other aspects will be reviewed and compared for each 
 representation type.
-In Section \ref{section:conmixforc}, details for using discrete mixture 
+In Section \ref{section:conmixforc}, details for using mixture 
 distributions in a collaborative forecast project are presented as well as tools
 which may be used for scoring and constructing an ensemble.
 Section \ref{section:retrostud} is a retrospective study of the CDC flu 
 competition and COVID-19 Forecast Hub
-forecast and an attempt to assess whether any forecast models
-may be approximated by known continuous distributions. We conclude this 
-paper with a discussion.
+forecasts and an attempt to assess whether forecast models
+may be approximated by one component mixture distributions.
 
 
 
@@ -394,15 +403,16 @@ those aspects are also presented.
 
 \section{Representation aspects to consider in collaborative projects}
 \subsection{Scoring}
-Scoring rules are used to numerically evaluate or score a probability forecast. 
+Scoring rules are used to numerically evaluate or \emph{score} a probability 
+forecast. 
 The
 score is a measure of the accuracy of the forecast and where multiple forecasts
 exist the score for each may be used to compare forecasts. If a scoring rule 
-is proper, then the best possible score is obtained by reporting the true 
+is \emph{proper}, then the best possible score is obtained by reporting the true 
 distribution. The rule is strictly proper if that value is unique. 
 Under proper
 scoring rules, a forecaster has no incentive to be dishonest in their 
-submission \cite{gneiting2007strictly}. This makes proper scoring rules ideal
+submission \cite[]{gneiting2007strictly}. This makes proper scoring rules ideal
 for evaluating forecasts. We will limit our review of scoring methods to rules
 which are proper.
 
@@ -412,8 +422,8 @@ many predictions are collected, computer storage may need to be addressed.
 As an example of required computer storage, the 
 repository for the
 COVID-19 Forecast Hub contained 85 million forecasts as of 
-February 5, 2022 which required more than 11.6 gigabytes of storage!
-(cite zoltar??)
+April 4, 2022 which required more than 11.7 gigabytes of storage!
+\cite[]{covidgithub}.
 When determining the goals of a forecast project, there should be consideration 
 of the storage required for different forecast representation types.
 
@@ -429,31 +439,32 @@ ensemble outperforms the individual component models.
 
 As probabilistic forecasting becomes more commonplace, so too does ensemble 
 modeling. Ensembles have been used extensively in weather and
-climate modeling \cite{baran2018combining}, 
+climate modeling \cite[]{baran2018combining}, 
 and they have been used increasingly in modeling infectious disease outbreaks
-\cite{yamana2016superensemble}. 
+\cite[]{yamana2016superensemble}. 
 Ensembles allow for an incorporation of multiple signals -
 often from differing data sources- and sometimes individual model biases are 
 canceled
 out or reduced by biases from other models \cite[see references
 therein]{reich2019accuracy}. 
 In several disease outbreak studies, ensemble forecasts have been 
-shown to outperform individual model forecasts 
+shown to outperform individual model forecasts
 \cite[see
-references therein]{cramer2021evaluation}.
+references therein]{ray2020ensemble, cramer2021evaluation}.
 
 Construction of an ensemble may be done by combining individual forecast 
 models using weighted averages. This has been called stacking 
-\cite{wolpert1992stacked} or weighted density ensembles 
-\cite{ray2018prediction}. 
+\cite[]{wolpert1992stacked} or weighted density ensembles 
+\cite[]{ray2018prediction}. 
 
 \section{Probabilistic forecast representation types}
 \subsection{Parametric distributions}
 \label{section:pardist}
 A parametric distribution is a discrete or continuous probability distribution 
 described by a known function $p(x) := p(x|\theta)$. The function $p(x)$ is 
-called a pmf if the distribution is discrete and is called a
-pdf if the distribution is continuous. Here $\theta$ is a vector of known or 
+called a probability mass function (pmf) if the distribution is discrete and 
+is called a probability density function
+(pdf) if the distribution is continuous. Here $\theta$ is a vector of known or 
 unkown parameters contained in the parameter space of the distribution. 
 
 The value of $p(\cdot)$ evaluated at $x$ is defined as 
@@ -477,14 +488,15 @@ The quantile function is defined in \eqref{eq:quant} which returns a quantile
 value where $p$ is a given probability such that $0\leq p \leq 1$.
 
 \begin{equation}
+\label{eq:dcdf}
+  F(x) = P(X \leq b) = \sum_{x \in X} p(x)
+\end{equation}
+
+\begin{equation}
 \label{eq:ccdf}
   F(x) = P(X \leq b) = \int_{-\infty}^x p(t) dt
 \end{equation}
 
-\begin{equation}
-\label{eq:dcdf}
-  F(x) = P(X \leq b) = \sum_{k=1}^n p(x_k) dt
-\end{equation}
 
 \begin{equation}
 \label{eq:quant}
@@ -497,10 +509,10 @@ For a forecast represented as a parametric function with pmf/pdf $p_m(\cdot)$,
 the accuracy of the forecast may be measured by how likely realized value $x^*$
 is to occur. Commonly used proper scoring rules for parametric distributions
 include the logarithmic score (LogS), the
-continuous rank probability score (CRPS) \cite{hersbach2000decomposition}
-\cite{alves2013ncep}, and the interval/Brier 
-score (IS) \cite{gneiting2007strictly} among 
-others. See also \cite{gneiting2014probabilistic}
+continuous rank probability score (CRPS) \cite[]{hersbach2000decomposition}
+\cite[]{alves2013ncep}, and the interval/Brier 
+score (IS) \cite[]{gneiting2007strictly} among 
+others. See also \cite[]{gneiting2014probabilistic}
 Section 3 for more on proper scoring functions. The definitions 
 \eqref{eq:logs} and \eqref{eq:crps} are found in the review by Krueger.
 
@@ -532,28 +544,28 @@ Here too a smaller score indicates a more accurate forecast.
 
 Besides evaluating forecasts, the CRPS may also be used for optimizing weights 
 used
-to build ensembles under Bayesian model averaging (BMA). Considered the 
+to build ensembles under model averaging (MA). Considered the 
 state-of-the-art techniques for combining 
 component distributions
 into an ensemble distribution are nonhomogeneous regression (NR), also known as
 ensemble model output statistics (EMOS), and ensemble
-BMA, both of which are defined in \cite{gneiting2014probabilistic}.
+MA, both of which are defined in \cite[]{gneiting2014probabilistic}.
 
 In the context of an ensemble made from component models submitted from various
 sources,
-BMA may be preferable because it does not require that modeling methods for 
+MA may be preferable because it does not require that modeling methods for 
 individual components be the same. 
-In BMA, the final model does not have to be specified
-beforehand and the resulting forecast will be a discrete mixture distribution
+In MA, the final model does not have to be specified
+beforehand and the resulting forecast will be a mixture distribution
 of all component forecasts. The general form for an ensemble distribution $p^E$
 is in \eqref{eq:bma}. Here $p_m$ is the $m^{th}$ component forecast 
 distribution and 
 $0 \leq w_m \leq 1$ is a weight assigned to that component where $\sum w_m = 1$.
-Methods for estimating weights include Maximum Likelihood estimation
-\cite{raftery2005using}, MCMC 
-sampling \cite{vrugt2008ensemble},
+Methods for estimating weights include maximum likelihood estimation
+\cite[]{raftery2005using}, MCMC 
+sampling \cite[]{vrugt2008ensemble},
 and minimizing the CRPS of the ensemble
-\cite{baran2018combining}.
+\cite[]{baran2018combining}.
 
 \begin{equation}
 \label{eq:bma}
@@ -565,7 +577,7 @@ For selecting distribution weights, minimizing the CRPS has some nice
 properties, but it can also be
 difficult to compute. For example, when the forecast is a mixture of a 
 truncated normal distribution (TN) and a truncated lognormal (TL) the CRPS is 
-not available in closed form \cite{baran2018combining}.
+not available in closed form \cite[]{baran2018combining}.
 
 Generally computation and evaluation of parametric distribution functions is not 
 hard. 
@@ -660,7 +672,7 @@ if they are asked to submit a parametric distribution, and the range of possible
 shapes for a distribution is larger.
 In the last few decades, increased computing power and improvements in MCMC
 sampling have greatly contributed to growth in the use of
-sample distributions for forecasting \cite{gneiting2007strictly}
+sample distributions for forecasting \cite[]{gneiting2007strictly}
 \cite[see examples listed therein]{krueger2016probabilistic}.
 
 To properly score a forecast represented by a sample distribution, both the CRPS
@@ -692,7 +704,7 @@ and the LogS]{krueger2016probabilistic}.
 
 
 
-To build an ensemble model from sample distribution forecasts, the BMA 
+To build an ensemble model from sample distribution forecasts, the MA 
 construction from (\ref{eq:bma}) may be used only replacing $p_m$ with the
 approximate KD or GA pdf functions
 -$\hat{p}_{n_m}^{KD}$ or $\hat{p}_{n_m}^{GA}$  
@@ -718,13 +730,13 @@ will usually require less storage space than samples is a bin
 distribution.
 
 A bin distribution may be constructed over a set 
-$A = [a, b]$ by partitioning $A$ into a set of $K$ bins $\{B_i\}_{i=1}^{K}$
+$A = [a, b)$ by partitioning $A$ into a set of $K$ bins $\{B_i\}_{i=1}^{K}$
 where $B_i = [b_{i-1}, b_i)$ and $\cup_{i=1}^{K} B_i = A$. Based on the problem
 to be forecasted, researchers will determine the possible range $A$ and 
 select the number of bins and the sizes for each bin. It may be the case
 that a collaborative project will set the width of all bins to be equal so that 
 $\Delta = b_i - b_{i-1}$ is the same width for all $i$ 
-\cite{mcgowan2019collaborative}.
+\cite[]{mcgowan2019collaborative}.
 To complete the construction, a probability $p_i$ is assigned to each $B_i$ 
 where $\sum_{i=1}^{K}p_i = 1$. These probabilities are determined by the 
 forecasters. 
@@ -756,24 +768,25 @@ distribution, such as a binary or Poisson distribution, may sometimes be used to
 assign probabilities to each of the bins. When the values to be forecasted are
 continuous, a forecaster may need to employ a method of discretization to a 
 forecast distribution. There are a number of possible ways to do this including
-those outlined by Chakraborty and Subrata \cite{chakraborty2015generating}.
+those outlined by Chakraborty and Subrata \cite[]{chakraborty2015generating}.
 
 The CDC flu competition has used a bin distributions as the forecast 
 representation. The CDC has also used it for other disease outbreak
 forecast projects.
 In that context it has become the standard representation 
-\cite{brooks2020comparing}. Much work has been done in evaluating 
+\cite[]{brooks2020comparing}. Much work has been done in evaluating 
 and constructing ensemble models on influenza forecasts represented by 
-discretized bins \cite{mcgowan2019collaborative, mcandrew2019adaptively,reich2019collaborative}. 
+discretized bins 
+\cite[]{mcgowan2019collaborative, mcandrew2019adaptively,reich2019collaborative}. 
 
 Because discretized bins can be seen as a pmf, methods for proper scoring 
 already 
-discussed -LogS and CRPS- are useable and BMA is valid method for ensemble 
-construction. Reich et. al used BMA to combine multiple forecasts from the flu 
+discussed -LogS and CRPS- are useable and MA is valid method for ensemble 
+construction. Reich et. al used MA to combine multiple forecasts from the flu 
 competition. They built and compared ensemble models with different weighting
 schemes including equally weighted components $w_j = 1/J$ and estimating weights
 according to the model specification. To estimate weights they used the 
-Expectation Maximization (EM) algorithm 
+expectation maximization (EM) algorithm 
 \cite[see
 supplementary material within for details]{reich2019accuracy}.
 
@@ -793,7 +806,7 @@ such that the probabilities $p_i$ are calculated as in \eqref{eq:disc}
 where $p^{TL}$ is the pdf of a truncated $\mbox{Lognormal(1,0.4)}$. This is 
 similar
 to Methodology-IV from Chakraborty 
-\cite{chakraborty2015generating,kemp2004classes}.
+\cite[]{chakraborty2015generating,kemp2004classes}.
 
 \begin{equation}
 \label{eq:disc}
@@ -863,7 +876,7 @@ the time pressure of generating forecasts and the large
 range for possible outcomes both contributed to the COVID-19 Forecast Hub 
 decision
 to forego trying to create the right binning scheme and use quantile forecasts
-to forecast the COVID-19 pandemic \cite{bracher2021evaluating}.
+to forecast the COVID-19 pandemic \cite[]{bracher2021evaluating}.
 The COVID-19 Forecast Hub requires predictions to be submitted as 11 or three 
 nominal 
 intervals -depending on the specific target and unit to forecast- and a median.
@@ -898,7 +911,7 @@ nothing
 is reported about the range below the $1^{st}$ quantile or above the $99^{th}$.
 Yet the quantile representation has its advantages. 
 
-Quantile FORECASTS allows for forecasters to submit fairly detailed
+Quantile forecasts allow for forecasters to submit fairly detailed
 forecasts without restricting the range of possible values.
 Since quantiles are easily calculated from any regular distribution type
 -using the quantile function for parametric functions or calculating sample 
@@ -914,7 +927,7 @@ the central $(1-\alpha)$ prediction interval the IS is defined in \eqref{eq:is}.
 This is a sum -weighted by 
 $\alpha$- of the width of the
 interval and the distance between $x^*$ and the interval (if $x^*$ is not 
-captured in the interval) \cite{gneiting2014probabilistic}. 
+captured in the interval) \cite[]{gneiting2014probabilistic}. 
 The IS requires only a single central 
 $(1-\alpha) \times 100$ prediction interval.
 
@@ -929,25 +942,26 @@ When an quantile forecast is made up of multiple intervals each with different
 $\alpha$ levels, the weighted interval score (WIS) may be used as it was by
 Bracher et.
 al use the WIS to score COVID-19 quantile forecasts 
-\cite{bracher2021evaluating}.
+\cite[]{bracher2021evaluating}.
 There are multiple versions of the WIS -some of 
-which are described in Bracher et. al- but the version used by the COVID-19 
+which are described in Bracher et. al, but the version used by the COVID-19 
 Forecast
 Hub for a forecast of $K$ intervals is defined in \eqref{eq:wis}.
-Here $w_k = \alpha_k/2$ is the weight on the $k^{th}$
+Here $median$ refers to the predictive median and $w_k = \alpha_k/2$ is the 
+weight on the $k^{th}$
 interval. With that selection of weights, it may be shown that the
 WIS approximates the CRPS \cite[see S1 Text therein]{bracher2021evaluating}.
 
 \begin{equation}
 \label{eq:wis}
-  WIS_{0,K}(F_m,y^*) = \frac{1}{K + 1/2} \times (w_0, \times |y^*-med|+
-  \sum_{k=1}^K \{ w_k \times IS_{\alpha_k}(F_m,y) \} )
+  WIS_{0,K}(F_m,x^*) = \frac{1}{K + 1/2} \times (w_0, \times |x^*-median|+
+  \sum_{k=1}^K \{ w_k \times IS_{\alpha_k}(F_m,x^*) \} )
 \end{equation}
 
 
 Bogner, Liechti and Zappa compared scoring forecasts of quantiles with the 
 Quantile Score (QS) similar to the interval score and scoring distribution functions
-fit to those quantiles using the CRPS \cite{bogner2017combining}. The CRPS 
+fit to those quantiles using the CRPS \cite[]{bogner2017combining}. The CRPS 
 corresponds to the integral of the QS over all possible thresholds rather than
 just specific quantiles, so it more effectively reveals deficiencies in parts of 
 the distribution and especially in the tails past the end points of quantiles
@@ -960,7 +974,7 @@ ensemble forecast.
 The ensemble forecast constructed by the COVID-19 Forecast Hub was made as an
 equally-weighted average of forecasts from the component models. More 
 specifically, each quantile value of the ensemble was the average of values from
-all models corresponding to the same quantile \cite{ray2020ensemble}. For $M$ 
+all models corresponding to the same quantile \cite[]{ray2020ensemble}. For $M$ 
 models each with $K$ quantiles, the $k^{th}$ ensemble quantile $q^E_k$ is 
 calculated as in \eqref{eq:qa}
 where $\nu_m$ is the weight assigned to each forecast and $\sum \nu_m = 1$. In
@@ -968,14 +982,12 @@ the COVID-19 Forecast Hub model, $\nu_m = \nu = 1/M$. Where the overall mean or
 a weighted mean may be used, the median may also be used.
 Brooks et. al compare performance of the COVID-19 ensemble
 using equally-weighted means, weighted means, and median value constructions
-\cite{brooks2020comparing}.
+\cite[]{brooks2020comparing}.
 In their report, they show that weighted means and median constructions tend
 to outperform an equally-weighted mean construction. To come up with optimal 
 weights, they select values $\nu_m$ from (\ref{eq:qa}) which minimize the WIS of 
 the ensemble forecast.
-Averaging quantiles in this way is the same as quantile averaging or Vincentization
-only with an incomplete quantile function. It thus carries with it many of the
-same characteristics.
+
 
 \begin{equation}
 \label{eq:qa}
@@ -989,16 +1001,16 @@ in \eqref{eq:vinc}
 where $F_m^{-1} (\alpha) = \inf \{y:F_m(y) \geq \alpha\}$ for 
 $0 < \alpha \leq 1$. Some notable characteristics are that it is more likely for
 the ensemble distribution
-to be unimodal than it is under linear averaging of densities like BMA 
-\cite{busetti2017quantile}. Under some circumstances, such as when member
+to be unimodal than it is under linear averaging of densities like MA 
+\cite[]{busetti2017quantile}. Under some circumstances, such as when member
 distributions are exponential, Weibull, or logisitic the aggregated distribution
-is of the same family \cite{ratcliff1979group}. Quantile averagin produces 
+is of the same family \cite[]{ratcliff1979group}. Quantile averagin produces 
 smoother
-distributions than BMA according to Schepen and Wang \cite{schepen2015model}.
+distributions than MA according to Schepen and Wang \cite[]{schepen2015model}.
 And Lichtendahl et. al conclude that quantile averaging produces sharper 
 forecasts
-and tends to perform better in scoring than probability averaging, BMA,
-\cite{lichtendahl2013better}.
+and tends to perform better in scoring than probability averaging, MA,
+\cite[]{lichtendahl2013better}.
 
 \begin{equation}
 \label{eq:vinc}
@@ -1011,7 +1023,7 @@ data storage for interval forecasts will
 depend on the desired clarity of resolution. For the COVID-19 forecasts 
 submitted to the COVID-19 Forecast Hub, 23 quantile values are requested for 
 quantiles (0.01, 0.025, 0.05, 0.10, …, 0.95, 0.975, 0.99). This includes a 
-median along with 11 predictive intervals \cite{bracher2021evaluating}. 
+median along with 11 predictive intervals \cite[]{bracher2021evaluating}. 
 Forecasters are thus required to submit 46 values in each short-term forecast 
 (some of the longer term forecasts only include seven quantiles). In terms of 
 storage, this is an improvement over requirements for the flu contest. Table
@@ -1070,8 +1082,7 @@ with corresponding values.}
 \newpage
 
 \section{Mixture distributions}
-A discrete mixture of parametric distributions forecast -which we will refer to
-as a mixture distribution forecast- representation is an
+A mixture distribution forecast representation is an
 attractive alternative to the four representations already discussed. 
 A mixture distribution forecast
 would allow for many distribution shapes, a high resolution, storage comparable
@@ -1096,7 +1107,7 @@ with pdfs $p_t(x)$ and $z_t > 0$ and $\sum_{t=1}^{T} z_t = 1$ we have
 
 Like the parametric, a mixture distribution may be evaluated with
 existing software like \texttt{distr} package in \texttt{R} 
-\cite{camphausen2007distr}. 
+\cite[]{camphausen2007distr}. 
 And 
 scoring may be done  
 using the LogS, CRPS and IS. A mixture distribution, like its parametric 
@@ -1105,11 +1116,11 @@ distribution components, has an infinite resolution.
 A mixture distribution may be much more flexible than a single component 
 parametric distribution in 
 terms of distributional shape. According to 
-McLachlan and Peel, a finite mixture of 
+McLachlan and Peel, a mixture of 
 normal densities with common variance can be used to approximate arbitrarily 
 well
-any continuous distribution \cite{peel2000finite} (see also 
-\cite{nguyen2019approximations}). Thus, for an unconventional probability
+any continuous distribution \cite[]{peel2000finite} (see also 
+\cite[]{nguyen2019approximations}). Thus, for an unconventional probability
 distribution -such as MCMC posterior samples- it may be reasonable to 
 approximate the distribution by fitting those samples to a mixture of normal
 distributions.
@@ -1124,7 +1135,7 @@ the likelihood of the forecast or minimizing the CRPS. However with the
 added complexity of component models being mixture distributions the 
 computation is likely to be more expensive. An example where this is
 true is when trying to minimize the CRPS but the exact mixture doesn't 
-produce a closed form CRPS \cite{baran2018combining}. In large projects like
+produce a closed form CRPS \cite[]{baran2018combining}. In large projects like
 the COVID-19 Forecast Hub, if an equal weight is not assigned to each component,
 it may be determined that models not reaching a certain standard of predictive
 performance are
@@ -1133,14 +1144,14 @@ include only the best performing forecasts.
 
 
 
-Table \ref{table:repscomp} shows how a discrete mixture distribution forecast 
-compares with the other formats discussed in terms of methods for scoring,
+Table \ref{table:repscomp} shows how a mixture distribution forecast 
+compared with the other formats discussed in terms of methods for scoring,
 information and resolution provided, methods for ensemble building, and computer
 storage requirement. To summarize, a continuous mixture distribution has the 
 infinite resolution of a parametric distribution with the flexibility of a bin
 distribution, a sample distribution, and a set of quantiles. The common proper
 scoring rules LogS and CRPS may be used to score it. The storage requirement is
-comparable to that of a bin distribution or a set of quantiles. And BMA may be 
+comparable to that of a bin distribution or a set of quantiles. And MA may be 
 used for building an ensemble.
 In Section
 \ref{section:conmixforc} we show how a mixture distribution may be constructed,
@@ -1154,9 +1165,8 @@ scored and used to construct an ensemble using software available in
 \begin{flushleft}
 
   \begin{table}
-    \begin{center}
-    \captionsetup{font=scriptsize}
-    \begin{tabular}{ | p{2.4cm} || p{3cm} | p{4cm} | p{3cm} | p{3.5cm} |}
+   \begin{adjustwidth}{-1cm}{-1cm}
+    \begin{tabular}{ | p{2.9cm} || p{3cm} | p{4cm} | p{3cm} | p{3.5cm} |}
     \hline
     \textbf{Representation} & \textbf{Scoring} & 
     \textbf{Flexibility/Information} & \textbf{Ensemble} &
@@ -1166,18 +1176,18 @@ scored and used to construct an ensemble using software available in
     Parametric distribution & LogS, CRPS, IS & Limited to common 
     distribution families. 
     Infinite resolution
-    & BMA & Low 3-6 values per prediction \\ \hline
+    & MA & Low 3-6 values per prediction \\ \hline
     
     Sample distribution & CRPS and IS. LogS after smoothing & Any shape. 
     Resolution may be
-    very high but depends on sample size & BMA after smoothing. Resampling 
+    very high but depends on sample size & MA after smoothing. Resampling 
     otherwise & 
     Hundreds or thousands of values per prediction
     \\ \hline
     
     Bin distribution & LogS, CRPS, IS &
     Any shape allowed, but limited by binning scheme. Range also may be limited
-    & BMA &
+    & MA &
     Depends on binning scheme but dozens to hundreds of values
     \\ \hline
 
@@ -1191,15 +1201,17 @@ scored and used to construct an ensemble using software available in
     Mixture distribution & LogS, CRPS, IS. May be more limited by computation & 
     With
     enough component distributions may
-    approximate any distribution shape. Infinite resolution& BMA 
+    approximate any distribution shape. Infinite resolution& MA 
     & 3 values to dozens per forecast depending on number of components
     \\ \hline
     
   
    
 	 \end{tabular}
-	 % \end{adjustwidth}
+	 \end{adjustwidth}
+	  \begin{center}
     \begin{minipage}{14cm}
+    \captionsetup{font=scriptsize}
    \caption[Forecast representation comparison]{This table compares scoring,
    information, ensemble building, and storage requirements for the different
    forecast representations discussed. To summarize 
@@ -1207,7 +1219,7 @@ scored and used to construct an ensemble using software available in
 infinite resolution of a parametric distribution with the flexibility of a bin
 distribution, a sample distribution, and a set of quantiles. The common proper
 scoring rules LogS and CRPS may be used to score it. The storage requirement is
-comparable to that of a bin distribution or a set of quantiles. And BMA may be 
+comparable to that of a bin distribution or a set of quantiles. And MA may be 
 used for building an ensemble.}
    \label{table:repscomp}
    \end{minipage}
@@ -1418,7 +1430,7 @@ location, target, and unit will produce a table representing a single forecast.
 That table may look like Tables \ref{tab:preddf1} and 
 \ref{tab:preddf1}. If the table is saved as a standard \texttt{data.frame} in 
 \texttt{R}, then tools based on the \texttt{distr} package 
-\cite{camphausen2007distr} may be used for evaluating a mixture distribution 
+\cite[]{camphausen2007distr} may be used for evaluating a mixture distribution 
 with the components in the table. 
 
 
@@ -1712,7 +1724,7 @@ with components is show in figure \ref{fig:mixense}.
 
 \begin{figure}[htbp]
 \centerline{\includegraphics[scale=.15]{Images/mix_ense.png}}
-\caption[Toy ensemble forecast]{Ensemble forecast made from forecast 1 and 
+\caption[Example ensemble forecast]{Ensemble forecast made from forecast 1 and 
 forecast 2 from Section \ref{section:tools}. The green line is the density 
 component of mixture forecast 1 with weight 0.529. The 
 red line is the density component of mixture forecast 2 with weight 
@@ -1766,10 +1778,10 @@ forecasts and quantile forecasts. We are unaware of formal statistical
 methods for fitting parametric distributions or mixture distributions to bin
 distributions. Methods of fitting a distribution to quantiles 
 include Bayesian Quantile Matching
-\cite{nirwan2020bayesian}, step interpolation with exponential tails 
-\cite{quinonero2005evaluating},
+\cite[]{nirwan2020bayesian}, step interpolation with exponential tails 
+\cite[]{quinonero2005evaluating},
 and the Method of Simulated Quantiles 
-\cite{dominicy2013method}. These studies however lack claims that the methods
+\cite[]{dominicy2013method}. These studies however lack claims that the methods
 for fitting are statistically formal.
 Because of this it should be noted that any conclusions made in 
 this section may not be 
@@ -1778,7 +1790,8 @@ stated in terms of statistical certainty.
 
 
 \section{CDC flu competition}
-The CDC Retrospective Forecasts project at zoltrdata.com (cite??) contains over
+The CDC Retrospective Forecasts project on zoltrdata.com \cite[]{zoltarflu} 
+contains over
 869,638 probabilistic influenza-like illness forecasts for all combinations
 of 11 regions 
 in the United States and seven targets from 27 different modeling teams. These
@@ -1942,9 +1955,15 @@ a TG.
 
 \begin{figure}[htbp]
 \centerline{\includegraphics[scale=.15]{Images/flu_fit_17_10_3.png}}
+\begin{center}
+\begin{minipage}{10cm}
+\captionsetup{font=scriptsize}
 \caption[Parametric distribution fits to binned distribution]{This figure shows
 the plots of fits from each a uniform, TN, TL,
-and TG distributions to the same bin distribution. The title of this forecast
+and TG distributions to the same bin distribution. Each black vertical line is
+a bin probability $p_i \times 10$. The probabilities are multiplied by 10 to 
+better illustrate fitting a distribution to the probabilities.
+The title of this forecast
 given by the submission team is Bayesian Model Averaging. This forecast was
 submitted to the CDC on May 15, 2017 and is a three week ahead forecast of
 percent of hospital patients due to an influenza like illness for a specific
@@ -1954,14 +1973,17 @@ TN cutoff value, so we conclude that the bin forecast may have been
 discretized from a TN. Proportions of distributions with MSDs 
 below the cutoff values are also included.}
 \label{fig:binparamfits}
+\end{minipage}
+\end{center}
 \end{figure}
 
 
 
 \section{COVID-19 Forecast Hub}
 
-As of April 1, 2022 there were 89.8 million forecasts  
-from 117 different modeling teams submitted to the COVID-19 Forecast Hub (cite??). 
+As of April 4, 2022 there were over 90 million forecasts  
+from 117 different modeling teams submitted to the COVID-19 Forecast Hub 
+\cite[]{zoltarcovid}. 
 These 
 forecasts covered all combinations of 3,202 municipalities (mostly counties) 
 in the United States with 441 targets. The first of these forecasts was 
@@ -1977,8 +1999,7 @@ known continuous distribution, we minimized the mean square error (MSE)
 in \eqref{eq:mse} between where $q_i$ is
 the $i^{th}$ quantile value from a forecast and $F(y| \theta)$ is a fit CDF with 
 parameter $\hat{\theta}$. The parameter $\hat{\theta}$ is the solution to 
-\eqref{eq:minithet}.
-a fit CDF and the given quantiles.
+\eqref{eq:minthet}.
 
 \begin{equation}
   MSE = \sum_{i=1}^m (q_i - F(y| \hat{\theta}))
@@ -2056,7 +2077,7 @@ make such a difference in the cutoff value.
 
 With these cutoff values selected, distributions were then fit to quantile 
 forecasts
-from the COVID-19 Forecasts on zoltardata.com.?? 
+from the COVID-19 Forecasts on zoltardata.com \cite[]{zoltarcovid}.
 From 115 modeling teams we randomly selected four forecast submissions. From 
 those submissions we randomly selected three units and attempted to assess
 forecasts for all targets under than unit.
@@ -2151,7 +2172,7 @@ likely are not. To expand upon these studies, one could attempt to fit the
 bin forecasts or the quantile forecasts to mixture 
 distributions with multiple components. Forecasts that are very close to 
 a mixture distribution may suggest that the forecasters already have models that
-make transition to a discrete mixture distribution forecast format easy or
+make transition to a mixture distribution forecast format easy or
 straightforward.
 
 
@@ -2191,7 +2212,7 @@ We thus advocate for the use of mixture distributions in
 future forecasting projects like those done in the CDC flu competition or in the
 COVID-19 Forecast Hub.
 
-For a number of reasons, the adoption of finite mixture distributions as the
+For a number of reasons, the adoption of mixture distributions as the
 submission format may be avoided. A collaborative forecast center, along with 
 forecasters, using a 
 different representation may simply not want to break from tradition. The 
